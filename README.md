@@ -1,2 +1,19 @@
-# Quant
-Project that marks my first attempt at quantitative trading
+# Momentum Trading on Time Series Data
+
+## Data Source
+Tushare for Chinese A-share market. 
+
+## Strategy
+This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 99 days moving average. 
+
+## Backtest
+Backtest must respect rules in Chinese market:
+- T+1 settlement: can't buy and sell on the same day;
+- No short selling: retail investors are not allowed to engage in short selling;
+- Daily price limits: price swings are capped at +/- 10%;
+- Lunch break: trading completely freezes from 11:30 AM -- 1:00 PM CST;
+
+and factor in transaction cost:
+- Commission: 0.01%
+- Stamp tax on sells: 0.05%
+- Slippage: 1 - 2 transactions if we place limit orders;
