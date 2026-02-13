@@ -1,3 +1,6 @@
 # Virtual env files
 Pipfile
 Pipfile.lock
+
+# Environment variables
+.env
