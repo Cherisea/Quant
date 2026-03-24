@@ -52,7 +52,7 @@ HK_LUNCH_START = "12:00"
 HK_LUNCH_END = "13:00"
 
 # Logging
-LOG_FILE = "trading_bot_06066.log"
+LOG_FILE = "./logs/trading_bot_06066.log"
 logging.basicConfig(
     level=logging.INFO, 
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -65,7 +65,6 @@ log = logging.getLogger(__name__)
 
 class TigerClient:
     """A holder for quote and trade agent.
-
     """
     def __init__(self) -> None:
         self.cfg = self._build_config()
@@ -95,7 +94,6 @@ class TigerClient:
         try:
             meta = self.quote.get_trade_metas([SYMBOL])
             ls = meta["lot_size"].iloc[0]
-            print(f"Data type of meta: {meta}")
             log.info(f"Verified lot size for {SYMBOL}: {ls}")
             return ls
         except Exception as e:
