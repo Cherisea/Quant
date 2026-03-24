@@ -4,6 +4,8 @@ A trading bot that operates on simple momentum strategy.
 
 # System and third-party imports
 import os 
+import sys
+import logging
 from dotenv import load_dotenv
 
 # Tiger trade imports
@@ -42,3 +44,17 @@ HK_MARKET_OPEN = "09:30"
 HK_MARKET_CLOSE = "16:00"
 HK_LUNCH_START = "12:00"
 HK_LUNCH_END = "13:00"
+
+# Logging
+LOG_FILE = "trading_bot_06066.log"
+logging.basicConfig(
+    level=logging.INFO, 
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler(sys.stdout)
+    ],
+)
+log = logging.getLogger(__name__)
+
+
