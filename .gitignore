@@ -5,4 +5,8 @@ Pipfile.lock
 # Environment variables
 .env
 
+# System generated files
 .DS_Store
+
+# Trading bot logs 
+*.log
