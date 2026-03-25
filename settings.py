@@ -80,4 +80,9 @@ def load_settings() -> AppSettings:
     )
 
 def _validate_settings(broker: BrokerSettings, risk: RiskSettings, strategy: StrategySettings):
-    pass
+    if strategy.fast_ema >= strategy.slow_ema:
+        raise ValueError("Fast EMA must be less than slow EMA.")
+    if not (0 < risk.trade_size_pct < 1):
+        raise ValueError("Trade_size_pct must be a float between 0 and 1.")
+    if broker.props_path is None and (not broker.private_key or not broker.tiger_id or not broker.tiger_account):
+        raise ValueError("Missing broker credentials: set PROPS_PATH or PRIVATE_KEY/TIGER_ID/TIGER_ACCOUNT.")
