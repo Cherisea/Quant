@@ -3,9 +3,9 @@ A trading bot that operates on simple momentum strategy.
 """
 
 # System and third-party imports
-import os 
 import sys
 import logging
+import pandas as pd
 from settings import load_settings
 
 # Tiger trade imports
@@ -29,7 +29,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-class TigerClient:
+class TigerClients:
     """A holder for quote and trade agent.
     """
     def __init__(self) -> None:
@@ -67,5 +67,22 @@ class TigerClient:
             log.warning(f"Could not verify lot size. Using default size of {ls}")
             return ls
 
-client = TigerClient()
-client.verify_lot_size()
+    @property
+    def lookback_bars(self):
+        """Set lookback period as a class property
+        """
+        return settings.risk.lookback_bars
+
+def get_bars(client: TigerClients, n: int) -> pd.DataFrame:
+    """Fetch OHLC data of last n days.
+    """
+    bars = client.quote.get_bars(
+        symbols = [client.symbol],
+        period = BarPeriod.DAY,
+        right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
+        limit = client.lookback_bars
+    )
+    bars["time"] = pd.to_datetime(bars["time"], unit="ms")
+    bars.set_index("time", inplace=True)
+    bars.sort_index(inplace=True, ascending=False)
+    return bars
