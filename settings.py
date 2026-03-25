@@ -2,6 +2,7 @@
     Grouped settings for main script.
 """
 import os
+from typing import Optional
 from dotenv import load_dotenv
 from dataclasses import dataclass
 
@@ -10,10 +11,10 @@ load_dotenv()
 
 @dataclass(frozen=True)
 class BrokerSettings:
-    props_path: str | None
-    private_key: str | None
-    tiger_id: str | None
-    tiger_account: str | None
+    props_path: Optional[str]
+    private_key: Optional[str]
+    tiger_id: Optional[str]
+    tiger_account: Optional[str]
     symbol: str = "06066"
     currency: str = "HKD"
     lot_size: int = 500
