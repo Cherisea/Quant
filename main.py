@@ -6,7 +6,7 @@ A trading bot that operates on simple momentum strategy.
 import os 
 import sys
 import logging
-from dotenv import load_dotenv
+from settings import load_settings
 
 # Tiger trade imports
 from tigeropen.common.consts import (
@@ -16,13 +16,17 @@ from tigeropen.common.consts import (
 from tigeropen.quote.quote_client import QuoteClient
 from tigeropen.trade.trade_client import TradeClient
 from tigeropen.common.util.contract_utils import stock_contract
-from tigeropen.tiger_open_config import PRIVATE_KEY, TigerOpenClientConfig
+
+settings = load_settings()
+SYMBOL = settings.broker.symbol
+CURRENCY = settings.broker.currency
+LOT_SIZE = settings.broker.lot_size
 
 logging.basicConfig(
-    level=logging.INFO, 
+    level = settings.logging.level,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_FILE),
+        logging.FileHandler(settings.logging.file),
         logging.StreamHandler(sys.stdout)
     ],
 )
@@ -32,26 +36,11 @@ class TigerClient:
     """A holder for quote and trade agent.
     """
     def __init__(self) -> None:
-        self.cfg = self._build_config()
+        self.cfg = settings
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=SYMBOL, currency=CURRENCY)    # Security to trade
         log.info(f"Tiger client initialized.")
-    
-    @staticmethod
-    def _build_config():
-        """Configure tiger client by retrieving information from env vars.
-        """
-        if PROPS_PATH:
-            cfg = TigerOpenClientConfig(props_path=PROPS_PATH)
-        else:
-            cfg = TigerOpenClientConfig()
-            cfg.private_key = os.getenv("PRIVATE_KEY", "Non-exist")
-            cfg.tiger_id = os.getenv("TIGER_ID", "Non-Exist")
-            cfg.tiger_account = os.getenv("ACCOUNT", "Non-Exist")
-        cfg.language = Language.en_US
-        cfg.timezone = "Asia/Hong_Kong"
-        return cfg
 
     def verify_lot_size(self) -> int:
         """Fetch actual lot size from exchange metadata.
