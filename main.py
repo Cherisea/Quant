@@ -16,6 +16,7 @@ from tigeropen.common.consts import (
 from tigeropen.quote.quote_client import QuoteClient
 from tigeropen.trade.trade_client import TradeClient
 from tigeropen.common.util.contract_utils import stock_contract
+from tigeropen.tiger_open_config import TigerOpenClientConfig
 
 settings = load_settings()
 SYMBOL = settings.broker.symbol
@@ -36,11 +37,25 @@ class TigerClient:
     """A holder for quote and trade agent.
     """
     def __init__(self) -> None:
-        self.cfg = settings
+        self.cfg = self._build_config()
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=SYMBOL, currency=CURRENCY)    # Security to trade
         log.info(f"Tiger client initialized.")
+
+    @staticmethod
+    def _build_config():
+        """Configure tiger client by retrieving constants from settings.
+        """
+        if settings.broker.props_path:
+            cfg = TigerOpenClientConfig(props_path=settings.broker.props_path)
+        else:
+            cfg = TigerOpenClientConfig()
+            cfg.private_key = settings.broker.private_key
+            cfg.tiger_id = settings.broker.tiger_id
+            cfg.tiger_account = settings.broker.tiger_account
+        cfg.timezone = settings.broker.tz
+        return cfg
 
     def verify_lot_size(self) -> int:
         """Fetch actual lot size from exchange metadata.
