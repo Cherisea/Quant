@@ -19,10 +19,6 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
 settings = load_settings()
-SYMBOL = settings.broker.symbol
-CURRENCY = settings.broker.currency
-LOT_SIZE = settings.broker.lot_size
-
 logging.basicConfig(
     level = settings.logging.level,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -37,10 +33,11 @@ class TigerClient:
     """A holder for quote and trade agent.
     """
     def __init__(self) -> None:
+        self.symbol = settings.broker.symbol
         self.cfg = self._build_config()
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
-        self.contract = stock_contract(symbol=SYMBOL, currency=CURRENCY)    # Security to trade
+        self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
         log.info(f"Tiger client initialized.")
 
     @staticmethod
@@ -61,13 +58,14 @@ class TigerClient:
         """Fetch actual lot size from exchange metadata.
         """
         try:
-            meta = self.quote.get_trade_metas([SYMBOL])
+            meta = self.quote.get_trade_metas([self.symbol])
             ls = meta["lot_size"].iloc[0]
-            log.info(f"Verified lot size for {SYMBOL}: {ls}")
+            log.info(f"Verified lot size for {self.symbol}: {ls}")
             return ls
         except Exception as e:
-            log.warning(f"Could not verify lot size. Using default size of {LOT_SIZE}")
-            return LOT_SIZE
+            ls = settings.broker.lot_size
+            log.warning(f"Could not verify lot size. Using default size of {ls}")
+            return ls
 
 client = TigerClient()
 client.verify_lot_size()
