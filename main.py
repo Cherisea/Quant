@@ -39,6 +39,23 @@ class TigerClients:
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
         log.info(f"Tiger client initialized.")
+    
+    def get_bars(self) -> pd.DataFrame:
+        """Fetch historical OHLC data.
+        """
+        bars = self.quote.get_bars(
+            symbols = [self.symbol],
+            period = BarPeriod.DAY,     # Timeframe of each candlestick bar
+            right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
+            limit = self.lookback_bars
+        )
+
+        if not bars or bars.empty:
+            raise RuntimeError("Failed to fetch bar data.") 
+        bars["time"] = pd.to_datetime(bars["time"], unit="ms")
+        bars.set_index("time", inplace=True)
+        bars.sort_index(inplace=True, ascending=False)
+        return bars
 
     @staticmethod
     def _build_config():
@@ -73,16 +90,3 @@ class TigerClients:
         """
         return settings.risk.lookback_bars
 
-def get_bars(client: TigerClients, n: int) -> pd.DataFrame:
-    """Fetch OHLC data of last n days.
-    """
-    bars = client.quote.get_bars(
-        symbols = [client.symbol],
-        period = BarPeriod.DAY,
-        right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-        limit = client.lookback_bars
-    )
-    bars["time"] = pd.to_datetime(bars["time"], unit="ms")
-    bars.set_index("time", inplace=True)
-    bars.sort_index(inplace=True, ascending=False)
-    return bars
