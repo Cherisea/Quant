@@ -34,6 +34,7 @@ class TigerClients:
     """
     def __init__(self) -> None:
         self.symbol = settings.broker.symbol
+        self.lot_size = self.verify_lot_size()
         self.cfg = self._build_config()
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
