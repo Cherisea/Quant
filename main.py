@@ -33,7 +33,7 @@ class TigerClients:
     """A single holder for quote and trade agent.
     """
     def __init__(self) -> None:
-        self.symbol = settings.broker.symbol
+        self._symbol = settings.broker.symbol
         self.lot_size = self.verify_lot_size()
 
         self.cfg = self._build_config()
@@ -79,7 +79,7 @@ class TigerClients:
     def symbol(self):
         """Set stock symbol as a property.
         """
-        return self.symbol
+        return self._symbol
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -90,14 +90,14 @@ class TechAnalyst:
     def get_bars(self) -> pd.DataFrame:
         """Fetch historical OHLC data.
         """
-        bars = self.quote.get_bars(
+        bars = self.client.quote.get_bars(
             symbols = [self.client.symbol],
             period = BarPeriod.DAY,     # Timeframe of each candlestick bar
             right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
             limit = self.client.lookback_bars
         )
 
-        if not bars or bars.empty:
+        if bars is None or bars.empty:
             raise RuntimeError("Failed to fetch bar data.") 
         
         # Preprocess fetched data
@@ -105,3 +105,7 @@ class TechAnalyst:
         bars.set_index("time", inplace=True)
         bars.sort_index(inplace=True, ascending=False)
         return bars
+
+client = TigerClients()
+analyst = TechAnalyst(client)
+print(analyst.get_bars())
