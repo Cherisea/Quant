@@ -127,7 +127,7 @@ class TechAnalyst:
         # Preprocess fetched data
         bars["time"] = pd.to_datetime(bars["time"], unit="ms")
         bars.set_index("time", inplace=True)
-        bars.sort_index(inplace=True, ascending=False)
+        bars.sort_index(inplace=True)
         return bars
 
     def compute_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -145,4 +145,5 @@ class TechAnalyst:
 
 client = TigerClients()
 analyst = TechAnalyst(client)
-print(analyst.get_bars())
+bars = analyst.get_bars()
+print(analyst.compute_indicators(bars))
