@@ -81,6 +81,30 @@ class TigerClients:
         """
         return self._symbol
 
+    @property
+    def fast_ema(self):
+        """Set fast EMA as a property.
+        """
+        return settings.strategy.fast_ema
+    
+    @property
+    def slow_ema(self):
+        """Set slow EMA as a property.
+        """
+        return settings.strategy.slow_ema
+    
+    @property
+    def roc(self):
+        """Set rate of change as a property.
+        """
+        return settings.strategy.roc_period
+    
+    @property
+    def vol_ma(self):
+        """Set moving average volume as a property.
+        """
+        return settings.strategy.vol_ma
+
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
     """
@@ -105,6 +129,19 @@ class TechAnalyst:
         bars.set_index("time", inplace=True)
         bars.sort_index(inplace=True, ascending=False)
         return bars
+
+    def compute_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate technical indicators such as fast EMA, slow EMA, rate of change and average volume.
+        """ 
+        df = df.copy()
+        df["fast_ema"] = df["close"].ewm(span=self.client.fast_ema, adjust=False).mean()
+        df["slow_ema"] = df["close"].ewm(span=self.client.slow_ema, adjust=False).mean()
+        df["roc"] = df["close"].pct_change(self.client.roc)
+        df["vol_ma"] = df["volume"].rolling(self.client.vol_ma).mean()
+        return df
+
+    def get_latest_signal(df: pd.DataFrame) -> str:
+        pass
 
 client = TigerClients()
 analyst = TechAnalyst(client)
