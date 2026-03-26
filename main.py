@@ -30,33 +30,30 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 class TigerClients:
-    """A holder for quote and trade agent.
+    """A single holder for quote and trade agent.
     """
     def __init__(self) -> None:
         self.symbol = settings.broker.symbol
         self.lot_size = self.verify_lot_size()
+
         self.cfg = self._build_config()
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
         log.info(f"Tiger client initialized.")
     
-    def get_bars(self) -> pd.DataFrame:
-        """Fetch historical OHLC data.
+    def verify_lot_size(self) -> int:
+        """Fetch actual lot size from exchange metadata.
         """
-        bars = self.quote.get_bars(
-            symbols = [self.symbol],
-            period = BarPeriod.DAY,     # Timeframe of each candlestick bar
-            right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-            limit = self.lookback_bars
-        )
-
-        if not bars or bars.empty:
-            raise RuntimeError("Failed to fetch bar data.") 
-        bars["time"] = pd.to_datetime(bars["time"], unit="ms")
-        bars.set_index("time", inplace=True)
-        bars.sort_index(inplace=True, ascending=False)
-        return bars
+        try:
+            meta = self.quote.get_trade_metas([self.symbol])
+            ls = meta["lot_size"].iloc[0]
+            log.info(f"Verified lot size for {self.symbol}: {ls}")
+            return ls
+        except Exception as e:
+            ls = settings.broker.lot_size
+            log.warning(f"Could not verify lot size. Using default size of {ls}")
+            return ls
 
     @staticmethod
     def _build_config():
@@ -72,22 +69,39 @@ class TigerClients:
         cfg.timezone = settings.broker.tz
         return cfg
 
-    def verify_lot_size(self) -> int:
-        """Fetch actual lot size from exchange metadata.
-        """
-        try:
-            meta = self.quote.get_trade_metas([self.symbol])
-            ls = meta["lot_size"].iloc[0]
-            log.info(f"Verified lot size for {self.symbol}: {ls}")
-            return ls
-        except Exception as e:
-            ls = settings.broker.lot_size
-            log.warning(f"Could not verify lot size. Using default size of {ls}")
-            return ls
-
     @property
     def lookback_bars(self):
         """Set lookback period as a class property
         """
         return settings.risk.lookback_bars
+    
+    @property
+    def symbol(self):
+        """Set stock symbol as a property.
+        """
+        return self.symbol
 
+class TechAnalyst:
+    """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
+    """
+    def __init__(self, client: TigerClients) -> None:
+        self.client = client
+
+    def get_bars(self) -> pd.DataFrame:
+        """Fetch historical OHLC data.
+        """
+        bars = self.quote.get_bars(
+            symbols = [self.client.symbol],
+            period = BarPeriod.DAY,     # Timeframe of each candlestick bar
+            right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
+            limit = self.client.lookback_bars
+        )
+
+        if not bars or bars.empty:
+            raise RuntimeError("Failed to fetch bar data.") 
+        
+        # Preprocess fetched data
+        bars["time"] = pd.to_datetime(bars["time"], unit="ms")
+        bars.set_index("time", inplace=True)
+        bars.sort_index(inplace=True, ascending=False)
+        return bars
