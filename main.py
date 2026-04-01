@@ -94,16 +94,28 @@ class TigerClients:
         return settings.strategy.slow_ema
     
     @property
-    def roc(self):
+    def roc_period(self):
         """Set rate of change as a property.
         """
         return settings.strategy.roc_period
+
+    @property
+    def roc_threshold(self):
+        """Set ROC threshold as a property.
+        """
+        return settings.strategy.roc_threshold
     
     @property
     def vol_ma(self):
         """Set moving average volume as a property.
         """
         return settings.strategy.vol_ma
+    
+    @property
+    def vol_coefficient(self):
+        """Expose volume coefficient as an attribute.
+        """
+        return settings.strategy.vol_coefficient
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -118,7 +130,7 @@ class TechAnalyst:
             symbols = [self.client.symbol],
             period = BarPeriod.DAY,     # Timeframe of each candlestick bar
             right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-            limit = self.client.lookback_bars
+            limit = self.client.lookback_bars       # Number of days to pull data
         )
 
         if bars is None or bars.empty:
@@ -136,12 +148,29 @@ class TechAnalyst:
         df = df.copy()
         df["fast_ema"] = df["close"].ewm(span=self.client.fast_ema, adjust=False).mean()
         df["slow_ema"] = df["close"].ewm(span=self.client.slow_ema, adjust=False).mean()
-        df["roc"] = df["close"].pct_change(self.client.roc)
+        df["roc"] = df["close"].pct_change(self.client.roc_period)
         df["vol_ma"] = df["volume"].rolling(self.client.vol_ma).mean()
         return df
 
-    def get_latest_signal(df: pd.DataFrame) -> str:
-        pass
+    def get_latest_signal(self, df: pd.DataFrame) -> str:
+        """Generate trading signals by evaluating price actions of the last two days.
+        """
+        if len(df) <= 2:
+            return "Hold"
+
+        prev = df.iloc[-2]
+        cur = df.iloc[-1]
+
+        # Check if EMA crosses up or down
+        cross_up = (prev['fast_ema'] <= prev['slow_ema']) and (cur['fast_ema'] > cur['slow_ema'])
+        cross_down = (prev['fast_ema'] > prev['slow_ema']) and (cur['fast_ema'] <= cur['slow_ema'])
+
+        if cross_up and cur['roc'] > self.client.roc_threshold and cur['volume'] > cur['vol_ma'] * self.client.vol_coefficient:
+            return "Buy"
+        elif cross_down:
+            return "Sell"
+        else:
+            return "Hold" 
 
 client = TigerClients()
 analyst = TechAnalyst(client)
