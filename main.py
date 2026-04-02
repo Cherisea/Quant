@@ -258,9 +258,15 @@ class PositionManager:
             log.warning(f"TRAILING STOP HIT: price = {current_price}, stop={stop_point}, peak={self.highest_since_entry}")
             return True
         return False
+
+def get_last_price(clients: TigerClients) -> float:
+    """Fetch latest closing price of a security.
+    """
+    brief = clients.quote.get_stock_briefs([clients.symbol])
+    return brief['close'].iloc[0]
     
+
 client = TigerClients()
 manager = PositionManager(client)
-cash = client.trade.get_assets(account=client.account)
-print(cash[0].summary.cash)
+
 
