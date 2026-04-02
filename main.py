@@ -267,76 +267,82 @@ class PositionManager:
             return True
         return False
 
-def get_last_price(clients: TigerClients) -> float:
-    """Fetch latest closing price of a security.
+class OrderExecutor:
+    """A class for executing limit buy and sell orders.
     """
-    brief = clients.quote.get_stock_briefs([clients.symbol])
-    return brief['close'].iloc[0]
+    def __init__(self, clients: TigerClients) -> None:
+        self.client = clients
 
-def place_limit_buy(clients: TigerClients, qty: int, ref_price: float) -> Optional[int]:
-    """Place a limit buy order slightly above the last price.
-    """
-    lim_price = round(ref_price * (1 + clients.limit_buffer_bps / 10_000), 3)
-    order = limit_order(
-        account=clients.account,
-        contract=clients.contract,
-        action="BUY",
-        limit_price=lim_price,
-        quantity=qty,
-    )
-    try:
-        clients.trade.place_order(order)
-        log.info(f"BUY order placed: {qty} at {lim_price}, order_id={order.id}")
-        return order.id
-    except Exception as e:
-        log.error(f"Failed to place BUY order: {e}")
-        return None
-    
-def place_limit_sell(clients: TigerClients, qty: int, ref_price: float) -> Optional[int]:
-    """Place a limit sell order slight below the last price.
-    """
-    lim_price = round(ref_price * (1 - clients.limit_buffer_bps / 10_000), 3)
-    order = limit_order(
-        account=clients.account,
-        contract=clients.contract,
-        action="SELL",
-        limit_price=lim_price,
-        quantity=qty
-    )
-    try:
-        clients.trade.place_order(order)
-        log.info(f"SELL orders placed: {qty} at {lim_price}, order_id = {order.id}")
-        return order.id
-    except Exception as e:
-        log.error(f"Failed to place SELL order: {e}")
-        return None
+    def get_last_price(self) -> float:
+        """Fetch latest closing price of a security.
+        """
+        brief = self.client.quote.get_stock_briefs([self.client.symbol])
+        return brief['close'].iloc[0]
 
-def wait_for_fill(clients: TigerClients, order_id: int) -> bool:
-    """Poll order status until filled or timeout, then cancel if unfilled.
-    """
-    start = time.time()
-    while time.time() - start < clients.max_wait_sec:
+    def place_limit_buy(self, qty: int, ref_price: float) -> Optional[int]:
+        """Place a limit buy order slightly above the last price.
+        """
+        lim_price = round(ref_price * (1 + self.client.limit_buffer_bps / 10_000), 3)
+        order = limit_order(
+            account=self.client.account,
+            contract=self.client.contract,
+            action="BUY",
+            limit_price=lim_price,
+            quantity=qty,
+        )
         try:
-            order = clients.trade.get_order(id=order_id)
-            status = order.status if hasattr(order, "status") else None
-            if status in (OrderStatus.FILLED, "Filled", "FILLED"):
-                log.info(f"Order {order_id} FILLED (avg_price={getattr(order, 'avg_filled_price', 0)})")
-                return True
-            if status in (OrderStatus.CANCELLED, OrderStatus.REJECTED, 
-                            "Cancelled", "Rejected", "CANCELLED", "REJECTED"):
-                log.warning(f"Order {order_id} was {status}")
-                return False
+            self.client.trade.place_order(order)
+            log.info(f"BUY order placed: {qty} at {lim_price}, order_id={order.id}")
+            return order.id
         except Exception as e:
-            log.warning(f"Error polling order {order_id}: {e}")
-        time.sleep(3)
+            log.error(f"Failed to place BUY order: {e}")
+            return None
+    
+    def place_limit_sell(self, qty: int, ref_price: float) -> Optional[int]:
+        """Place a limit sell order slight below the last price.
+        """
+        lim_price = round(ref_price * (1 - self.client.limit_buffer_bps / 10_000), 3)
+        order = limit_order(
+            account=self.client.account,
+            contract=self.client.contract,
+            action="SELL",
+            limit_price=lim_price,
+            quantity=qty
+        )
+        try:
+            self.client.trade.place_order(order)
+            log.info(f"SELL orders placed: {qty} at {lim_price}, order_id = {order.id}")
+            return order.id
+        except Exception as e:
+            log.error(f"Failed to place SELL order: {e}")
+            return None
 
-    # Timeout - cancel the order
-    log.warning(f"Order {order_id} not filled after {clients.max_wait_sec} -- cancelling")
-    try:
-        clients.trade.cancel_order(order=order_id)
-    except Exception as e:
-        log.error(f"Failed to cancel order: {e}")
-    return False 
+    def wait_for_fill(self, order_id: int) -> bool:
+        """Poll order status until filled or timeout, then cancel if unfilled.
+        """
+        start = time.time()
+        while time.time() - start < self.client.max_wait_sec:
+            try:
+                order = self.client.trade.get_order(id=order_id)
+                status = order.status if hasattr(order, "status") else None
+                if status in (OrderStatus.FILLED, "Filled", "FILLED"):
+                    log.info(f"Order {order_id} FILLED (avg_price={getattr(order, 'avg_filled_price', 0)})")
+                    return True
+                if status in (OrderStatus.CANCELLED, OrderStatus.REJECTED, 
+                                "Cancelled", "Rejected", "CANCELLED", "REJECTED"):
+                    log.warning(f"Order {order_id} was {status}")
+                    return False
+            except Exception as e:
+                log.warning(f"Error polling order {order_id}: {e}")
+            time.sleep(3)
+
+        # Timeout - cancel the order
+        log.warning(f"Order {order_id} not filled after {self.client.max_wait_sec} -- cancelling")
+        try:
+            self.client.trade.cancel_order(order=order_id)
+        except Exception as e:
+            log.error(f"Failed to cancel order: {e}")
+        return False 
 
 
 client = TigerClients()
