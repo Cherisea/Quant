@@ -238,6 +238,21 @@ class PositionManager:
         """
         return (qty // self.lot_size) * self.lot_size
     
+    def check_trailing_stop(self, current_price: float) -> bool:
+        """Check if a trailing stop order set at a fixed percentage point is triggered. Note
+            this order lives on the software side, not broker side. Move it to the broker side
+            to ensure it still triggers even when the bot experiences downtime.
+        """
+        if self.position <= 0:
+            return False
+        
+        self.highest_since_entry = max(self.highest_since_entry, current_price)
+        stop_point = self.highest_since_entry * (1 - self.clients.stop_loss_pct)
+        if current_price <= stop_point:
+            log.warning(f"TRAILING STOP HIT: price = {current_price}, stop={stop_point}, peak={self.highest_since_entry}")
+            return True
+        return False
+    
 client = TigerClients()
 manager = PositionManager(client)
 cash = client.trade.get_assets(account=client.account)
