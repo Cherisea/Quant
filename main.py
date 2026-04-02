@@ -34,7 +34,7 @@ class TigerClients:
     """
     def __init__(self) -> None:
         self._symbol = settings.broker.symbol
-        self.lot_size = self.verify_lot_size()
+        self._lot_size = self.verify_lot_size()
 
         self.cfg = self._build_config()
         self.quote = QuoteClient(self.cfg)
@@ -113,9 +113,15 @@ class TigerClients:
     
     @property
     def vol_coefficient(self):
-        """Expose volume coefficient as an attribute.
+        """Expose volume coefficient as a read-only attribute.
         """
         return settings.strategy.vol_coefficient
+
+    @property
+    def lot_size(self):
+        """Expose lot size as a read-only attribute.
+        """
+        return self._lot_size
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -175,4 +181,6 @@ class TechAnalyst:
 client = TigerClients()
 analyst = TechAnalyst(client)
 bars = analyst.get_bars()
-print(analyst.compute_indicators(bars))
+df = analyst.compute_indicators(bars)
+signal = analyst.get_latest_signal(df)
+print(signal)
