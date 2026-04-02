@@ -130,8 +130,7 @@ class TigerClients:
     def account(self):
         """Expose Tiger account as a read-only attribute.
         """
-        return self.cfg.account or settings.broker.tiger_account
-        
+        return self.cfg.account or settings.broker.tiger_account  
     
     @property
     def stop_loss_pct(self):
@@ -280,42 +279,30 @@ class OrderExecutor:
         brief = self.client.quote.get_stock_briefs([self.client.symbol])
         return brief['close'].iloc[0]
 
-    def place_limit_buy(self, qty: int, ref_price: float) -> Optional[int]:
-        """Place a limit buy order slightly above the last price.
+    def place_limit_order(self, qty: int, ref_price: float, direct: str) -> Optional[int]:
+        """Place a limit order priced at a certain range of reference price.
         """
-        lim_price = round(ref_price * (1 + self.client.limit_buffer_bps / 10_000), 3)
+        if direct not in ["BUY", "SELL"]:
+            raise ValueError("Direction of limit orders must be either buy or sell. Aborting...")
+        
+        if direct == "BUY":
+            lim_price = round(ref_price * (1 + self.client.limit_buffer_bps / 10_000), 3)
+        else:
+            lim_price = round(ref_price * (1 - self.client.limit_buffer_bps / 10_000), 3)
+
         order = limit_order(
             account=self.client.account,
             contract=self.client.contract,
-            action="BUY",
+            action=direct,
             limit_price=lim_price,
             quantity=qty,
         )
         try:
             self.client.trade.place_order(order)
-            log.info(f"BUY order placed: {qty} at {lim_price}, order_id={order.id}")
+            log.info(f"{direct} order placed: {qty} at {lim_price}, order_id={order.id}")
             return order.id
         except Exception as e:
-            log.error(f"Failed to place BUY order: {e}")
-            return None
-    
-    def place_limit_sell(self, qty: int, ref_price: float) -> Optional[int]:
-        """Place a limit sell order slight below the last price.
-        """
-        lim_price = round(ref_price * (1 - self.client.limit_buffer_bps / 10_000), 3)
-        order = limit_order(
-            account=self.client.account,
-            contract=self.client.contract,
-            action="SELL",
-            limit_price=lim_price,
-            quantity=qty
-        )
-        try:
-            self.client.trade.place_order(order)
-            log.info(f"SELL orders placed: {qty} at {lim_price}, order_id = {order.id}")
-            return order.id
-        except Exception as e:
-            log.error(f"Failed to place SELL order: {e}")
+            log.error(f"Failed to place {direct} order: {e}")
             return None
 
     def wait_for_fill(self, order_id: int) -> bool:
