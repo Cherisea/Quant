@@ -34,12 +34,12 @@ class TigerClients:
     """
     def __init__(self) -> None:
         self._symbol = settings.broker.symbol
-        self._lot_size = self.verify_lot_size()
-
         self.cfg = self._build_config()
+        
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
+        self._lot_size = self.verify_lot_size()
         log.info(f"Tiger client initialized.")
     
     def verify_lot_size(self) -> int:
@@ -52,7 +52,7 @@ class TigerClients:
             return ls
         except Exception as e:
             ls = settings.broker.lot_size
-            log.warning(f"Could not verify lot size. Using default size of {ls}")
+            log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls
 
     @staticmethod
@@ -201,6 +201,6 @@ class PositionManager:
         pass
     
     
-
-
 client = TigerClients()
+pos = client.trade.get_positions(account=client.account, sec_type=SecurityType.STK, symbol=client.symbol)
+print(pos)
