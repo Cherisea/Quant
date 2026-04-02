@@ -198,7 +198,7 @@ class PositionManager:
         self._sync_from_broker()
 
     def _sync_from_broker(self):
-        """Read actual positions from Tiger Trade on startup.
+        """Read actual positions and average cost from Tiger Trade on startup.
         """
         try:
             data = self.clients.trade.get_positions(account=client.account, 
@@ -213,8 +213,26 @@ class PositionManager:
                 log.info(f"No existing position in {self.clients.symbol}")
         except Exception as e:
             log.warning(f"Couldn't sync position: {e}")
-
+    
+    def get_balance(self) -> float:
+        """Fetch available cash from broker account.
+        """
+        try:
+            data = self.clients.trade.get_assets(account=self.clients.account)
+            if data is not None:
+                cash = data[0].summary.cash
+                return cash
+        except Exception as e:
+            log.warning(f"Couldn't fetch balance: {e}")
+        return 0.0
+    
+    def round_to_lot(self, qty: int) -> int:
+        """Round requested quantity to a multiple of lot size.
+        """
+        return (qty // self.lot_size) * self.lot_size
     
 client = TigerClients()
 manager = PositionManager(client)
+cash = client.trade.get_assets(account=client.account)
+print(cash[0].summary.cash)
 
