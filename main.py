@@ -284,6 +284,25 @@ def place_limit_buy(clients: TigerClients, qty: int, ref_price: float) -> Option
     except Exception as e:
         log.error(f"Failed to place BUY order: {e}")
         return None
+    
+def place_limit_sell(clients: TigerClients, qty: int, ref_price: float) -> Optional[int]:
+    """Place a limit sell order slight below the last price.
+    """
+    lim_price = round(ref_price * (1 - clients.limit_buffer_bps / 10_000), 3)
+    order = limit_order(
+        account=clients.account,
+        contract=clients.contract,
+        action="SELL",
+        limit_price=lim_price,
+        quantity=qty
+    )
+    try:
+        clients.trade.place_order(order)
+        log.info(f"SELL orders placed: {qty} at {lim_price}, order_id = {order.id}")
+        return order.id
+    except Exception as e:
+        log.error(f"Failed to place SELL order: {e}")
+        return None
 
 client = TigerClients()
 manager = PositionManager(client)
