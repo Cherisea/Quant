@@ -136,6 +136,12 @@ class TigerClients:
             read_only attribute.
         """
         return settings.risk.stop_loss_pct
+    
+    @property
+    def limit_buffer_bps(self):
+        """Expose limit buffer base points as a read_only attribute.
+        """
+        return settings.risk.limit_buffer_bps
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
