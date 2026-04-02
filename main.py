@@ -315,7 +315,28 @@ def wait_for_fill(clients: TigerClients, order_id: int) -> bool:
     """Poll order status until filled or timeout, then cancel if unfilled.
     """
     start = time.time()
-    pass
+    while time.time() - start < clients.max_wait_sec:
+        try:
+            order = clients.trade.get_order(id=order_id)
+            status = order.status if hasattr(order, "status") else None
+            if status in (OrderStatus.FILLED, "Filled", "FILLED"):
+                log.info(f"Order {order_id} FILLED (avg_price={getattr(order, 'avg_filled_price', 0)})")
+                return True
+            if status in (OrderStatus.CANCELLED, OrderStatus.REJECTED, 
+                            "Cancelled", "Rejected", "CANCELLED", "REJECTED"):
+                log.warning(f"Order {order_id} was {status}")
+                return False
+        except Exception as e:
+            log.warning(f"Error polling order {order_id}: {e}")
+        time.sleep(3)
+
+    # Timeout - cancel the order
+    log.warning(f"Order {order_id} not filled after {clients.max_wait_sec} -- cancelling")
+    try:
+        clients.trade.cancel_order(order=order_id)
+    except Exception as e:
+        log.error(f"Failed to cancel order: {e}")
+    return False 
 
 
 client = TigerClients()
