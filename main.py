@@ -129,6 +129,13 @@ class TigerClients:
         """Expose Tiger account as a read-only attribute.
         """
         return settings.broker.tiger_account
+    
+    @property
+    def stop_loss_pct(self):
+        """Expose the percentage value that triggers stop loss orders as a 
+            read_only attribute.
+        """
+        return settings.risk.stop_loss_pct
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
