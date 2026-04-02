@@ -122,6 +122,12 @@ class TigerClients:
         """Expose lot size as a read-only attribute.
         """
         return self._lot_size
+    
+    @property
+    def account(self):
+        """Expose Tiger account as a read-only attribute.
+        """
+        return settings.broker.tiger_account
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -178,9 +184,23 @@ class TechAnalyst:
         else:
             return "Hold" 
 
+class PositionManager:
+    """Tracks current position, entry price and trailing stop orders.
+    """
+    def __init__(self, clients:TigerClients) -> None:
+        self.clients = clients
+        self.lot_size = self.clients.lot_size
+        self.position = 0
+        self.entry_price = 0.0
+        self.highest_since_entry = 0.0
+        self._sync_from_broker()
+
+    def _sync_from_broker(self):
+        """Read actual positions from Tiger Trade on startup.
+        """
+        pass
+    
+    
+
+
 client = TigerClients()
-analyst = TechAnalyst(client)
-bars = analyst.get_bars()
-df = analyst.compute_indicators(bars)
-signal = analyst.get_latest_signal(df)
-print(signal)
