@@ -130,7 +130,8 @@ class TigerClients:
     def account(self):
         """Expose Tiger account as a read-only attribute.
         """
-        return settings.broker.tiger_account
+        return self.cfg.tiger_account or settings.broker.tiger_account
+        
     
     @property
     def stop_loss_pct(self):
@@ -346,6 +347,8 @@ class OrderExecutor:
 
 
 client = TigerClients()
+print(client.account)
 manager = PositionManager(client)
-
+exe = OrderExecutor(client)
+exe.place_limit_buy(500, 10.20)
 
