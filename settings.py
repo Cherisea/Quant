@@ -24,7 +24,7 @@ class BrokerSettings:
 class RiskSettings:
     trade_size_pct: float = 0.15        # Fraction of available fund allocated for each trade
     stop_loss_pct: float = 0.05         # 5% Trailing stop
-    limit_buffer_bps: int = 10          # Overpay amount for an order to be filled
+    limit_buffer_bps: int = 10          # Overpay amount in base point for an order to be filled
     max_wait_sec: int = 60              # Max amount of time to wait before canceling an order
     lookback_bars: int = 240            # Number of daily bars to fetch at each tick
 
