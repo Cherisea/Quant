@@ -5,6 +5,7 @@ A trading bot that operates on simple momentum strategy.
 # System and third-party imports
 import sys
 import logging
+from turtle import position
 import pandas as pd
 from settings import load_settings
 
@@ -35,7 +36,7 @@ class TigerClients:
     def __init__(self) -> None:
         self._symbol = settings.broker.symbol
         self.cfg = self._build_config()
-        
+
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
@@ -190,6 +191,7 @@ class PositionManager:
     def __init__(self, clients:TigerClients) -> None:
         self.clients = clients
         self.lot_size = self.clients.lot_size
+
         self.position = 0
         self.entry_price = 0.0
         self.highest_since_entry = 0.0
@@ -198,9 +200,21 @@ class PositionManager:
     def _sync_from_broker(self):
         """Read actual positions from Tiger Trade on startup.
         """
-        pass
-    
+        try:
+            data = self.clients.trade.get_positions(account=client.account, 
+                    sec_type=SecurityType.STK, symbol=client.symbol)
+            if data is not None and len(data) != 0:
+                row = data[0]
+                self.position = int(row.quantity)
+                self.entry_price = float(row.average_cost)
+                self.highest_since_entry = self.entry_price
+                log.info(f"Synced position: {self.position} shares @{self.entry_price:.3f}")
+            else:
+                log.info(f"No existing position in {self.clients.symbol}")
+        except Exception as e:
+            log.warning(f"Couldn't sync position: {e}")
+
     
 client = TigerClients()
-pos = client.trade.get_positions(account=client.account, sec_type=SecurityType.STK, symbol=client.symbol)
-print(pos)
+manager = PositionManager(client)
+
