@@ -130,7 +130,7 @@ class TigerClients:
     def account(self):
         """Expose Tiger account as a read-only attribute.
         """
-        return self.cfg.tiger_account or settings.broker.tiger_account
+        return self.cfg.account or settings.broker.tiger_account
         
     
     @property
@@ -340,7 +340,7 @@ class OrderExecutor:
         # Timeout - cancel the order
         log.warning(f"Order {order_id} not filled after {self.client.max_wait_sec} -- cancelling")
         try:
-            self.client.trade.cancel_order(order=order_id)
+            self.client.trade.cancel_order(id=order_id)
         except Exception as e:
             log.error(f"Failed to cancel order: {e}")
         return False 
@@ -350,5 +350,5 @@ client = TigerClients()
 print(client.account)
 manager = PositionManager(client)
 exe = OrderExecutor(client)
-exe.place_limit_buy(500, 10.20)
+exe.wait_for_fill(42760578863090688)
 
