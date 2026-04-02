@@ -4,6 +4,7 @@ A trading bot that operates on simple momentum strategy.
 
 # System and third-party imports
 import sys
+import time
 import logging
 from typing import Optional
 import pandas as pd
@@ -143,6 +144,12 @@ class TigerClients:
         """Expose limit buffer base points as a read_only attribute.
         """
         return settings.risk.limit_buffer_bps
+    
+    @property
+    def max_wait_sec(self):
+        """Expose max wait time as a read_only attribute.
+        """
+        return settings.risk.max_wait_sec
 
 class TechAnalyst:
     """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -303,6 +310,13 @@ def place_limit_sell(clients: TigerClients, qty: int, ref_price: float) -> Optio
     except Exception as e:
         log.error(f"Failed to place SELL order: {e}")
         return None
+
+def wait_for_fill(clients: TigerClients, order_id: int) -> bool:
+    """Poll order status until filled or timeout, then cancel if unfilled.
+    """
+    start = time.time()
+    pass
+
 
 client = TigerClients()
 manager = PositionManager(client)
