@@ -396,7 +396,7 @@ class MomentumBot:
 
         # Register system signals with a custom function
         signal.signal(signal.SIGINT, self._shutdown)
-        signal.signal(signal.SIGTERM, self._shutdwon)
+        signal.signal(signal.SIGTERM, self._shutdown)
 
     def _shutdown(self):
         """Custom signal handler.
@@ -413,9 +413,11 @@ class MomentumBot:
         now = datetime.now().time()
         lunch_start = datetime.strptime(settings.schedule.lunch_start, "%H:%M").time()
         lunch_end = datetime.strptime(settings.schedule.lunch_end, "%H:%M").time()
+        market_open = datetime.strptime(settings.schedule.market_open, "%H:%M").time()
+        market_close = datetime.strptime(settings.schedule.market_close, "%H:%M").time()
         if lunch_start <= now <= lunch_end:
             return False
-        return settings.schedule.market_open < now < settings.schedule.market_close
+        return market_open < now < market_close
 
     def tick(self):
         """One evaluation cycle.
