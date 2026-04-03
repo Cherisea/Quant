@@ -5,10 +5,12 @@ A trading bot that operates on simple momentum strategy.
 # System and third-party imports
 import sys
 import time
+import signal
 import logging
-from typing import Optional
 import pandas as pd
+from typing import Optional
 from settings import load_settings
+from datetime import datetime, time
 
 # Tiger trade imports
 from tigeropen.common.consts import (
@@ -367,6 +369,36 @@ class OrderExecutor:
             log.error(f"Failed to cancel order: {e}")
         return False 
 
+class MomentumBot:
+    
+    def __init__(self) -> None:
+        self.client = TigerClients()
+        self.lot_size = self.client.verify_lot_size()
+        self.pm = PositionManager(self.client, self.lot_size)
+        self._running = True
+
+        # Register system signals with a custom function
+        signal.signal(signal.SIGINT, self._shutdown)
+        signal.signal(signal.SIGTERM, self._shutdwon)
+
+    def _shutdown(self):
+        """Custom signal handler.
+        """
+        log.info("Shutdown signal received -- stopping bot.")
+        self._running = False
+
+    def is_market_hours(self) -> bool:
+        """Check if market is open.
+
+        Returns:
+            True if market is open, False otherwise.
+        """
+        now = datetime.now().time()
+        lunch_start = datetime.strptime(settings.schedule.lunch_start, "%H:%M").time()
+        lunch_end = datetime.strptime(settings.schedule.lunch_end, "%H:%M").time()
+        if lunch_start <= now <= lunch_end:
+            return False
+        return settings.schedule.market_open < now < settings.schedule.market_close
 
 client = TigerClients()
 print(client.account)
