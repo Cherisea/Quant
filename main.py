@@ -1,5 +1,5 @@
 """
-A trading bot that operates on simple momentum strategy.
+A trading bot that operates on a simple momentum strategy. 
 """
 
 # System and third-party imports
@@ -14,13 +14,13 @@ from datetime import datetime, time
 
 # Tiger trade imports
 from tigeropen.common.consts import (
-    Language, Market, BarPeriod, QuoteRight,
-    SecurityType, Currency, OrderStatus
+    BarPeriod, QuoteRight,
+    SecurityType, OrderStatus
 )
 from tigeropen.quote.quote_client import QuoteClient
 from tigeropen.trade.trade_client import TradeClient
 from tigeropen.common.util.contract_utils import stock_contract
-from tigeropen.common.util.order_utils import limit_order, market_order
+from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
 settings = load_settings()
@@ -35,7 +35,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 class TigerClients:
-    """A single holder for quote and trade agent.
+    """Quote and trade agent for interacting with Tiger Trade platform.
     """
     def __init__(self) -> None:
         self._symbol = settings.broker.symbol
@@ -147,10 +147,19 @@ class TigerClients:
         return settings.risk.max_wait_sec
 
 class TechAnalyst:
-    """A technical analyst that pulls market data, compute technical indicators and generate trading signals.
+    """An analyst that pulls market data, compute technical indicators and generate trading signals.
     """
     def __init__(self, client: TigerClients) -> None:
         self.client = client
+    
+    def get_last_price(self) -> float:
+        """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
+
+        Returns:
+            Security price as a float.
+        """
+        brief = self.client.quote.get_stock_briefs([self.client.symbol])
+        return brief['close'].iloc[0]
 
     def get_bars(self) -> pd.DataFrame:
         """Fetch historical OHLC data.
@@ -212,7 +221,7 @@ class TechAnalyst:
             return "Hold" 
 
 class PositionManager:
-    """Tracks current position, entry price and trailing stop orders.
+    """A manager that tracks current position, entry price and trailing stop orders.
     """
     def __init__(self, clients:TigerClients, lot_size: int) -> None:
         self.clients = clients
@@ -288,19 +297,10 @@ class PositionManager:
         return False
 
 class OrderExecutor:
-    """A class for executing limit buy and sell orders.
+    """An executor for placing limit buy and sell orders.
     """
     def __init__(self, clients: TigerClients) -> None:
         self.client = clients
-
-    def get_last_price(self) -> float:
-        """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
-
-        Returns:
-            Security price as a float.
-        """
-        brief = self.client.quote.get_stock_briefs([self.client.symbol])
-        return brief['close'].iloc[0]
 
     def place_limit_order(self, qty: int, ref_price: float, direct: str) -> Optional[int]:
         """Place a limit order priced at a certain range of reference price.
@@ -375,6 +375,7 @@ class MomentumBot:
         self.client = TigerClients()
         self.lot_size = self.client.verify_lot_size()
         self.pm = PositionManager(self.client, self.lot_size)
+        self.analyst = TechAnalyst(self.client)
         self._running = True
 
         # Register system signals with a custom function
@@ -399,6 +400,24 @@ class MomentumBot:
         if lunch_start <= now <= lunch_end:
             return False
         return settings.schedule.market_open < now < settings.schedule.market_close
+
+    def tick(self):
+        """One evaluation cycle.
+        """
+        if not self.is_market_hours():
+            return
+
+        try:
+            # Fetch data and compute trading signals
+            bars = self.analyst.get_bars()
+            bars = self.analyst.compute_indicators(bars)
+            sig = self.analyst.get_latest_signal(bars)
+
+    
+    def run(self):
+        pass
+
+
 
 client = TigerClients()
 print(client.account)
