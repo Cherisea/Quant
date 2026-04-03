@@ -11,6 +11,9 @@ load_dotenv()
 
 @dataclass(frozen=True)
 class BrokerSettings:
+    """ Broker can be connected either with a properties file or required environment
+        variables.
+    """
     props_path: Optional[str]
     private_key: Optional[str]
     tiger_id: Optional[str]
@@ -22,6 +25,9 @@ class BrokerSettings:
 
 @dataclass(frozen=True)
 class RiskSettings:
+    """Configures asset allocation for each trade, strategy for avoiding slippage and 
+        number of candelstick bars to examine.
+    """
     trade_size_pct: float = 0.2        # Fraction of available fund allocated for each trade
     stop_loss_pct: float = 0.05         # 5% Trailing stop
     limit_buffer_bps: int = 10          # Overpay amount in base point for an order to be filled
@@ -30,6 +36,10 @@ class RiskSettings:
 
 @dataclass(frozen=True)
 class StrategySettings:
+    """Configures a duel EMA crossover strategy with two confirmation filters: a 14-day 
+        period rate of change(roc) and an elevated volume compared to 20-day moving 
+        average.
+    """
     fast_ema: int = 20
     slow_ema: int = 60
     vol_ma: int =  20   # Rolling window for calculating average daily volume
@@ -39,6 +49,8 @@ class StrategySettings:
 
 @dataclass(frozen=True)
 class ScheduleSettings:
+    """Configures trading bot running schedule and specifies trading hours of HKSE.
+    """
     tick_interval: int = 10     # Interval between two consecutive ticks
     market_open: str = "09:30"
     market_close: str = "16:00"
@@ -47,12 +59,16 @@ class ScheduleSettings:
 
 @dataclass(frozen=True)
 class LoggingSettings:
+    """Specifies where logs should be kept and what types of message should be captured.
+    """
     file: str = "./logs/trading_bot_06066.log"
     level: str = "INFO"
 
 # Setting orchestrator
 @dataclass(frozen=True)
 class AppSettings:
+    """An parent class that encompasses all kinds of settings.
+    """
     broker: BrokerSettings
     risk: RiskSettings
     strategy: StrategySettings
@@ -60,6 +76,8 @@ class AppSettings:
     logging: LoggingSettings
 
 def load_settings() -> AppSettings:
+    """Populates values of fields in Broker and initialize other settings.
+    """
     broker = BrokerSettings(
         props_path = os.getenv("PROPS_PATH"),
         private_key = os.getenv("PRIVATE_KEY"),
@@ -81,6 +99,8 @@ def load_settings() -> AppSettings:
     )
 
 def _validate_settings(broker: BrokerSettings, risk: RiskSettings, strategy: StrategySettings):
+    """Verify values of various settings are valid.
+    """
     if strategy.fast_ema >= strategy.slow_ema:
         raise ValueError("Fast EMA must be less than slow EMA.")
     if not (0 < risk.trade_size_pct < 1):
