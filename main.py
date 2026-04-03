@@ -266,6 +266,7 @@ class PositionManager:
         self.entry_price = 0.0
         self.highest_since_entry = 0.0
     
+    # TODO: check currency of balance and convert it to the same used for pricing target security.
     def get_balance(self) -> float:
         """Fetch available cash from account.
 
