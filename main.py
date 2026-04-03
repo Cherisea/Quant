@@ -145,6 +145,12 @@ class TigerClients:
         """Expose max wait time as a read_only attribute.
         """
         return settings.risk.max_wait_sec
+    
+    @property
+    def trade_size_pct(self):
+        """Expose trade size percentage as a read_only attribute.
+        """
+        return settings.risk.trade_size_pct
 
 class TechAnalyst:
     """An analyst that pulls market data, compute technical indicators and generate trading signals.
@@ -439,6 +445,30 @@ class MomentumBot:
                 if order_id and self.executor.wait_for_fill(order_id):
                     log.info(f"SOLD {pos} shares of {self.client.symbol}")
                     self.pm.close_pos()
+                else:
+                    log.warning("SELL order did not fill -- will retry in next tick.")
+            
+            # Execute buy
+            elif sig == "BUY" and self.pm.position == 0:
+                equity = self.pm.get_balance()
+                budget = equity * self.client.trade_size_pct
+                raw_qty = budget // latest_price
+                qty = self.pm.round_to_lot(raw_qty)
+                if qty <= 0:
+                    log.warning(f"Insufficient equity for a full lot (equity={equity}, price={latest_price})")
+                    return
+                
+                order_id = self.executor.place_limit_order(qty, latest_price, "BUY")
+                if order_id and self.executor.wait_for_fill(order_id):
+                    self.pm.position = qty 
+                    self.pm.entry_price = latest_price
+                    self.pm.highest_since_entry = latest_price
+                    log.info(f"BOUGHT {qty} shares of {self.client.symbol} at {latest_price:.3f}")
+                else:
+                    log.warning("BUY order did not fill -- will retry in next tick.")
+        except Exception as e:
+            log.warning(f"Error during tick: {e}")
+                
     
     def run(self):
         pass
