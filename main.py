@@ -42,7 +42,6 @@ class TigerClients:
         self.quote = QuoteClient(self.cfg)
         self.trade = TradeClient(self.cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
-        self._lot_size = self.verify_lot_size()
         log.info(f"Tiger client initialized.")
     
     def verify_lot_size(self) -> int:
@@ -119,12 +118,6 @@ class TigerClients:
         """Expose volume coefficient as a read-only attribute.
         """
         return settings.strategy.vol_coefficient
-
-    @property
-    def lot_size(self):
-        """Expose lot size as a read-only attribute.
-        """
-        return self._lot_size
     
     @property
     def account(self):
@@ -209,9 +202,9 @@ class TechAnalyst:
 class PositionManager:
     """Tracks current position, entry price and trailing stop orders.
     """
-    def __init__(self, clients:TigerClients) -> None:
+    def __init__(self, clients:TigerClients, lot_size: int) -> None:
         self.clients = clients
-        self.lot_size = self.clients.lot_size
+        self.lot_size = lot_size
 
         self.position = 0
         self.entry_price = 0.0
