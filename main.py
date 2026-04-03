@@ -495,11 +495,7 @@ class MomentumBot:
         log.info("Bot stopped cleanly.")
 
 
-
-
-client = TigerClients()
-print(client.account)
-manager = PositionManager(client, 500)
-exe = OrderExecutor(client)
-exe.place_limit_order(500, 10.28, "BUY")
+if __name__ == "__main__":
+    bot = MomentumBot()
+    bot.run()
 
