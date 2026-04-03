@@ -248,6 +248,13 @@ class PositionManager:
                 log.info(f"No existing position in {self.clients.symbol}")
         except Exception as e:
             log.warning(f"Couldn't sync position: {e}")
+
+    def close_pos(self):
+        """Close all positions in an account.
+        """
+        self.position = 0
+        self.entry_price = 0.0
+        self.highest_since_entry = 0.0
     
     def get_balance(self) -> float:
         """Fetch available cash from broker account.
@@ -376,6 +383,7 @@ class MomentumBot:
         self.lot_size = self.client.verify_lot_size()
         self.pm = PositionManager(self.client, self.lot_size)
         self.analyst = TechAnalyst(self.client)
+        self.executor = OrderExecutor(self.client)
         self._running = True
 
         # Register system signals with a custom function
@@ -412,7 +420,25 @@ class MomentumBot:
             bars = self.analyst.get_bars()
             bars = self.analyst.compute_indicators(bars)
             sig = self.analyst.get_latest_signal(bars)
+            latest_price = self.analyst.get_last_price()
 
+            fast_ema = bars.iloc[-1]['fast_ema']
+            slow_ema = bars.iloc[-1]['slow_ema']
+            roc = bars.iloc[-1]['roc']
+            pos = self.pm.position
+            log.info("TICK: price=%.3f | fast_ema=%.3f | slow_ema=%.3f | roc=%.4f | signal=%s | pos=%d",
+                    latest_price, fast_ema, slow_ema, roc, sig, pos)
+            
+            # Trailing stop order check
+            if self.pm.check_trailing_stop(latest_price):
+                sig = "SELL"
+            
+            # Execute sell
+            if sig == "SELL" and pos > 0:
+                order_id = self.executor.place_limit_order(pos, latest_price, "SELL")
+                if order_id and self.executor.wait_for_fill(order_id):
+                    log.info(f"SOLD {pos} shares of {self.client.symbol}")
+                    self.pm.close_pos()
     
     def run(self):
         pass
