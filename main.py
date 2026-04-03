@@ -208,7 +208,7 @@ class PositionManager:
 
         self.position = 0
         self.entry_price = 0.0
-        self.highest_since_entry = 0.0
+        self.highest_since_entry = 0.0      # Updated for trailing stop orders
         self._sync_from_broker()
 
     def _sync_from_broker(self):
@@ -230,6 +230,9 @@ class PositionManager:
     
     def get_balance(self) -> float:
         """Fetch available cash from broker account.
+
+        Returns:
+            Balance in account if no exception is thrown, otherwise returns 0.0.
         """
         try:
             data = self.clients.trade.get_assets(account=self.clients.account)
@@ -242,13 +245,25 @@ class PositionManager:
     
     def round_to_lot(self, qty: int) -> int:
         """Round requested quantity to a multiple of lot size.
+
+        Args:
+            qty: number of requested shares.
+        
+        Returns:
+            Requested shares as a multiple of lot size.
         """
         return (qty // self.lot_size) * self.lot_size
     
     def check_trailing_stop(self, current_price: float) -> bool:
-        """Check if a trailing stop order set at a fixed percentage point is triggered. Note
+        """Check if a trailing stop order set at a fixed percentage point should be triggered. Note
             this order lives on the software side, not broker side. Move it to the broker side
             to ensure it still triggers even when the bot experiences downtime.
+        
+        Args:
+            current_price: current price of security.
+        
+        Returns:
+            True if a trailing stop order should be triggered; otherwise False.
         """
         if self.position <= 0:
             return False
