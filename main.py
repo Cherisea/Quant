@@ -1,5 +1,6 @@
 """
-A trading bot that operates on a simple momentum strategy. 
+A live momentum trading bot that connects to Tiger Trade via tigeropen SDK. Trading strategy can be configured in a 
+separate script. 
 """
 
 # System and third-party imports
@@ -14,7 +15,7 @@ from datetime import datetime
 from settings import load_settings
 
 
-# Tiger trade imports
+# Tiger trade SDK
 from tigeropen.common.consts import (
     BarPeriod, QuoteRight,
     SecurityType, OrderStatus
@@ -25,6 +26,7 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
+# Load settings and set up logs
 settings = load_settings()
 logging.basicConfig(
     level = settings.logging.level,
@@ -265,7 +267,7 @@ class PositionManager:
         self.highest_since_entry = 0.0
     
     def get_balance(self) -> float:
-        """Fetch available cash from broker account.
+        """Fetch available cash from account.
 
         Returns:
             Balance in account if no exception is thrown, otherwise returns 0.0.
