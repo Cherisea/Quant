@@ -7,10 +7,12 @@ import sys
 import time
 import signal
 import logging
+import schedule
 import pandas as pd
 from typing import Optional
+from datetime import datetime
 from settings import load_settings
-from datetime import datetime, time
+
 
 # Tiger trade imports
 from tigeropen.common.consts import (
@@ -471,7 +473,27 @@ class MomentumBot:
                 
     
     def run(self):
-        pass
+        """Main loop -- schedule ticks at a set interval.
+        """
+        log.info("=" * 60)
+        log.info(f"  Momentum Bot STARTED -- Trading {self.client.symbol} on Tiger Trade")
+        log.info(f"  Account: {self.client.account} | Lot size: {self.lot_size}")
+        log.info("  Strategy: EMA(%d/%d)  +  ROC(%d)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
+                    self.client.fast_ema, self.client.slow_ema, self.client.vol_ma, 
+                    self.client.vol_coefficient)
+        log.info(f"  Position sizing: {self.client.trade_size_pct} | Stop loss: {self.client.stop_loss_pct}")
+        log.info("=" * 60)
+
+        # Run an immediate tick and schedule the next one
+        self.tick()
+        schedule.every(settings.schedule.tick_interval).minutes().do(self.tick)
+
+        while self._running:
+            schedule.run_pending()      # Run all jobs that are due
+            time.sleep(1)
+
+        log.info("Bot stopped cleanly.")
+
 
 
 

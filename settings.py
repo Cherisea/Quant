@@ -39,7 +39,7 @@ class StrategySettings:
 
 @dataclass(frozen=True)
 class ScheduleSettings:
-    check_interval_min: int = 5
+    tick_interval: int = 10     # Interval between two consecutive ticks
     market_open: str = "09:30"
     market_close: str = "16:00"
     lunch_start: str = "12:00"
