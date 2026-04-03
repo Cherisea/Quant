@@ -152,6 +152,10 @@ class TechAnalyst:
 
     def get_bars(self) -> pd.DataFrame:
         """Fetch historical OHLC data.
+
+        Returns:
+            A dataframe with a set number of rows containing historical price information of a 
+            preset security.
         """
         bars = self.client.quote.get_bars(
             symbols = [self.client.symbol],
@@ -171,6 +175,9 @@ class TechAnalyst:
 
     def compute_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate technical indicators such as fast EMA, slow EMA, rate of change and average volume.
+
+        Returns:
+            Original dataframe with derived columns of technical indicators.
         """ 
         df = df.copy()
         df["fast_ema"] = df["close"].ewm(span=self.client.fast_ema, adjust=False).mean()
@@ -181,6 +188,9 @@ class TechAnalyst:
 
     def get_latest_signal(self, df: pd.DataFrame) -> str:
         """Generate trading signals by evaluating price actions of the last two days.
+
+        Returns:
+            "BUY" if a cross-up signal is detected, "SELL" if a cross-down is observed. Otherwise "Hold".
         """
         if len(df) <= 2:
             return "Hold"
