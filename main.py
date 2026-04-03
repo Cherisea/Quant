@@ -244,8 +244,8 @@ class PositionManager:
         """Read actual positions and average cost from Tiger Trade on startup.
         """
         try:
-            data = self.clients.trade.get_positions(account=client.account, 
-                    sec_type=SecurityType.STK, symbol=client.symbol)
+            data = self.clients.trade.get_positions(account=self.clients.account, 
+                    sec_type=SecurityType.STK, symbol=self.clients.symbol)
             if data is not None and len(data) != 0:
                 row = data[0]
                 self.position = int(row.quantity)
@@ -480,7 +480,7 @@ class MomentumBot:
         log.info("=" * 60)
         log.info(f"  Momentum Bot STARTED -- Trading {self.client.symbol} on Tiger Trade")
         log.info(f"  Account: {self.client.account} | Lot size: {self.lot_size}")
-        log.info("  Strategy: EMA(%d/%d)  +  ROC(%d)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
+        log.info("  Strategy: EMA(%d/%d)  +  ROC(%.3f)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
                     self.client.fast_ema, self.client.slow_ema, self.client.roc_threshold, 
                     self.client.vol_ma, self.client.vol_coefficient)
         log.info(f"  Position sizing: {self.client.trade_size_pct} | Stop loss: {self.client.stop_loss_pct}")
