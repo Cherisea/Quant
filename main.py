@@ -481,14 +481,14 @@ class MomentumBot:
         log.info(f"  Momentum Bot STARTED -- Trading {self.client.symbol} on Tiger Trade")
         log.info(f"  Account: {self.client.account} | Lot size: {self.lot_size}")
         log.info("  Strategy: EMA(%d/%d)  +  ROC(%d)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
-                    self.client.fast_ema, self.client.slow_ema, self.client.vol_ma, 
-                    self.client.vol_coefficient)
+                    self.client.fast_ema, self.client.slow_ema, self.client.roc_threshold, 
+                    self.client.vol_ma, self.client.vol_coefficient)
         log.info(f"  Position sizing: {self.client.trade_size_pct} | Stop loss: {self.client.stop_loss_pct}")
         log.info("=" * 60)
 
         # Run an immediate tick and schedule the next one
         self.tick()
-        schedule.every(settings.schedule.tick_interval).minutes().do(self.tick)
+        schedule.every(settings.schedule.tick_interval).minutes.do(self.tick)
 
         while self._running:
             schedule.run_pending()      # Run all jobs that are due
