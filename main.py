@@ -267,13 +267,24 @@ class OrderExecutor:
         self.client = clients
 
     def get_last_price(self) -> float:
-        """Fetch latest closing price of a security.
+        """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
+
+        Returns:
+            Security price as a float.
         """
         brief = self.client.quote.get_stock_briefs([self.client.symbol])
         return brief['close'].iloc[0]
 
     def place_limit_order(self, qty: int, ref_price: float, direct: str) -> Optional[int]:
         """Place a limit order priced at a certain range of reference price.
+
+        Args:
+            qty: number of shares that's a multiple of lot size.
+            ref_price: base price an order is placed at.
+            direct: direction of order. Must be either "BUY" or "SELL".
+        
+        Return:
+            None if order is successfully placed, or order id as an integer if operation succeeds.
         """
         if direct not in ["BUY", "SELL"]:
             raise ValueError("Direction of limit orders must be either buy or sell. Aborting...")
@@ -300,6 +311,12 @@ class OrderExecutor:
 
     def wait_for_fill(self, order_id: int) -> bool:
         """Poll order status until filled or timeout, then cancel if unfilled.
+
+        Args:
+            order_id: order to be operated on.
+        
+        Returns:
+            True if order is filled, otherwise False. Check logs for details.
         """
         start = time.time()
         while time.time() - start < self.client.max_wait_sec:
@@ -328,7 +345,7 @@ class OrderExecutor:
 
 client = TigerClients()
 print(client.account)
-manager = PositionManager(client)
+manager = PositionManager(client, 500)
 exe = OrderExecutor(client)
-exe.wait_for_fill(42760578863090688)
+exe.place_limit_order(500, 10.28, "BUY")
 
