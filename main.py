@@ -177,19 +177,32 @@ class TechAnalyst:
         brief = self.client.quote.get_stock_briefs([self.client.symbol])
         return brief['close'].iloc[0]
 
-    def get_bars(self) -> pd.DataFrame:
+    def fetch_bars(self, test: bool=False) -> pd.DataFrame:
         """Fetch historical OHLC data.
+
+        Args:
+            test: if backtest mode is on or not
 
         Returns:
             A dataframe with a set number of rows containing historical price information of a 
             preset security.
         """
-        bars = self.client.quote.get_bars(
-            symbols = [self.client.symbol],
-            period = BarPeriod.DAY,     # Timeframe of each candlestick bar
-            right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-            limit = self.client.lookback_bars       # Number of days to pull data
-        )
+        if test:
+            bars = self.client.quote.get_bars(
+                symbols= [self.client.symbol],
+                period= BarPeriod.DAY,
+                right= QuoteRight.BR,
+                begin_time= "2020-01-01",
+                end_time= "2026-03-30",
+                limit= 10000,
+            )
+        else:
+            bars = self.client.quote.get_bars(
+                symbols = [self.client.symbol],
+                period = BarPeriod.DAY,     # Timeframe of each candlestick bar
+                right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
+                limit = self.client.lookback_bars       # Number of days to pull data
+            )
 
         if bars is None or bars.empty:
             raise RuntimeError("Failed to fetch bar data.") 
@@ -432,13 +445,12 @@ class MomentumBot:
     def tick(self):
         """One evaluation cycle.
         """
-        self.pm.get_balance()
         if not self.is_market_hours():
             return
 
         try:
             # Fetch data and compute trading signals
-            bars = self.analyst.get_bars()
+            bars = self.analyst.fetch_bars()
             bars = self.analyst.compute_indicators(bars)
             sig = self.analyst.get_latest_signal(bars)
             latest_price = self.analyst.get_last_price()
