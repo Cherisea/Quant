@@ -507,7 +507,6 @@ class MomentumBot:
 
         log.info("Bot stopped cleanly.")
 
-
 if __name__ == "__main__":
     bot = MomentumBot()
     bot.run()
