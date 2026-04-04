@@ -90,6 +90,12 @@ class TigerClients:
         return self._symbol
 
     @property
+    def currency(self):
+        """Expose currency of traded stock as a read_only attribute.
+        """
+        return settings.broker.currency
+
+    @property
     def fast_ema(self):
         """Set fast EMA as a property.
         """
@@ -266,7 +272,6 @@ class PositionManager:
         self.entry_price = 0.0
         self.highest_since_entry = 0.0
     
-    # TODO: check currency of balance and convert it to the same used for pricing target security.
     def get_balance(self) -> float:
         """Fetch available cash from account.
 
@@ -276,6 +281,8 @@ class PositionManager:
         try:
             data = self.clients.trade.get_assets(account=self.clients.account)
             if data is not None:
+                print(f"All assets: {data}\n")
+                print(f"Asset currency: {data[0].summary.currency}")
                 cash = data[0].summary.cash
                 return cash
         except Exception as e:
@@ -425,6 +432,7 @@ class MomentumBot:
     def tick(self):
         """One evaluation cycle.
         """
+        self.pm.get_balance()
         if not self.is_market_hours():
             return
 
