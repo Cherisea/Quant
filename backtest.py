@@ -7,7 +7,7 @@ import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
-from settings import BacktestRisk
+from settings import BacktestRisk, BacktestState
 
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     """Generate trading signals for all rows of a dataframe.
@@ -61,6 +61,19 @@ def calc_commission(price: float, qty: int) -> float:
     afrc = round(turnover * BacktestRisk.afrc_levy, 2)
     return brokerage + stamp + sfc + trading_fee + afrc
 
+def run_backtest(df: pd.DataFrame) -> BacktestState:
+    """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
+        of each day.
+    """
+    # State management of current iteration 
+    state = BacktestState(cash = BacktestRisk.initial_capital)
+
+    pass
+
+
+if __name__ == "__main__":
+    # Fetch data 
+    pass
 client = TigerClients()
 analyst = TechAnalyst(client)
 bars = analyst.fetch_bars(test=True)
