@@ -21,3 +21,4 @@ and factor in transaction cost:
 ## Glossary
 - Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 
 - Slippage: the difference between an expected price of a trade and the actual execution price, often caused by volatility and large orders.
+- Base point(abbr. bp/bps): one hundredth of a percent
