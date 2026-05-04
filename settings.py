@@ -65,7 +65,7 @@ class StrategySettings:
 class ScheduleSettings:
     """Configures trading bot running schedule and specifies trading hours of HKSE.
     """
-    tick_interval: int = 10     # Interval between two consecutive ticks
+    tick_interval: int = 10     # Interval between two evaluation cycle
     market_open: str = "09:30"
     market_close: str = "16:00"
     lunch_start: str = "12:00"
