@@ -2,6 +2,7 @@
 Backtesting momentum strategy defined in main script.
 """
 
+import math
 import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
@@ -47,6 +48,18 @@ def apply_slippage(price: float, side: str) -> float:
     offset = price * BacktestRisk.slippage_bps / 10_000
     return price + offset if side == "buy" else price - offset
 
+def calc_commission(price: float, qty: int, side: str) -> float:
+    """Calculate al HK trading costs per HKEX fee schedule.
+
+    """
+    turnover = price * qty
+    brokerage = turnover * BacktestRisk.commission_rate
+    stamp = math.ceil(turnover * BacktestRisk.stamp_duty)
+
+    sfc = round(turnover * BacktestRisk.sfc_levy, 2)
+    trading_fee = round(turnover * BacktestRisk.trading_fee, 2)
+    afrc = round(turnover * BacktestRisk.afrc_levy, 2)
+    return brokerage + stamp + sfc + trading_fee + afrc
 
 client = TigerClients()
 analyst = TechAnalyst(client)
