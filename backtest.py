@@ -12,34 +12,10 @@ from settings import BacktestRisk, BacktestState, load_settings
 from utils import setup_logging
 
 settings = load_settings()
+
 # Load global settings from root logger
 setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
-
-def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
-    """Generate trading signals for all rows of a dataframe.
-
-    Args:
-        client: a functional trading client
-        df: data of target stocks
-    
-    Returns:
-        A modified dataframe with a new "signal" column.
-    """
-    df = df.copy()
-    df['signal'] = 0
-
-    # Moment of transition where fast and slow ema flips position
-    cross_up = (df['fast_ema'] > df['slow_ema']) & (df['fast_ema'].shift(1) <= df['slow_ema'].shift(1))
-    cross_down = (df['fast_ema'] < df['slow_ema']) & (df['fast_ema'].shift(1) >= df['slow_ema'].shift(1))
-
-    momentum = df['roc'] > client.roc_threshold
-    volume = df['volume'] > client.vol_coefficient * df['vol_ma']
-
-    df.loc[cross_up & momentum & volume, 'signal'] = 1     # Buy signal
-    df.loc[cross_down, "signal"] = -1        # Sell signal
-
-    return df
 
 def apply_slippage(price: float, side: str) -> float:
     """Calculate slippage adjusted stock price based on action type. As slippage always works 
@@ -79,10 +55,16 @@ def run_backtest(df: pd.DataFrame) -> BacktestState:
 
 
 if __name__ == "__main__":
+    client = TigerClients()
+    analyst = TechAnalyst(client)
+
     # Fetch data 
-    pass
-client = TigerClients()
-analyst = TechAnalyst(client)
-bars = analyst.fetch_bars(test=True)
-df = analyst.compute_indicators(bars)
-generate_signals(client, df)
+    log.info(f"Fetching historical bars for {settings.broker.symbol}")
+    bars = analyst.fetch_bars(test=True)
+    
+    # Compute indicators and signals
+    bars = analyst.compute_indicators(bars)
+    bars = analyst.get_all_signals(bars)
+    log.info("Signal counts -- BUY: %d | SELL: %d",
+            (bars["signal"] == 1).sum(), 
+            (bars["signal"] == -1).sum())

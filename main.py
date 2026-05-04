@@ -246,6 +246,32 @@ class TechAnalyst:
         else:
             return "Hold" 
 
+    def get_all_signals(client: TigerClients, df: pd.DataFrame) -> pd.DataFrame:
+        """Generate trading signals for all rows of a dataframe. This method is 
+            designed for backtesting.
+
+        Args:
+            client: a functional trading client
+            df: data of target stocks
+        
+        Returns:
+            A modified dataframe with a new "signal" column.
+        """
+        df = df.copy()
+        df['signal'] = 0
+
+        # Moment of transition where fast and slow ema flips position
+        cross_up = (df['fast_ema'] > df['slow_ema']) & (df['fast_ema'].shift(1) <= df['slow_ema'].shift(1))
+        cross_down = (df['fast_ema'] < df['slow_ema']) & (df['fast_ema'].shift(1) >= df['slow_ema'].shift(1))
+
+        momentum = df['roc'] > client.roc_threshold
+        volume = df['volume'] > client.vol_coefficient * df['vol_ma']
+
+        df.loc[cross_up & momentum & volume, 'signal'] = 1     # Buy signal
+        df.loc[cross_down, "signal"] = -1        # Sell signal
+
+        return df
+
 class PositionManager:
     """A manager that tracks current position, entry price and trailing stop orders.
     """
