@@ -46,9 +46,9 @@ def apply_slippage(price: float, side: str) -> float:
         slippage adjusted price.
     """
     offset = price * BacktestRisk.slippage_bps / 10_000
-    return price + offset if side == "buy" else price - offset
+    return price + offset if side == "BUY" else price - offset
 
-def calc_commission(price: float, qty: int, side: str) -> float:
+def calc_commission(price: float, qty: int) -> float:
     """Calculate al HK trading costs per HKEX fee schedule.
 
     """
