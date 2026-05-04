@@ -6,6 +6,8 @@ import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
+from settings import BacktestRisk
+
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     """Generate trading signals for all rows of a dataframe.
 
@@ -30,6 +32,21 @@ def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     df.loc[cross_down, "signal"] = -1        # Sell signal
 
     return df
+
+def apply_slippage(price: float, side: str) -> float:
+    """Calculate slippage adjusted stock price based on action type. As slippage always works 
+        against us, selling prices are adjusted lower, while buying prices higher.
+
+    Args:
+        price: expected stock price
+        side: a string indicating type of price action
+
+    Returns:
+        slippage adjusted price.
+    """
+    offset = price * BacktestRisk.slippage_bps / 10_000
+    return price + offset if side == "buy" else price - offset
+
 
 client = TigerClients()
 analyst = TechAnalyst(client)
