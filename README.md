@@ -4,7 +4,7 @@
 Tushare for Chinese A-share market. 
 
 ## Strategy
-This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 99 days moving average. 
+This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 60 days moving average. 
 
 ## Backtest
 Backtest must respect rules in Chinese market:
@@ -17,3 +17,6 @@ and factor in transaction cost:
 - Commission: 0.01%
 - Stamp tax on sells: 0.05%
 - Slippage: 1 - 2 transactions if we place limit orders;
+
+## Glossary
+- Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 

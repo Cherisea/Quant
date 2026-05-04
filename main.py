@@ -449,7 +449,7 @@ class MomentumBot:
             return
 
         try:
-            # Fetch data and compute trading signals
+            # Analyst: fetch data and compute trading signals
             bars = self.analyst.fetch_bars()
             bars = self.analyst.compute_indicators(bars)
             sig = self.analyst.get_latest_signal(bars)
