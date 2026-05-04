@@ -4,32 +4,7 @@ Backtesting momentum strategy defined in main script.
 
 import pandas as pd
 from pandas import DataFrame
-from typing import Optional
-from dataclasses import dataclass, field
 from main import TigerClients, TechAnalyst
-
-@dataclass
-class Trade:
-    entry_date: pd.Timestamp
-    entry_price: float
-    quantity: int
-    exit_date: Optional[pd.Timestamp] = None
-    exit_price: Optional[float] = None
-
-    pnl: float = 0.0    # Profit and loss in absolute amount
-    pnl_pct: float = 0.0    # Profit and loss as a percentage
-    exit_reason: str = ""
-
-@dataclass
-class BacktestState:
-    cash: float
-    # Custom attribute with a mutable default value
-    equity_curve: list = field(default_factory=list)
-    position: int = 0
-    entry_price: float = 0.0
-    highest_since_entry: float = 0.0
-    trades: list = field(default_factory=list)      # Complete trade log
-    current_trade: Optional[Trade] = None
 
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     df = df.copy()

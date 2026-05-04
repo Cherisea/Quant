@@ -2,9 +2,10 @@
     Grouped settings for main script.
 """
 import os
+import pandas as pd
 from typing import Optional
 from dotenv import load_dotenv
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Load env vars from .env file 
 load_dotenv()
@@ -22,6 +23,29 @@ class BacktestRisk:
     trading_fee: float = 0.0000565      # HKEX trading fee 0.00565% per side
     afrc_levy: float = 0.0000015        # AFRC transaction levy 0.00015% per side
     slippage_bps: int = 5               # 5 bps assumed slippage
+
+@dataclass
+class Trade:
+    entry_date: pd.Timestamp
+    entry_price: float
+    quantity: int
+    exit_date: Optional[pd.Timestamp] = None
+    exit_price: Optional[float] = None
+
+    pnl: float = 0.0    # Profit and loss in absolute amount
+    pnl_pct: float = 0.0    # Profit and loss as a percentage
+    exit_reason: str = ""
+
+@dataclass
+class BacktestState:
+    cash: float
+    # Custom attribute with a mutable default value
+    equity_curve: list = field(default_factory=list)
+    position: int = 0
+    entry_price: float = 0.0
+    highest_since_entry: float = 0.0
+    trades: list = field(default_factory=list)      # Complete trade log
+    current_trade: Optional[Trade] = None
 
 @dataclass(frozen=True)
 class BrokerSettings:
