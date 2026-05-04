@@ -207,7 +207,7 @@ class TechAnalyst:
         if bars is None or bars.empty:
             raise RuntimeError("Failed to fetch bar data.") 
         
-        # Preprocess fetched data
+        # Convert numeric time to a human-readable format
         bars["time"] = pd.to_datetime(bars["time"], unit="ms")
         bars.set_index("time", inplace=True)
         bars.sort_index(inplace=True)
@@ -238,7 +238,7 @@ class TechAnalyst:
         prev = df.iloc[-2]
         cur = df.iloc[-1]
 
-        # Check if EMA crosses up or down
+        # Check if EMA crosses up or down in the last two days
         cross_up = (prev['fast_ema'] <= prev['slow_ema']) and (cur['fast_ema'] > cur['slow_ema'])
         cross_down = (prev['fast_ema'] > prev['slow_ema']) and (cur['fast_ema'] <= cur['slow_ema'])
 
