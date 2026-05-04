@@ -14,7 +14,7 @@ class BacktestRisk:
     """Risk settings for backtesting momentum strategy.
     """
     initial_capital: int = 500_000.0     # HKD
-    trade_size_pct: float = 0.2       # Percentage of available fund for a single trade
+    trade_size_pct: float = 0.2       # Fraction of available fund for a single trade
     stop_loss_pct: float = 0.05     # 5% trailing stop orders
     commission_rate: float = 0.0003     # 3 bps fee charged per side
     stamp_duty: float = 0.001      # HK stamp duty per side
