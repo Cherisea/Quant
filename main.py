@@ -7,9 +7,11 @@ separate script.
 import sys
 import time
 import signal
-import logging
 import schedule
+import logging
 import pandas as pd
+
+from utils import setup_logging
 from typing import Optional
 from datetime import datetime
 from settings import load_settings
@@ -26,17 +28,12 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
-# Load settings and set up logs
+
 settings = load_settings()
-logging.basicConfig(
-    level = settings.logging.level,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(settings.logging.file),
-        logging.StreamHandler(sys.stdout)
-    ],
-)
-log = logging.getLogger(__name__)
+
+# Load global settings from root logger
+setup_logging(settings.logging.file, settings.logging.level)
+log = logging.getLogger(__name__)   # Initialize a named logger 
 
 class TigerClients:
     """Quote and trade agent for interacting with Tiger Trade platform.
