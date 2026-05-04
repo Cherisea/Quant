@@ -7,6 +7,15 @@ from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
+    """Generate trading signals for all rows of a dataframe.
+
+    Args:
+        client: a functional trading client
+        df: data of target stocks
+    
+    Returns:
+        A modified dataframe with a new "signal" column.
+    """
     df = df.copy()
     df['signal'] = 0
 
