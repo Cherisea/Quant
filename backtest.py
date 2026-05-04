@@ -3,11 +3,18 @@ Backtesting momentum strategy defined in main script.
 """
 
 import math
+import logging
 import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
-from settings import BacktestRisk, BacktestState
+from settings import BacktestRisk, BacktestState, load_settings
+from utils import setup_logging
+
+settings = load_settings()
+# Load global settings from root logger
+setup_logging(settings.logging.file, settings.logging.level)
+log = logging.getLogger(__name__)   # Initialize a named logger 
 
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     """Generate trading signals for all rows of a dataframe.
