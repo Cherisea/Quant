@@ -1,11 +1,24 @@
 """
-Momentum Backtest Engine
+Backtesting momentum strategy defined in main script.
 """
 
+from dataclasses import dataclass
+from typing import Optional
 import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
+@dataclass
+class Trade:
+    entry_date: pd.Timestamp
+    entry_price: float
+    quantity: int
+    exit_date: Optional[pd.Timestamp] = None
+    exit_price: Optional[float] = None
+
+    pnl: float = 0.0    # Profit and loss in absolute amount
+    pnl_pct: float = 0.0    # Profit and loss as a percentage
+    exit_reason: str = ""
 
 def generate_signals(client: TigerClients, df: DataFrame) -> pd.DataFrame:
     df = df.copy()
