@@ -174,24 +174,29 @@ class TechAnalyst:
         brief = self.client.quote.get_stock_briefs([self.client.symbol])
         return brief['close'].iloc[0]
 
-    def fetch_bars(self, test: bool=False) -> pd.DataFrame:
+    def fetch_bars(self, test: bool=False, test_duration: int=3) -> pd.DataFrame:
         """Fetch historical OHLC data.
 
         Args:
             test: if backtest mode is on or not
+            test_duration: how far back to pull historical price data for backtest. 
+                            Measured in years.
 
         Returns:
             A dataframe with a set number of rows containing historical price information of a 
             preset security.
         """
         if test:
+            # Resets to midnight local time
+            end = pd.Timestamp.now().normalize()
+            start = end - pd.DateOffset(years=test_duration)
+
             bars = self.client.quote.get_bars(
                 symbols= [self.client.symbol],
                 period= BarPeriod.DAY,
                 right= QuoteRight.BR,
-                begin_time= "2020-01-01",
-                end_time= "2026-03-30",
-                limit= 10000,
+                begin_time= start.strftime("%Y-%m-%d"),
+                end_time= end.strftime("%Y-%m-%d"),
             )
         else:
             bars = self.client.quote.get_bars(
