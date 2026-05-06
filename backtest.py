@@ -4,6 +4,7 @@ Backtesting momentum strategy defined in main script.
 
 import math
 import logging
+from time import strftime
 import pandas as pd
 from pandas import DataFrame
 from main import TigerClients, TechAnalyst
@@ -57,10 +58,16 @@ def run_backtest(df: pd.DataFrame) -> BacktestState:
 if __name__ == "__main__":
     client = TigerClients()
     analyst = TechAnalyst(client)
+    test_duration = 3   # Number of years of historical price data
 
     # Fetch data 
     log.info(f"Fetching historical bars for {settings.broker.symbol}")
-    bars = analyst.fetch_bars(test=True)
+    bars = analyst.fetch_bars(test=True, test_duration=test_duration)
+
+    end = pd.Timestamp.now().normalize()
+    start = end - pd.DateOffset(years=test_duration)
+    log.info(f"{'=' * 50}")
+    log.info(f"Start date: {start.strftime('%Y-%m-%d')} | End date: {end.strftime('%Y-%m-%d')}")
     
     # Compute indicators and signals
     bars = analyst.compute_indicators(bars)
