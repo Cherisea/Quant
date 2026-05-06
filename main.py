@@ -246,7 +246,7 @@ class TechAnalyst:
         else:
             return "Hold" 
 
-    def get_all_signals(client: TigerClients, df: pd.DataFrame) -> pd.DataFrame:
+    def get_all_signals(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generate trading signals for all rows of a dataframe. This method is 
             designed for backtesting.
 
@@ -264,8 +264,8 @@ class TechAnalyst:
         cross_up = (df['fast_ema'] > df['slow_ema']) & (df['fast_ema'].shift(1) <= df['slow_ema'].shift(1))
         cross_down = (df['fast_ema'] < df['slow_ema']) & (df['fast_ema'].shift(1) >= df['slow_ema'].shift(1))
 
-        momentum = df['roc'] > client.roc_threshold
-        volume = df['volume'] > client.vol_coefficient * df['vol_ma']
+        momentum = df['roc'] > self.client.roc_threshold
+        volume = df['volume'] > self.client.vol_coefficient * df['vol_ma']
 
         df.loc[cross_up & momentum & volume, 'signal'] = 1     # Buy signal
         df.loc[cross_down, "signal"] = -1        # Sell signal
