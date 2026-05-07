@@ -4,9 +4,7 @@ Backtesting momentum strategy defined in main script.
 
 import math
 import logging
-from time import strftime
 import pandas as pd
-from pandas import DataFrame
 from main import TigerClients, TechAnalyst
 
 from settings import BacktestRisk, BacktestState, load_settings
@@ -77,3 +75,7 @@ if __name__ == "__main__":
             (bars["signal"] == 1).sum(), 
             (bars["signal"] == -1).sum())
     log.info(f"\n{bars[bars['signal'] == 1]}\n{bars[bars['signal'] == -1]}")
+
+    # Run backtest
+    log.info(f"Running backtest (capital={BacktestRisk.initial_capital:,} HKD)")
+    result = run_backtest(bars)
