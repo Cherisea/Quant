@@ -64,6 +64,7 @@ if __name__ == "__main__":
     log.info(f"Fetching historical bars for {settings.broker.symbol}")
     bars = analyst.fetch_bars(test=True, test_duration=test_duration)
 
+    # Compute custom start and end time
     end = pd.Timestamp.now().normalize()
     start = end - pd.DateOffset(years=test_duration)
     log.info(f"{'=' * 50}")
@@ -72,6 +73,7 @@ if __name__ == "__main__":
     # Compute indicators and signals
     bars = analyst.compute_indicators(bars)
     bars = analyst.get_all_signals(bars)
-    log.info("Signal counts -- BUY: %d | SELL: %d",
+    log.info("Overview: signal counts -- BUY: %d | SELL: %d",
             (bars["signal"] == 1).sum(), 
             (bars["signal"] == -1).sum())
+    log.info(f"\n{bars[bars['signal'] == 1]}\n{bars[bars['signal'] == -1]}")
