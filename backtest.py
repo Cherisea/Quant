@@ -27,7 +27,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     for i in range(len(df)):
         price = closes[i]
         sig = signals[i]
-        ts = timestamps[i]
+        ts = pd.Timestamp(timestamps[i]).isoformat(timespec="seconds")
         
         # Check trailing stop 
         if state.position > 0:
