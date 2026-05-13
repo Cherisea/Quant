@@ -5,7 +5,7 @@ import sys
 import math
 import logging
 
-from settings import BacktestRisk
+from settings import BacktestRisk, HKPlatformFeePlan, TradeFeesHK
 
 def setup_logging(log_file: str, level: str = "INFO"):
     """Set up a logger for a script.
@@ -59,6 +59,29 @@ def apply_slippage(slippage_bps, price: float, side: str) -> float:
     """
     offset = price * slippage_bps / 10_000
     return price + offset if side == "BUY" else price - offset
+
+def set_platform_fee_hk(plan: HKPlatformFeePlan, tiers: tuple[tuple[float, float], ...], 
+                    monthly_orders: int) -> float:
+    """Set platform fees based on pricing plan. Note this is only applicable to HK securities traded
+        through Tiger broker. 
+
+    Args:
+        plan: Tiger pricing plan. Can be either fixed or tiered.
+        tiers: tuples of (max_monthly_orders, fee_per_order).
+        monthly_orders: total number of trade orders in current month.
+    
+    Returns:
+        platform fee per order.
+    """
+    if plan == "fixed":
+        return TradeFeesHK.platform_fee_fixed
+    
+    if monthly_orders < 1:
+        raise ValueError("Monthly orders must be an integer.")
+    for max_order, fee in tiers:
+        if monthly_orders <= max_order:
+            return fee
+    return tiers[-1][1]
 
 def calc_commission(fees: BacktestRisk, price: float, qty: int) -> float:
     """Calculate all HK trading costs per HKEX fee schedule. Adjust for other markets.
