@@ -60,13 +60,13 @@ def apply_slippage(slippage_bps, price: float, side: str) -> float:
     offset = price * slippage_bps / 10_000
     return price + offset if side == "BUY" else price - offset
 
-def set_platform_fee_hk(plan: HKPlatformFeePlan, tiers: tuple[tuple[float, float], ...], 
-                    monthly_orders: int) -> float:
+def set_platform_fee_hk(tiers: tuple[tuple[float, float], ...], monthly_orders: int, 
+                        plan: HKPlatformFeePlan = "fixed") -> float:
     """Set platform fees based on pricing plan. Note this is only applicable to HK securities traded
         through Tiger broker. 
 
     Args:
-        plan: Tiger pricing plan. Can be either fixed or tiered.
+        plan: Tiger pricing plan. Defaults to fixed.
         tiers: tuples of (max_monthly_orders, fee_per_order).
         monthly_orders: total number of trade orders in current month.
     
@@ -75,7 +75,6 @@ def set_platform_fee_hk(plan: HKPlatformFeePlan, tiers: tuple[tuple[float, float
     """
     if plan == "fixed":
         return TradeFeesHK.platform_fee_fixed
-    
     if monthly_orders < 1:
         raise ValueError("Monthly orders must be an integer.")
     for max_order, fee in tiers:
