@@ -104,7 +104,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         mark_to_market = state.cash + state.position * price
         state.equity_curve.append((ts, mark_to_market))
     
-    # Close any open position on the last day
+    # Clear any open positions on the last day
     if state.position > 0:
         last_price = df.iloc[-1]["close"]
         sell_px = apply_slippage(risk.slippage_bps, last_price, "SELL")
