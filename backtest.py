@@ -7,7 +7,7 @@ import logging
 import pandas as pd
 from main import TigerClients, TechAnalyst
 
-from utils import setup_logging, round_to_lot
+from utils import setup_logging, round_to_lot, apply_slippage
 from settings import BacktestRisk, BacktestState, Trade, load_settings
 
 settings = load_settings()
@@ -15,20 +15,6 @@ settings = load_settings()
 # Load global settings from root logger
 setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
-
-def apply_slippage(price: float, side: str) -> float:
-    """Calculate slippage adjusted stock price based on action type. As slippage always works 
-        against us, selling prices are adjusted lower, while buying prices higher.
-
-    Args:
-        price: expected stock price
-        side: a string indicating type of price action
-
-    Returns:
-        slippage adjusted price.
-    """
-    offset = price * BacktestRisk.slippage_bps / 10_000
-    return price + offset if side == "BUY" else price - offset
 
 def calc_commission(price: float, qty: int) -> float:
     """Calculate al HK trading costs per HKEX fee schedule.
@@ -70,7 +56,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            sell_price = apply_slippage(price, "SELL")
+            sell_price = apply_slippage(BacktestRisk.slippage_bps, price, "SELL")
             proceeds = sell_price * state.position
             comm = calc_commission(sell_price, state.position)
             state.cash += proceeds - comm
@@ -98,7 +84,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         elif sig == 1 and state.position == 0:
             equity = state.cash
             budget = equity * BacktestRisk.trade_size_pct
-            buy_price = apply_slippage(price, "BUY")
+            buy_price = apply_slippage(BacktestRisk.slippage_bps, price, "BUY")
             raw_qty = int(budget / buy_price)
             qty = round_to_lot(lot_size, raw_qty)
             if qty <= 0:
@@ -118,7 +104,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     # Close any open position on the last day
     if state.position > 0:
         last_price = df.iloc[-1]["close"]
-        sell_price = apply_slippage(last_price, "SELL")
+        sell_price = apply_slippage(BacktestRisk.slippage_bps, last_price, "SELL")
         comm = calc_commission(sell_price, state.position, "SELL")
         state.cash += sell_price * state.position - comm
         if state.current_trade:
