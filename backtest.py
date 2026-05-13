@@ -48,7 +48,8 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
                 t = state.current_trade
                 t.exit_date = ts
                 t.exit_price = sell_price
-                t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(fees, t.entry_price, t.quantity)
+                t.trans_fees = comm + calc_commission(fees, t.entry_price, t.quantity)
+                t.pnl = (sell_price - t.entry_price) * t.quantity - t.trans_fees
                 # TODO: probably over optimistic since denominator doesn't contain fee
                 t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
                 
@@ -98,6 +99,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             t.exit_reason = "end_of_data"
             state.trades.append(t)
         state.position = 0
+    print(f"All trades: {state.trades}")
     return state
 
 
