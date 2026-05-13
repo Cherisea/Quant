@@ -2,6 +2,7 @@
     Grouped settings for main script.
 """
 import os
+from enum import Enum
 import pandas as pd
 from typing import Optional
 from dotenv import load_dotenv
@@ -9,6 +10,45 @@ from dataclasses import dataclass, field
 
 # Load env vars from .env file 
 load_dotenv()
+
+# (max_monthly_orders, fee_per_order) based on Tiger's fee structure
+HK_PLATFORM_FEE_TIERS = (
+    (5, 30.0),
+    (20, 15.0),
+    (50, 10.0),
+    (100, 9.0),
+    (500, 8.0),
+    (1000, 7.0),
+    (2000, 6.0),
+    (3000, 5.0),
+    (4000, 4.0),
+    (5000, 3.0),
+    (6000, 2.0),
+    (float('inf'), 1.0),
+)
+
+class HKPlatformFeePlan(str, Enum):
+    """Enums for two types of pricing plan on Tiger for trading HK securities.
+    """
+    FIXED = "fixed"     # Default until switch
+    TIERED = "tiered"
+
+@dataclass(frozen=True)
+class TradeFeesHK:
+    """Transaction fees for trading HK securities using Tiger platform. Adjust
+        for other brokerage and markets.
+    """
+    # Tiger charged fees
+    commission_rate: float = 0.0003     
+    platform_fee_plan: HKPlatformFeePlan = HKPlatformFeePlan.FIXED
+    platform_fee_fixed: int = 15        # Fixed fee per order in HKD
+    platform_fee_tiers: tuple[tuple[float, float], ...] = HK_PLATFORM_FEE_TIERS
+
+    # External fees
+    stamp_duty: float = 0.001      # HK stamp duty per side
+    sfc_levy: float = 0.000027      # HK SFC levy
+    trading_fee: float = 0.0000565      # HKEX trading fee 0.00565% per side
+    afrc_levy: float = 0.0000015        # AFRC transaction levy 0.00015% per side
 
 @dataclass(frozen=True)
 class BacktestRisk:
