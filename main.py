@@ -11,7 +11,7 @@ import schedule
 import logging
 import pandas as pd
 
-from utils import setup_logging
+from utils import setup_logging, round_to_lot
 from typing import Optional
 from datetime import datetime
 from settings import load_settings
@@ -330,17 +330,6 @@ class PositionManager:
             log.warning(f"Couldn't fetch balance: {e}")
         return 0.0
     
-    def round_to_lot(self, qty: int) -> int:
-        """Round requested quantity to a multiple of lot size.
-
-        Args:
-            qty: number of requested shares.
-        
-        Returns:
-            Requested shares as a multiple of lot size.
-        """
-        return (qty // self.lot_size) * self.lot_size
-    
     def check_trailing_stop(self, current_price: float) -> bool:
         """Check if a trailing stop order set at a fixed percentage point should be triggered. Note
             this order lives on the software side, not broker side. Move it to the broker side
@@ -508,7 +497,7 @@ class MomentumBot:
                 equity = self.pm.get_balance()
                 budget = equity * self.client.trade_size_pct
                 raw_qty = budget // latest_price
-                qty = self.pm.round_to_lot(raw_qty)
+                qty = round_to_lot(raw_qty)
                 if qty <= 0:
                     log.warning(f"Insufficient equity for a full lot (equity={equity}, price={latest_price})")
                     return
