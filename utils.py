@@ -83,7 +83,7 @@ def set_platform_fee_hk(tiers: tuple[tuple[float, float], ...], monthly_orders: 
     return tiers[-1][1]
 
 def calc_commission(fees: TradeFeesHK, price: float, qty: int, 
-                    platform_per_order: float, orders: int = 1) -> float:
+                    platform_per_order: float = 15.0, orders: int = 1) -> float:
     """Calculate all HK trading costs per HKEX fee schedule. Adjust for other markets and
         brokerage.
 
