@@ -2,7 +2,10 @@
 Utility functions to support the execution of primary scripts.
 """
 import sys
+import math
 import logging
+
+from settings import BacktestRisk
 
 def setup_logging(log_file: str, level: str = "INFO"):
     """Set up a logger for a script.
@@ -56,3 +59,25 @@ def apply_slippage(slippage_bps, price: float, side: str) -> float:
     """
     offset = price * slippage_bps / 10_000
     return price + offset if side == "BUY" else price - offset
+
+def calc_commission(fees: BacktestRisk, price: float, qty: int) -> float:
+    """Calculate all HK trading costs per HKEX fee schedule. Adjust for other markets.
+
+    Args:
+        comm_rate: commission rate charged by broker
+        stamp_duty: duty on value of a transaction on both buyers and sellers
+        sfc_levy: sfc transaction levy
+        trading: trading fee payable to HKSE
+        afrc_levy: afrc transaction levy
+    
+    Returns:
+        total sum of various fees.
+    """
+    turnover = price * qty
+    brokerage = turnover * fees.commission_rate
+    stamp = math.ceil(turnover * fees.stamp_duty)
+
+    sfc = round(turnover * fees.sfc_levy, 2)
+    trading_fee = round(turnover * fees.trading_fee, 2)
+    afrc = round(turnover * fees.afrc_levy, 2)
+    return brokerage + stamp + sfc + trading_fee + afrc

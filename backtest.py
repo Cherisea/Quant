@@ -2,12 +2,11 @@
 Backtesting momentum strategy defined in main script.
 """
 
-import math
 import logging
 import pandas as pd
 from main import TigerClients, TechAnalyst
 
-from utils import setup_logging, round_to_lot, apply_slippage
+from utils import *
 from settings import BacktestRisk, BacktestState, Trade, load_settings
 
 settings = load_settings()
@@ -16,25 +15,13 @@ settings = load_settings()
 setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
-def calc_commission(price: float, qty: int) -> float:
-    """Calculate al HK trading costs per HKEX fee schedule.
-
-    """
-    turnover = price * qty
-    brokerage = turnover * BacktestRisk.commission_rate
-    stamp = math.ceil(turnover * BacktestRisk.stamp_duty)
-
-    sfc = round(turnover * BacktestRisk.sfc_levy, 2)
-    trading_fee = round(turnover * BacktestRisk.trading_fee, 2)
-    afrc = round(turnover * BacktestRisk.afrc_levy, 2)
-    return brokerage + stamp + sfc + trading_fee + afrc
-
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
         of each day.
     """
     # State management of current iteration 
-    state = BacktestState(cash = BacktestRisk.initial_capital)
+    risk = BacktestRisk
+    state = BacktestState(cash = risk.initial_capital)
 
     # Extract column values for faster iteration
     closes = df['close'].values
@@ -50,15 +37,15 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         # Check trailing stop 
         if state.position > 0:
             state.highest_since_entry = max(state.highest_since_entry, price)
-            stop_price = state.highest_since_entry * (1 - BacktestRisk.stop_loss_pct)
+            stop_price = state.highest_since_entry * (1 - risk.stop_loss_pct)
             if price <= stop_price:
                 sig = -1    # Force liquidation 
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            sell_price = apply_slippage(BacktestRisk.slippage_bps, price, "SELL")
+            sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
             proceeds = sell_price * state.position
-            comm = calc_commission(sell_price, state.position)
+            comm = calc_commission(risk, sell_price, state.position)
             state.cash += proceeds - comm
 
             # Log trade details
@@ -66,11 +53,11 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
                 t = state.current_trade
                 t.exit_date = ts
                 t.exit_price = sell_price
-                t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(t.entry_price, t.quantity)
+                t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(risk, t.entry_price, t.quantity)
                 # TODO: probably over optimistic since denominator doesn't contain fee
                 t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
                 
-                if price <= state.highest_since_entry * (1 - BacktestRisk.stop_loss_pct):
+                if price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
                     t.exit_reason = "trail_stop"
                 else:
                     t.exit_reason = "signal"
@@ -83,15 +70,15 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
         elif sig == 1 and state.position == 0:
             equity = state.cash
-            budget = equity * BacktestRisk.trade_size_pct
-            buy_price = apply_slippage(BacktestRisk.slippage_bps, price, "BUY")
+            budget = equity * risk.trade_size_pct
+            buy_price = apply_slippage(risk.slippage_bps, price, "BUY")
             raw_qty = int(budget / buy_price)
             qty = round_to_lot(lot_size, raw_qty)
             if qty <= 0:
                 state.equity_curve.append((ts, state.cash))
                 continue
 
-            state.cash -= buy_price * qty + calc_commission(buy_price, qty)
+            state.cash -= buy_price * qty + calc_commission(risk, buy_price, qty)
             state.position = qty
             state.entry_price = buy_price
             state.highest_since_entry = buy_price
@@ -104,14 +91,14 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     # Close any open position on the last day
     if state.position > 0:
         last_price = df.iloc[-1]["close"]
-        sell_price = apply_slippage(BacktestRisk.slippage_bps, last_price, "SELL")
-        comm = calc_commission(sell_price, state.position, "SELL")
+        sell_price = apply_slippage(risk.slippage_bps, last_price, "SELL")
+        comm = calc_commission(risk, sell_price, state.position)
         state.cash += sell_price * state.position - comm
         if state.current_trade:
             t = state.current_trade
             t.exit_date = df.index[-1]
             t.exit_price = sell_price
-            t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(t.entry_price, t.quantity)
+            t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(risk, t.entry_price, t.quantity)
             t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
             t.exit_reason = "end_of_data"
             state.trades.append(t)
