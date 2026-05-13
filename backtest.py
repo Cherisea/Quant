@@ -9,23 +9,31 @@ from main import TigerClients, TechAnalyst
 from utils import *
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
-def log_trade(trade: Trade, ts: pd.Timestamp, sell_price: float):
+def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, exit_reason: str) -> Trade:
     """Log trade details for review and analysis. 
 
     Args:
-        trade: a data class containing trade details
+        trade: a data class containing limited trade details
         ts: when current trade is complete
         sell_price: price at which positions exit
+        comm: commission fee at sell
+        exit_reason: reason to exit positions
+
+    Returns:
+        a filled trade object.
     """
     # Only log trade details if it exists
     if not trade: return
 
     trade.exit_date = ts
     trade.exit_price = sell_price
-    # trade.trans_fees = comm + calc_commission(fees, trade.entry_price, trade.quantity)
+    trade.trans_fees += comm 
     trade.pnl = (sell_price - trade.entry_price) * trade.quantity - trade.trans_fees
     # TODO: probably over optimistic since denominator doesn't contain fee
     trade.pnl_pct = trade.pnl / (trade.entry_price * trade.quantity)
+    trade.exit_reason = exit_reason
+
+    return trade
 
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
@@ -61,24 +69,16 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             proceeds = sell_price * state.position
             comm_sell = calc_commission(fees, sell_price, state.position)
             state.cash += proceeds - comm_sell
+            
+            # Record trade details
+            if price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
+                exit_reason = "trail_stop"
+            else:
+                exit_reason = "signal"
+            t = fill_trade(state.current_trade, ts, sell_price, comm_sell, exit_reason)
+            state.trades.append(t)
+            state.current_trade = None
 
-            # Log trade details
-            if state.current_trade:
-                t = state.current_trade
-                t.exit_date = ts
-                t.exit_price = sell_price
-                t.trans_fees += comm_sell
-                t.pnl = (sell_price - t.entry_price) * t.quantity - t.trans_fees
-                # TODO: probably over optimistic since denominator doesn't contain fee
-                t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
-                
-                if price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
-                    t.exit_reason = "trail_stop"
-                else:
-                    t.exit_reason = "signal"
-                
-                state.trades.append(t)
-                state.current_trade = None
             state.position = 0
             state.entry_price = 0.0
             state.highest_since_entry = 0.0
@@ -107,18 +107,12 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     # Close any open position on the last day
     if state.position > 0:
         last_price = df.iloc[-1]["close"]
-        sell_price = apply_slippage(risk.slippage_bps, last_price, "SELL")
+        sell_px = apply_slippage(risk.slippage_bps, last_price, "SELL")
         comm = calc_commission(fees, sell_price, state.position)
         state.cash += sell_price * state.position - comm
 
-        if state.current_trade:
-            t = state.current_trade
-            t.exit_date = df.index[-1]
-            t.exit_price = sell_price
-            t.pnl = (sell_price - t.entry_price) * t.quantity - comm - calc_commission(fees, t.entry_price, t.quantity)
-            t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
-            t.exit_reason = "end_of_data"
-            state.trades.append(t)
+        t_last = fill_trade(state.current_trade, df.index[-1], sell_px, comm, "end_of_data")
+        state.trades.append(t_last)
         state.position = 0
     print(f"All trades: {state.trades}")
     return state
