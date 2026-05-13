@@ -7,7 +7,7 @@ import pandas as pd
 from main import TigerClients, TechAnalyst
 
 from utils import *
-from settings import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
+from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
