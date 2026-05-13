@@ -60,14 +60,14 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
             proceeds = sell_price * state.position
             comm_sell = calc_commission(fees, sell_price, state.position)
-            state.cash += proceeds - comm
+            state.cash += proceeds - comm_sell
 
             # Log trade details
             if state.current_trade:
                 t = state.current_trade
                 t.exit_date = ts
                 t.exit_price = sell_price
-                t.trans_fees = comm_sell
+                t.trans_fees += comm_sell
                 t.pnl = (sell_price - t.entry_price) * t.quantity - t.trans_fees
                 # TODO: probably over optimistic since denominator doesn't contain fee
                 t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
