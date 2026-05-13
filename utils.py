@@ -5,7 +5,7 @@ import sys
 import math
 import logging
 
-from configs import BacktestRisk, HKPlatformFeePlan, TradeFeesHK
+from configs import HKPlatformFeePlan, TradeFeesHK
 
 def setup_logging(log_file: str, level: str = "INFO"):
     """Set up a logger for a script.

@@ -9,6 +9,25 @@ from main import TigerClients, TechAnalyst
 from utils import *
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
+def log_trade(trade: Trade, ts: pd.Timestamp, sell_price: float):
+    """Log trade details for review and analysis. 
+
+    Args:
+        trade: a data class containing trade details
+        ts: when current trade is complete
+        sell_price: price at which positions exit
+    """
+    # Only log trade details if it exists
+    if not trade: return
+
+    trade.exit_date = ts
+    trade.exit_price = sell_price
+    # trade.trans_fees = comm + calc_commission(fees, trade.entry_price, trade.quantity)
+    trade.pnl = (sell_price - trade.entry_price) * trade.quantity - trade.trans_fees
+    # TODO: probably over optimistic since denominator doesn't contain fee
+    trade.pnl_pct = trade.pnl / (trade.entry_price * trade.quantity)
+
+
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
         of each day.
@@ -40,7 +59,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         if sig == -1 and state.position > 0:
             sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
             proceeds = sell_price * state.position
-            comm = calc_commission(fees, sell_price, state.position)
+            comm_sell = calc_commission(fees, sell_price, state.position)
             state.cash += proceeds - comm
 
             # Log trade details
@@ -48,7 +67,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
                 t = state.current_trade
                 t.exit_date = ts
                 t.exit_price = sell_price
-                t.trans_fees = comm + calc_commission(fees, t.entry_price, t.quantity)
+                t.trans_fees = comm_sell
                 t.pnl = (sell_price - t.entry_price) * t.quantity - t.trans_fees
                 # TODO: probably over optimistic since denominator doesn't contain fee
                 t.pnl_pct = t.pnl / (t.entry_price * t.quantity)
@@ -73,12 +92,13 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             if qty <= 0:
                 state.equity_curve.append((ts, state.cash))
                 continue
-
-            state.cash -= buy_price * qty + calc_commission(fees, buy_price, qty)
+            
+            comm_buy = calc_commission(fees, buy_price, qty)
+            state.cash -= buy_price * qty + comm_buy
             state.position = qty
             state.entry_price = buy_price
             state.highest_since_entry = buy_price
-            state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty)
+            state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty, trans_fees=comm_buy)
         
         # Record equity
         mark_to_market = state.cash + state.position * price
@@ -90,6 +110,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         sell_price = apply_slippage(risk.slippage_bps, last_price, "SELL")
         comm = calc_commission(fees, sell_price, state.position)
         state.cash += sell_price * state.position - comm
+
         if state.current_trade:
             t = state.current_trade
             t.exit_date = df.index[-1]
