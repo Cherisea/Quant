@@ -25,7 +25,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
     # TODO: why not shift rows by one to avoid forward trading?
     for i in range(len(df)):
-        price = closes[i]
+        price = float(closes[i])
         sig = signals[i]
         ts = pd.Timestamp(timestamps[i]).isoformat(timespec="seconds")
         

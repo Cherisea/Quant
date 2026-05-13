@@ -54,11 +54,11 @@ class TigerClients:
             meta = self.quote.get_trade_metas([self.symbol])
             ls = meta["lot_size"].iloc[0]
             log.info(f"Verified lot size for {self.symbol}: {ls}")
-            return ls
+            return ls.item()
         except Exception as e:
             ls = settings.broker.lot_size
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
-            return ls
+            return ls.item()
 
     @staticmethod
     def _build_config():
