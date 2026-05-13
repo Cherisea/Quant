@@ -101,12 +101,12 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
 
 if __name__ == "__main__":
+    # =================== Load settings and set up a logger ===================
     settings = load_settings()
-
-    # Load global settings from root logger
     setup_logging(settings.logging.file, settings.logging.level)
     log = logging.getLogger(__name__)   # Initialize a named logger 
 
+    # ================== Boot up trading clients =================
     client = TigerClients()
     analyst = TechAnalyst(client)
     test_duration = 3   # Number of years of historical price data
@@ -130,6 +130,6 @@ if __name__ == "__main__":
             (bars["signal"] == -1).sum())
     log.info(f"\n{bars[bars['signal'] == 1]}\n{bars[bars['signal'] == -1]}")
 
-    # Run backtest
+    # =================== Run backtest ==================
     log.info(f"Running backtest (capital={BacktestRisk.initial_capital:,} HKD)")
     result = run_backtest(bars, lot_size)
