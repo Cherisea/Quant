@@ -39,16 +39,17 @@ class TradeFeesHK:
         for other brokerage and markets.
     """
     # Tiger charged fees
-    commission_rate: float = 0.0003     
+    commission_rate: float = 0.0003    # Portion of trading value
     platform_fee_plan: HKPlatformFeePlan = HKPlatformFeePlan.FIXED
     platform_fee_fixed: int = 15        # Fixed fee per order in HKD
-    platform_fee_tiers: tuple[tuple[float, float], ...] = HK_PLATFORM_FEE_TIERS
+    platform_fee_tiered: tuple[tuple[float, float], ...] = HK_PLATFORM_FEE_TIERS
 
-    # External fees
-    stamp_duty: float = 0.001      # HK stamp duty per side
-    sfc_levy: float = 0.000027      # HK SFC levy
-    trading_fee: float = 0.0000565      # HKEX trading fee 0.00565% per side
-    afrc_levy: float = 0.0000015        # AFRC transaction levy 0.00015% per side
+    # Third-party fee: portion of trading value
+    stamp_duty: float = 0.001      # Rounded up to the nearest int, min 1 HKD/order
+    sfc_levy: float = 0.000027      # Min 0.01 HKD 
+    trading_fee: float = 0.0000565      # Min 0.01 HKD  
+    settlement_fee: float = 0.0000565   # Min 0.01 HKD
+    afrc_levy: float = 0.0000015 
 
 @dataclass(frozen=True)
 class BacktestRisk:
