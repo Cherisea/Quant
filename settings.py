@@ -58,12 +58,6 @@ class BacktestRisk:
     initial_capital: int = 500_000.0     # HKD
     trade_size_pct: float = 0.2       # Fraction of available fund for a single trade
     stop_loss_pct: float = 0.05     # 5% trailing stop orders
-    
-    commission_rate: float = 0.0003     # 3 bps fee charged per side
-    stamp_duty: float = 0.001      # HK stamp duty per side
-    sfc_levy: float = 0.000027      # HK SFC levy
-    trading_fee: float = 0.0000565      # HKEX trading fee 0.00565% per side
-    afrc_levy: float = 0.0000015        # AFRC transaction levy 0.00015% per side
     slippage_bps: int = 5               # 5 bps assumed slippage
 
 @dataclass
