@@ -9,12 +9,6 @@ from main import TigerClients, TechAnalyst
 from utils import *
 from settings import BacktestRisk, BacktestState, Trade, load_settings
 
-settings = load_settings()
-
-# Load global settings from root logger
-setup_logging(settings.logging.file, settings.logging.level)
-log = logging.getLogger(__name__)   # Initialize a named logger 
-
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
         of each day.
@@ -107,6 +101,12 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
 
 if __name__ == "__main__":
+    settings = load_settings()
+
+    # Load global settings from root logger
+    setup_logging(settings.logging.file, settings.logging.level)
+    log = logging.getLogger(__name__)   # Initialize a named logger 
+
     client = TigerClients()
     analyst = TechAnalyst(client)
     test_duration = 3   # Number of years of historical price data
