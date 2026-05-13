@@ -14,7 +14,7 @@ import pandas as pd
 from utils import setup_logging, round_to_lot
 from typing import Optional
 from datetime import datetime
-from settings import load_settings
+from configs import load_settings
 
 
 # Tiger trade SDK
