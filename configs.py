@@ -60,6 +60,8 @@ class BacktestRisk:
     stop_loss_pct: float = 0.05     # 5% trailing stop orders
     slippage_bps: int = 5               # 5 bps assumed slippage
     risk_free_rate: float = 0.025       # 12 month annualized return rate(HK Exchange Fund Bills)
+    trading_days_yearly: int = 252      # Total number of trading days in a year
+    days_yearly: float = 365.25         # Total number of days in a year, adjusted for leap years
 
 @dataclass
 class Trade:

@@ -13,10 +13,7 @@ Backtest must respect rules in Chinese market:
 - Daily price limits: price swings are capped at +/- 10%;
 - Lunch break: trading completely freezes from 11:30 AM -- 1:00 PM CST;
 
-and factor in transaction cost:
-- Commission: 0.01%
-- Stamp tax on sells: 0.05%
-- Slippage: 1 - 2 transactions if we place limit orders;
+and factor in all transaction cost(refer to your broker for a complete list of fees). 
 
 ## Performance Metrics
 - **Annualized return**: Adjusted for leap years by dividing 365.25 by the number of days in a trading period.
