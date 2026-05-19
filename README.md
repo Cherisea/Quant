@@ -19,6 +19,7 @@ and factor in all transaction cost(refer to your broker for a complete list of f
 - **Annualized return**: Adjusted for leap years by dividing 365.25 by the number of days in a trading period.
 - **Annualized volatility**: Calculated by multiplying daily standard deviation by the square root of total trading days in a year (252).
 - **Sharpe ratio**: $\frac{R_p - R_f}{V_p}$
+- **Drawdown**: $\frac{Peak - Trough}{Peak}$
 
 ## Roadmap
 - [ ] Move current_trade and equity_curve to a database;
