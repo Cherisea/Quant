@@ -34,9 +34,25 @@ def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, e
 
     return trade
 
+def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
+    """Calculate various performance metrics based on current backtesting state.
+
+    Args:
+        state: current backtesting state
+        df: data on target stocks
+        
+    Returns:
+        dict and dataframe: dict of a collection of metrics and their values; a new dataframe.
+    """
+    eq = pd.DataFrame(state.equity_curve, columns=["date", "equity"]).set_index("date")
+    eq["return"] = eq["equity"].pct_change()
+    
+    total_return = (eq["equity"].iloc[-1] / BacktestRisk.initial_capital) - 1       
+    days = (eq.index[-1] - eq.index[0]).days
+    ann_return = (1 + total_return) ** (365.25 / max(days, 1)) - 1
+
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
-    """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
-        of each day.
+    """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on daily trading signal.
     """
     # State management of current iteration 
     risk = BacktestRisk
@@ -113,7 +129,9 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         t_last = fill_trade(state.current_trade, df.index[-1], sell_px, comm, "end_of_data")
         state.trades.append(t_last)
         state.position = 0
-    print(f"All trades: {state.trades}")
+    print(f"==================== All trades ================")
+    for trade in state.trades:
+        print(f"{trade} \n")
     return state
 
 
@@ -126,7 +144,7 @@ if __name__ == "__main__":
     # ================== Boot up trading clients =================
     client = TigerClients()
     analyst = TechAnalyst(client)
-    test_duration = 3   # Number of years of historical price data
+    test_duration = 5   # Number of years of historical price data
     lot_size = client.verify_lot_size()
 
     # Fetch data 
@@ -150,3 +168,6 @@ if __name__ == "__main__":
     # =================== Run backtest ==================
     log.info(f"Running backtest (capital={BacktestRisk.initial_capital:,} HKD)")
     result = run_backtest(bars, lot_size)
+
+    # Analyse and display results
+    analyse_performance(result, bars)

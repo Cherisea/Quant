@@ -18,6 +18,11 @@ and factor in transaction cost:
 - Stamp tax on sells: 0.05%
 - Slippage: 1 - 2 transactions if we place limit orders;
 
+## Performance Metrics
+- **Annualized return**: Adjusted for leap years by dividing 365.25 by the number of days in a trading period.
+- **Annualized volatility**: Calculated by multiplying daily standard deviation by the square root of total trading days in a year (252).
+- **Sharpe ratio**: $\frac{Annual_return - Risk_free_return}{Annual_Volatility}$
+
 ## Roadmap
 - [ ] Move current_trade and equity_curve to a database;
 - [ ] Replace logger with a third-party logging tool (Datadog);
