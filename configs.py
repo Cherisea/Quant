@@ -59,6 +59,7 @@ class BacktestRisk:
     trade_size_pct: float = 0.2       # Fraction of available fund for a single trade
     stop_loss_pct: float = 0.05     # 5% trailing stop orders
     slippage_bps: int = 5               # 5 bps assumed slippage
+    risk_free_rate: float = 0.025       # 12 month annualized return rate(HK Exchange Fund Bills)
 
 @dataclass
 class Trade:

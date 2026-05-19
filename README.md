@@ -20,7 +20,7 @@ and factor in transaction cost:
 
 ## Roadmap
 - [ ] Move current_trade and equity_curve to a database;
-- [ ] Replace logger with a third-party logging tool;
+- [ ] Replace logger with a third-party logging tool (Datadog);
 
 ## Glossary
 - Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 
