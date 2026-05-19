@@ -3,7 +3,9 @@ Backtesting momentum strategy defined in main script.
 """
 
 import logging
+from math import e
 import pandas as pd
+import numpy as np
 from main import TigerClients, TechAnalyst
 
 from utils import *
@@ -49,7 +51,47 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     
     total_return = (eq["equity"].iloc[-1] / BacktestRisk.initial_capital) - 1       
     days = (eq.index[-1] - eq.index[0]).days
-    ann_return = (1 + total_return) ** (365.25 / max(days, 1)) - 1
+    ann_return = (1 + total_return) ** (BacktestRisk.days_yearly / max(days, 1)) - 1
+
+    ann_vol = eq["return"].std() * np.sqrt(BacktestRisk.trading_days_yearly)
+    sharpe = (ann_return - BacktestRisk.risk_free_rate) / ann_vol if ann_vol > 0 else 0.0
+
+    running_max = eq["equity"].cummax()
+    drawdown = (eq["equity"] - running_max) / running_max
+    max_dd = drawdown.min()
+
+    trades = state.trades
+    n_trades = len(trades)
+    winners = [t for t in trades if t.pnl > 0]
+    win_rate = len(winners) / n_trades if n_trades > 0 else 0
+
+    avg_win_pct = np.mean([t.pnl_pct for t in winners])
+    losers = [t for t in trades if t.pnl < 0]
+    avg_loss_pct = np.mean([t.pnl_pct for t in losers])
+
+    # Amount of money made relative to that lost
+    if sum(t.pnl for t in losers) != 0:
+        profit_factor = sum(t.pnl for t in winners) / abs(sum(t.pnl for t in losers))
+    else:
+        profit_factor = float('inf')
+    
+    # Approximate buy and hold return rate 
+    bnh_return = (df["close"].iloc[-1] - df["close"].iloc[0]) - 1
+
+    stats = {
+        "total_return": f"{total_return:.2%}",
+        "annualized_return": f"{ann_return:.2%}",
+        "annualized_volatility": f"{ann_vol:.2%}",
+        "sharpe_ratio": f"{sharpe:.2%}",
+        "max_drawdown": f"{max_dd:.2%}",
+        "total_trades": n_trades,
+        "win_rate": f"{win_rate:.2%}",
+        "avg_win_pct": f"{avg_win_pct:.2%}",
+        "avg_loss_pct": f"{avg_loss_pct:.2%}",
+        "profit_factor": f"{profit_factor:.2%}",
+        "buy_and_hold_return": f"{bnh_return:.2%}"
+    }
+    return stats, eq
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on daily trading signal.
