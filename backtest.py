@@ -27,14 +27,12 @@ def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, e
 
     trade.exit_date = ts
     trade.exit_price = sell_price
-    trade.trans_fees += comm 
-    trade.pnl = (sell_price - trade.entry_price) * trade.quantity - trade.trans_fees
-    # TODO: probably over optimistic since denominator doesn't contain fee
-    trade.pnl_pct = trade.pnl / (trade.entry_price * trade.quantity)
+    trade.pnl = (sell_price - trade.entry_price) * trade.quantity - trade.trans_fees - comm
+    trade.pnl_pct = trade.pnl / (trade.entry_price * trade.quantity + trade.trans_fees)
     trade.exit_reason = exit_reason
+    trade.trans_fees += comm
 
     return trade
-
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on trading signal 
