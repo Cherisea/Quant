@@ -47,31 +47,32 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
     # Extract column values for faster iteration
     closes = df['close'].values
+    opens = df['open'].values
     signals = df['signal'].values
     timestamps = df.index.values
 
-    # TODO: why not shift rows by one to avoid forward trading?
-    for i in range(len(df)):
-        price = float(closes[i])
-        sig = signals[i]
+    for i in range(1, len(df)):
+        exec_price = float(opens[i])        # Execute at today's open
+        mark_price = float(closes[i])   # Mark-to-market at today's close
+        sig = signals[i-1]      # Trade on yesterday's signal
         ts = pd.Timestamp(timestamps[i]).isoformat(timespec="seconds")
         
         # Check trailing stop 
         if state.position > 0:
-            state.highest_since_entry = max(state.highest_since_entry, price)
+            state.highest_since_entry = max(state.highest_since_entry, mark_price)
             stop_price = state.highest_since_entry * (1 - risk.stop_loss_pct)
-            if price <= stop_price:
+            if mark_price <= stop_price:
                 sig = -1    # Force liquidation 
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
+            sell_price = apply_slippage(risk.slippage_bps, exec_price, "SELL")
             proceeds = sell_price * state.position
             comm_sell = calc_commission(fees, sell_price, state.position)
             state.cash += proceeds - comm_sell
             
             # Record trade details
-            if price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
+            if sell_price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
                 exit_reason = "trail_stop"
             else:
                 exit_reason = "signal"
@@ -86,7 +87,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         elif sig == 1 and state.position == 0:
             equity = state.cash
             budget = equity * risk.trade_size_pct
-            buy_price = apply_slippage(risk.slippage_bps, price, "BUY")
+            buy_price = apply_slippage(risk.slippage_bps, exec_price, "BUY")
             raw_qty = int(budget / buy_price)
             qty = round_to_lot(lot_size, raw_qty)
             if qty <= 0:
@@ -101,7 +102,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty, trans_fees=comm_buy)
         
         # Record equity
-        mark_to_market = state.cash + state.position * price
+        mark_to_market = state.cash + state.position * mark_price
         state.equity_curve.append((ts, mark_to_market))
     
     # Clear any open positions on the last day
