@@ -87,7 +87,7 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
         "total_return": f"{total_return:.2%}",
         "annualized_return": f"{ann_return:.2%}",
         "annualized_volatility": f"{ann_vol:.2%}",
-        "sharpe_ratio": f"{sharpe:.2%}",
+        "sharpe_ratio": f"{sharpe:.2}",
         "max_drawdown": f"{max_dd:.2%}",
         "total_trades": n_trades,
         "win_rate": f"{win_rate:.2%}",
@@ -95,7 +95,7 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
         "avg_loss_pct": f"{avg_loss_pct:.2%}",
         "buy_and_hold_return": f"{bnh_return:.2%}"
     }
-    stats["profit_factor"] = f"{profit_factor:.2%}" if profit_factor != float('inf') else "inf"
+    stats["profit_factor"] = f"{profit_factor:.2}" if profit_factor != float('inf') else "inf"
     return stats, eq
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
