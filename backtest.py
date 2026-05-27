@@ -145,7 +145,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             state.entry_price = 0.0
             state.highest_since_entry = 0.0
 
-        elif sig == 1 and state.position == 0:
+        elif sig == 1:
             equity = state.cash
             budget = equity * risk.trade_size_pct
             buy_price = apply_slippage(risk.slippage_bps, exec_price, "BUY")

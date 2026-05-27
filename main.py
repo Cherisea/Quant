@@ -4,7 +4,6 @@ separate script.
 """
 
 # System and third-party imports
-import sys
 import time
 import signal
 import schedule
