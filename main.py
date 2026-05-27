@@ -79,6 +79,8 @@ class TechAnalyst:
     """
     def __init__(self, client: TigerClients, settings: AppSettings) -> None:
         self.client = client
+        self.strategy = settings.strategy
+        self.risk = settings.risk
     
     def get_last_price(self) -> float:
         """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
@@ -118,7 +120,7 @@ class TechAnalyst:
                 symbols = [self.client.symbol],
                 period = BarPeriod.DAY,     # Timeframe of each candlestick bar
                 right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-                limit = self.client.lookback_bars       # Number of days to pull data
+                limit = self.risk.lookback_bars       # Number of days to pull data
             )
 
         if bars is None or bars.empty:
@@ -137,10 +139,10 @@ class TechAnalyst:
             Original dataframe with derived columns of technical indicators.
         """ 
         df = df.copy()
-        df["fast_ema"] = df["close"].ewm(span=self.client.fast_ema, adjust=False).mean()
-        df["slow_ema"] = df["close"].ewm(span=self.client.slow_ema, adjust=False).mean()
-        df["roc"] = df["close"].pct_change(self.client.roc_period)
-        df["vol_ma"] = df["volume"].rolling(self.client.vol_ma).mean()
+        df["fast_ema"] = df["close"].ewm(span=self.strategy.fast_ema, adjust=False).mean()
+        df["slow_ema"] = df["close"].ewm(span=self.strategy.slow_ema, adjust=False).mean()
+        df["roc"] = df["close"].pct_change(self.strategy.roc_period)
+        df["vol_ma"] = df["volume"].rolling(self.strategy.vol_ma).mean()
         return df
 
     def get_latest_signal(self, df: pd.DataFrame) -> str:
@@ -159,7 +161,7 @@ class TechAnalyst:
         cross_up = (prev['fast_ema'] <= prev['slow_ema']) and (cur['fast_ema'] > cur['slow_ema'])
         cross_down = (prev['fast_ema'] > prev['slow_ema']) and (cur['fast_ema'] <= cur['slow_ema'])
 
-        if cross_up and cur['roc'] > self.client.roc_threshold and cur['volume'] > cur['vol_ma'] * self.client.vol_coefficient:
+        if cross_up and cur['roc'] > self.strategy.roc_threshold and cur['volume'] > cur['vol_ma'] * self.strategy.vol_coefficient:
             return "Buy"
         elif cross_down:
             return "Sell"
@@ -184,8 +186,8 @@ class TechAnalyst:
         cross_up = (df['fast_ema'] > df['slow_ema']) & (df['fast_ema'].shift(1) <= df['slow_ema'].shift(1))
         cross_down = (df['fast_ema'] < df['slow_ema']) & (df['fast_ema'].shift(1) >= df['slow_ema'].shift(1))
 
-        momentum = df['roc'] > self.client.roc_threshold
-        volume = df['volume'] > self.client.vol_coefficient * df['vol_ma']
+        momentum = df['roc'] > self.strategy.roc_threshold
+        volume = df['volume'] > self.strategy.vol_coefficient * df['vol_ma']
 
         df.loc[cross_up & momentum & volume, 'signal'] = 1     # Buy signal
         df.loc[cross_down, "signal"] = -1        # Sell signal
