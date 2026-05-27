@@ -33,6 +33,7 @@ class TigerClient:
     """
     def __init__(self, settings: AppSettings) -> None:
         self.symbol = settings.broker.symbol
+        self.settings = settings
         self.cfg = self._build_config()
 
         self.quote = QuoteClient(self.cfg)
@@ -49,22 +50,21 @@ class TigerClient:
             log.info(f"Verified lot size for {self.symbol}: {ls}")
             return ls.item()
         except Exception as e:
-            ls = settings.broker.lot_size
+            ls = self.settings.broker.lot_size
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
 
-    @staticmethod
-    def _build_config():
+    def _build_config(self):
         """Configure tiger client by retrieving constants from settings.
         """
-        if settings.broker.props_path:
-            cfg = TigerOpenClientConfig(props_path=settings.broker.props_path)
+        if self.settings.broker.props_path:
+            cfg = TigerOpenClientConfig(props_path=self.settings.broker.props_path)
         else:
             cfg = TigerOpenClientConfig()
-            cfg.private_key = settings.broker.private_key
-            cfg.tiger_id = settings.broker.tiger_id
-            cfg.tiger_account = settings.broker.tiger_account
-        cfg.timezone = settings.broker.tz
+            cfg.private_key = self.settings.broker.private_key
+            cfg.tiger_id = self.settings.broker.tiger_id
+            cfg.tiger_account = self.settings.broker.tiger_account
+        cfg.timezone = self.settings.broker.tz
         return cfg
 
 class TechAnalyst:
