@@ -89,7 +89,8 @@ def execute_sell(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.
     state.entry_price = 0.0
     state.highest_since_entry = 0.0
 
-def execute_buy(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.Timestamp, fee: TradeFeesHK):
+def execute_buy(risk: BacktestRisk, state: BacktestState, price: float, 
+                ts: pd.Timestamp, fee: TradeFeesHK, lot_size: int):
     """Enter position if fund is enough and log trade details in testing state.
 
     Returns:
@@ -208,7 +209,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         if sig == -1 and state.position > 0:
             execute_sell(risk, state, exec_price, ts, fee)
         elif sig == 1 and state.position == 0:
-            if not execute_buy(risk, state, exec_price, ts, fee):
+            if not execute_buy(risk, state, exec_price, ts, fee, lot_size):
                 continue
         
         # Record equity
@@ -223,7 +224,6 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     for trade in state.trades:
         print(f"{trade} \n")
     return state
-
 
 if __name__ == "__main__":
     # ================== Boot up trading clients =================
