@@ -24,6 +24,7 @@ and factor in all transaction cost(refer to your broker for a complete list of f
 ## Roadmap
 - [ ] Move current_trade and equity_curve to a database;
 - [ ] Replace logger with a third-party logging tool (Datadog);
+- [ ] Store OHLC price info in Postgres to avoid repeated API calls to Tiger Client;
 
 ## Glossary
 - Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 

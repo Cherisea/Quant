@@ -456,7 +456,7 @@ class MomentumBot:
 if __name__ == "__main__":
     settings = load_settings()
 
-    # Load global settings from root logger
+    # Load logger settings from root logger
     setup_logging(settings.logging.file, settings.logging.level)
     log = logging.getLogger(__name__)   # Initialize a named logger 
 
