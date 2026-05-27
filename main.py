@@ -193,6 +193,7 @@ class PositionManager:
     def __init__(self, clients:TigerClient, lot_size: int, settings: AppSettings) -> None:
         self.clients = clients
         self.risk = settings.risk
+        self.broker = settings.broker
         self.lot_size = lot_size
 
         self.position = 0
@@ -204,7 +205,7 @@ class PositionManager:
         """Read actual positions and average cost from Tiger Trade on startup.
         """
         try:
-            data = self.clients.trade.get_positions(account=self.clients.account, 
+            data = self.clients.trade.get_positions(account=self.broker.tiger_account, 
                     sec_type=SecurityType.STK, symbol=self.clients.symbol)
             if data is not None and len(data) != 0:
                 row = data[0]
@@ -231,7 +232,7 @@ class PositionManager:
             Balance in account if no exception is thrown, otherwise returns 0.0.
         """
         try:
-            data = self.clients.trade.get_prime_assets(account=self.clients.account)
+            data = self.clients.trade.get_prime_assets(account=self.broker.tiger_account)
             cash = data.segments['S'].currency_assets.get(self.clients.currency).cash_available_for_trade
             if cash <= 0:
                 log.warning(f"No {self.clients.currency} cash available for trading {self.clients.symbol}.")
