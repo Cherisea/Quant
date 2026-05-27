@@ -76,7 +76,7 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
         profit_factor = float('inf')
     
     # Approximate buy and hold return rate 
-    bnh_return = (df["close"].iloc[-1] - df["close"].iloc[0]) - 1
+    bnh_return = (df["close"].iloc[-1] / df["close"].iloc[0]) - 1
 
     stats = {
         "total_return": f"{total_return:.2%}",
