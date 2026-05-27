@@ -89,6 +89,29 @@ def execute_sell(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.
     state.entry_price = 0.0
     state.highest_since_entry = 0.0
 
+def execute_buy(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.Timestamp, fee: TradeFeesHK):
+    """Enter position if fund is enough and log trade details in testing state.
+
+    Returns:
+        int: 0 if fund is insufficient else 1
+    """
+    equity = state.cash
+    budget = equity * risk.trade_size_pct
+    buy_price = apply_slippage(risk.slippage_bps, price, "BUY")
+    raw_qty = int(budget / buy_price)
+    qty = round_to_lot(lot_size, raw_qty)
+    if qty <= 0:
+        state.equity_curve.append((ts, state.cash))
+        return 0
+
+    comm_buy = calc_commission(fee, buy_price, qty)
+    state.cash -= buy_price * qty + comm_buy
+    state.position = qty
+    state.entry_price = buy_price
+    state.highest_since_entry = buy_price
+    state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty, trans_fees=comm_buy)
+    return 1
+
 def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     """Calculate various performance metrics based on current backtesting state.
 
@@ -168,27 +191,14 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         ts = pd.Timestamp(timestamps[i])
         
         # Check trailing stop
-        sig = resolve_signal(sig, state, mark_price, risk)
+        sig = resolve_signal(risk, state, mark_price, sig)
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            execute_sell()
+            execute_sell(risk, state, exec_price, ts, fees)
         elif sig == 1 and state.position == 0:
-            equity = state.cash
-            budget = equity * risk.trade_size_pct
-            buy_price = apply_slippage(risk.slippage_bps, exec_price, "BUY")
-            raw_qty = int(budget / buy_price)
-            qty = round_to_lot(lot_size, raw_qty)
-            if qty <= 0:
-                state.equity_curve.append((ts, state.cash))
+            if not execute_buy(risk, state, exec_price, ts, fees):
                 continue
-            
-            comm_buy = calc_commission(fees, buy_price, qty)
-            state.cash -= buy_price * qty + comm_buy
-            state.position = qty
-            state.entry_price = buy_price
-            state.highest_since_entry = buy_price
-            state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty, trans_fees=comm_buy)
         
         # Record equity
         mark_to_market = state.cash + state.position * mark_price
