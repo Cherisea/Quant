@@ -3,7 +3,6 @@ Backtesting momentum strategy defined in main script.
 """
 
 import logging
-from math import e
 import pandas as pd
 import numpy as np
 from main import TigerClients, TechAnalyst
@@ -65,13 +64,14 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     winners = [t for t in trades if t.pnl > 0]
     win_rate = len(winners) / n_trades if n_trades > 0 else 0
 
-    avg_win_pct = np.mean([t.pnl_pct for t in winners])
+    avg_win_pct = np.mean([t.pnl_pct for t in winners]) if winners else 0
     losers = [t for t in trades if t.pnl < 0]
-    avg_loss_pct = np.mean([t.pnl_pct for t in losers])
+    avg_loss_pct = np.mean([t.pnl_pct for t in losers]) if losers else 0 
 
     # Amount of money made relative to that lost
     if sum(t.pnl for t in losers) != 0:
         profit_factor = sum(t.pnl for t in winners) / abs(sum(t.pnl for t in losers))
+        
     else:
         profit_factor = float('inf')
     
@@ -88,9 +88,9 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
         "win_rate": f"{win_rate:.2%}",
         "avg_win_pct": f"{avg_win_pct:.2%}",
         "avg_loss_pct": f"{avg_loss_pct:.2%}",
-        "profit_factor": f"{profit_factor:.2%}",
         "buy_and_hold_return": f"{bnh_return:.2%}"
     }
+    stats["profit_factor"] = f"{profit_factor:.2%}" if profit_factor != float('inf') else "inf"
     return stats, eq
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
@@ -111,7 +111,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         exec_price = float(opens[i])        # Execute at today's open
         mark_price = float(closes[i])   # Mark-to-market at today's close
         sig = signals[i-1]      # Trade on yesterday's signal
-        ts = pd.Timestamp(timestamps[i]).isoformat(timespec="seconds")
+        ts = pd.Timestamp(timestamps[i])
         
         # Check trailing stop 
         if state.position > 0:
@@ -212,4 +212,5 @@ if __name__ == "__main__":
     result = run_backtest(bars, lot_size)
 
     # Analyse and display results
-    analyse_performance(result, bars)
+    stats, eq = analyse_performance(result, bars)
+    print(stats)
