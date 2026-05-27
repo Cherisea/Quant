@@ -28,13 +28,6 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
-
-settings = load_settings()
-
-# Load global settings from root logger
-setup_logging(settings.logging.file, settings.logging.level)
-log = logging.getLogger(__name__)   # Initialize a named logger 
-
 class TigerClients:
     """Quote and trade agent for interacting with Tiger Trade platform.
     """
@@ -458,6 +451,13 @@ class MomentumBot:
         log.info("Bot stopped cleanly.")
 
 if __name__ == "__main__":
-    bot = MomentumBot()
+    settings = load_settings()
+
+    # Load global settings from root logger
+    setup_logging(settings.logging.file, settings.logging.level)
+    log = logging.getLogger(__name__)   # Initialize a named logger 
+
+    # Start the bot
+    bot = MomentumBot(settings)
     bot.run()
 
