@@ -28,7 +28,7 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
-class TigerClients:
+class TigerClient:
     """Quote and trade agent for interacting with Tiger Trade platform.
     """
     def __init__(self, settings: AppSettings) -> None:
@@ -70,7 +70,7 @@ class TigerClients:
 class TechAnalyst:
     """An analyst that pulls market data, compute technical indicators and generate trading signals.
     """
-    def __init__(self, client: TigerClients, settings: AppSettings) -> None:
+    def __init__(self, client: TigerClient, settings: AppSettings) -> None:
         self.client = client
         self.strategy = settings.strategy
         self.risk = settings.risk
@@ -190,7 +190,7 @@ class TechAnalyst:
 class PositionManager:
     """A manager that tracks current position, entry price and trailing stop orders.
     """
-    def __init__(self, clients:TigerClients, lot_size: int, settings: AppSettings) -> None:
+    def __init__(self, clients:TigerClient, lot_size: int, settings: AppSettings) -> None:
         self.clients = clients
         self.risk = settings.risk
         self.lot_size = lot_size
@@ -265,7 +265,7 @@ class PositionManager:
 class OrderExecutor:
     """An executor for placing limit buy and sell orders.
     """
-    def __init__(self, clients: TigerClients, settings: AppSettings) -> None:
+    def __init__(self, clients: TigerClient, settings: AppSettings) -> None:
         self.client = clients
         self.risk = settings.risk
 
@@ -339,7 +339,7 @@ class OrderExecutor:
 class MomentumBot:
     
     def __init__(self, settings: AppSettings) -> None:
-        self.client = TigerClients(settings)
+        self.client = TigerClient(settings)
         self.lot_size = self.client.verify_lot_size()
 
         self.risk = settings.risk
