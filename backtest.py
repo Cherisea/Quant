@@ -112,6 +112,17 @@ def execute_buy(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.T
     state.current_trade = Trade(entry_date=ts, entry_price=buy_price, quantity=qty, trans_fees=comm_buy)
     return 1
 
+def liquidate_at_end(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.Timestamp, fee: TradeFeesHK):
+    """Close any remaining position at the end of test period and log trade in backtest state.
+    """
+    sell_px = apply_slippage(risk.slippage_bps, price, "SELL")
+    comm = calc_commission(fee, sell_px, state.position)
+    state.cash += sell_px * state.position - comm
+
+    t_last = fill_trade(state.current_trade, ts, sell_px, comm, "end_of_data")
+    state.trades.append(t_last)
+    state.position = 0
+
 def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     """Calculate various performance metrics based on current backtesting state.
 
@@ -175,7 +186,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """
     # State management of current iteration 
     risk = BacktestRisk
-    fees = TradeFeesHK
+    fee = TradeFeesHK
     state = BacktestState(cash = risk.initial_capital)
 
     # Extract column values for faster iteration
@@ -195,9 +206,9 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            execute_sell(risk, state, exec_price, ts, fees)
+            execute_sell(risk, state, exec_price, ts, fee)
         elif sig == 1 and state.position == 0:
-            if not execute_buy(risk, state, exec_price, ts, fees):
+            if not execute_buy(risk, state, exec_price, ts, fee):
                 continue
         
         # Record equity
@@ -206,14 +217,8 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     
     # Clear any open positions on the last day
     if state.position > 0:
-        last_price = df.iloc[-1]["close"]
-        sell_px = apply_slippage(risk.slippage_bps, last_price, "SELL")
-        comm = calc_commission(fees, sell_px, state.position)
-        state.cash += sell_px * state.position - comm
+        liquidate_at_end(risk, state, df['close'].iloc[-1], df.index[-1], fee)
 
-        t_last = fill_trade(state.current_trade, df.index[-1], sell_px, comm, "end_of_data")
-        state.trades.append(t_last)
-        state.position = 0
     print(f"==================== All trades ================")
     for trade in state.trades:
         print(f"{trade} \n")
