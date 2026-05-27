@@ -31,8 +31,8 @@ from tigeropen.tiger_open_config import TigerOpenClientConfig
 class TigerClients:
     """Quote and trade agent for interacting with Tiger Trade platform.
     """
-    def __init__(self) -> None:
-        self._symbol = settings.broker.symbol
+    def __init__(self, settings: AppSettings) -> None:
+        self.symbol = settings.broker.symbol
         self.cfg = self._build_config()
 
         self.quote = QuoteClient(self.cfg)
@@ -339,7 +339,7 @@ class OrderExecutor:
 class MomentumBot:
     
     def __init__(self, settings: AppSettings) -> None:
-        self.client = TigerClients()
+        self.client = TigerClients(settings)
         self.lot_size = self.client.verify_lot_size()
 
         self.risk = settings.risk
