@@ -345,12 +345,14 @@ class OrderExecutor:
 
 class MomentumBot:
     
-    def __init__(self) -> None:
+    def __init__(self, settings: AppSettings) -> None:
         self.client = TigerClients()
         self.lot_size = self.client.verify_lot_size()
-        self.pm = PositionManager(self.client, self.lot_size)
-        self.analyst = TechAnalyst(self.client)
-        self.executor = OrderExecutor(self.client)
+
+        self.risk = settings.risk
+        self.pm = PositionManager(self.client, self.lot_size, settings)
+        self.analyst = TechAnalyst(self.client, settings)
+        self.executor = OrderExecutor(self.client, settings)
         self._running = True
 
         # Register system signals with a custom function
@@ -414,7 +416,7 @@ class MomentumBot:
             # Execute buy
             elif sig == "BUY" and self.pm.position == 0:
                 equity = self.pm.get_balance()
-                budget = equity * self.client.trade_size_pct
+                budget = equity * self.risk.trade_size_pct
                 raw_qty = budget // latest_price
                 qty = round_to_lot(raw_qty)
                 if qty <= 0:
