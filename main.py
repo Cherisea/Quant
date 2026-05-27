@@ -272,8 +272,9 @@ class PositionManager:
 class OrderExecutor:
     """An executor for placing limit buy and sell orders.
     """
-    def __init__(self, clients: TigerClients) -> None:
+    def __init__(self, clients: TigerClients, settings: AppSettings) -> None:
         self.client = clients
+        self.risk = settings.risk
 
     def place_limit_order(self, qty: int, ref_price: float, direct: str) -> Optional[int]:
         """Place a limit order priced at a certain range of reference price.
@@ -290,9 +291,9 @@ class OrderExecutor:
             raise ValueError("Direction of limit orders must be either buy or sell. Aborting...")
         
         if direct == "BUY":
-            lim_price = round(ref_price * (1 + self.client.limit_buffer_bps / 10_000), 3)
+            lim_price = round(ref_price * (1 + self.risk.limit_buffer_bps / 10_000), 3)
         else:
-            lim_price = round(ref_price * (1 - self.client.limit_buffer_bps / 10_000), 3)
+            lim_price = round(ref_price * (1 - self.risk.limit_buffer_bps / 10_000), 3)
 
         order = limit_order(
             account=self.client.account,
@@ -319,7 +320,7 @@ class OrderExecutor:
             True if order is filled, otherwise False. Check logs for details.
         """
         start = time.time()
-        while time.time() - start < self.client.max_wait_sec:
+        while time.time() - start < self.risk.max_wait_sec:
             try:
                 order = self.client.trade.get_order(id=order_id)
                 status = order.status if hasattr(order, "status") else None
@@ -335,7 +336,7 @@ class OrderExecutor:
             time.sleep(3)
 
         # Timeout - cancel the order
-        log.warning(f"Order {order_id} not filled after {self.client.max_wait_sec} -- cancelling")
+        log.warning(f"Order {order_id} not filled after {self.risk.max_wait_sec} -- cancelling")
         try:
             self.client.trade.cancel_order(id=order_id)
         except Exception as e:
