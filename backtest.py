@@ -187,7 +187,7 @@ if __name__ == "__main__":
     # ================== Boot up trading clients =================
     client = TigerClient(settings)
     analyst = TechAnalyst(client, settings)
-    test_duration = 5   # Number of years of historical price data
+    test_duration = 3   # Number of years of historical price data
     lot_size = client.verify_lot_size()
 
     # Fetch data 
