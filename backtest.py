@@ -145,7 +145,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
             state.entry_price = 0.0
             state.highest_since_entry = 0.0
 
-        elif sig == 1:
+        elif sig == 1 and state.position == 0:
             equity = state.cash
             budget = equity * risk.trade_size_pct
             buy_price = apply_slippage(risk.slippage_bps, exec_price, "BUY")
@@ -170,8 +170,8 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     if state.position > 0:
         last_price = df.iloc[-1]["close"]
         sell_px = apply_slippage(risk.slippage_bps, last_price, "SELL")
-        comm = calc_commission(fees, sell_price, state.position)
-        state.cash += sell_price * state.position - comm
+        comm = calc_commission(fees, sell_px, state.position)
+        state.cash += sell_px * state.position - comm
 
         t_last = fill_trade(state.current_trade, df.index[-1], sell_px, comm, "end_of_data")
         state.trades.append(t_last)
