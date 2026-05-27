@@ -197,8 +197,9 @@ class TechAnalyst:
 class PositionManager:
     """A manager that tracks current position, entry price and trailing stop orders.
     """
-    def __init__(self, clients:TigerClients, lot_size: int) -> None:
+    def __init__(self, clients:TigerClients, lot_size: int, settings: AppSettings) -> None:
         self.clients = clients
+        self.risk = settings.risk
         self.lot_size = lot_size
 
         self.position = 0
@@ -262,7 +263,7 @@ class PositionManager:
             return False
         
         self.highest_since_entry = max(self.highest_since_entry, current_price)
-        stop_point = self.highest_since_entry * (1 - self.clients.stop_loss_pct)
+        stop_point = self.highest_since_entry * (1 - self.risk.stop_loss_pct)
         if current_price <= stop_point:
             log.warning(f"TRAILING STOP HIT: price = {current_price}, stop={stop_point}, peak={self.highest_since_entry}")
             return True
