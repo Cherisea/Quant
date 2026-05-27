@@ -5,10 +5,15 @@ Backtesting momentum strategy defined in main script.
 import logging
 import pandas as pd
 import numpy as np
-from main import TigerClients, TechAnalyst
+from main import TigerClient, TechAnalyst
 
 from utils import *
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
+
+# =================== Load settings and set up a logger ===================
+settings = load_settings()
+setup_logging(settings.logging.file, settings.logging.level)
+log = logging.getLogger(__name__)   # Initialize a named logger 
 
 def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, exit_reason: str) -> Trade:
     """Log trade details for review and analysis. 
@@ -178,14 +183,9 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
 
 if __name__ == "__main__":
-    # =================== Load settings and set up a logger ===================
-    settings = load_settings()
-    setup_logging(settings.logging.file, settings.logging.level)
-    log = logging.getLogger(__name__)   # Initialize a named logger 
-
     # ================== Boot up trading clients =================
-    client = TigerClients()
-    analyst = TechAnalyst(client)
+    client = TigerClient(settings)
+    analyst = TechAnalyst(client, settings)
     test_duration = 5   # Number of years of historical price data
     lot_size = client.verify_lot_size()
 
