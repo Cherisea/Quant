@@ -341,8 +341,10 @@ class MomentumBot:
     def __init__(self, settings: AppSettings) -> None:
         self.client = TigerClient(settings)
         self.lot_size = self.client.verify_lot_size()
-
         self.risk = settings.risk
+        self.broker = settings.broker
+        self.strategy = settings.strategy
+
         self.pm = PositionManager(self.client, self.lot_size, settings)
         self.analyst = TechAnalyst(self.client, settings)
         self.executor = OrderExecutor(self.client, settings)
@@ -433,11 +435,11 @@ class MomentumBot:
         """
         log.info("=" * 60)
         log.info(f"  Momentum Bot STARTED -- Trading {self.client.symbol} on Tiger Trade")
-        log.info(f"  Account: {self.client.account} | Lot size: {self.lot_size}")
+        log.info(f"  Account: {self.broker.tiger_account} | Lot size: {self.lot_size}")
         log.info("  Strategy: EMA(%d/%d)  +  ROC(%.3f)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
-                    self.client.fast_ema, self.client.slow_ema, self.client.roc_threshold, 
-                    self.client.vol_ma, self.client.vol_coefficient)
-        log.info(f"  Position sizing: {self.client.trade_size_pct} | Stop loss: {self.client.stop_loss_pct}")
+                    self.strategy.fast_ema, self.strategy.slow_ema, self.strategy.roc_threshold, 
+                    self.strategy.vol_ma, self.strategy.vol_coefficient)
+        log.info(f"  Position sizing: {self.risk.trade_size_pct} | Stop loss: {self.risk.stop_loss_pct}")
         log.info("=" * 60)
 
         # Run an immediate tick and schedule the next one
