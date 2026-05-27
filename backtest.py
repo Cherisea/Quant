@@ -41,6 +41,26 @@ def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, e
 
     return trade
 
+def resolve_signal(org_sig, state: BacktestState, price: float, risk: BacktestRisk) -> int:
+    """Return trading signal after checking on trailing-stop condition.
+
+    Args:
+        org_sig: original signal
+        state: a snapshot of backtest status
+        price: today's closing price
+        risk: a snapshot of backtest risk 
+
+    Returns:
+        int: -1 or 1 for sell or buy respetively
+    """
+    if state.position > 0:
+        state.highest_since_entry = max(state.highest_since_entry, price)
+        stop_price = state.highest_since_entry * (1 - risk.stop_loss_pct)
+        if price <= stop_price:
+            org_sig = -1    # Overwrite original signal
+    
+    return org_sig
+
 def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     """Calculate various performance metrics based on current backtesting state.
 
@@ -119,12 +139,8 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         sig = signals[i-1]      # Trade on yesterday's signal
         ts = pd.Timestamp(timestamps[i])
         
-        # Check trailing stop 
-        if state.position > 0:
-            state.highest_since_entry = max(state.highest_since_entry, mark_price)
-            stop_price = state.highest_since_entry * (1 - risk.stop_loss_pct)
-            if mark_price <= stop_price:
-                sig = -1    # Force liquidation 
+        # Check trailing stop
+        sig = resolve_signal(sig, state, mark_price, risk)
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
