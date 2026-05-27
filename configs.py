@@ -72,7 +72,8 @@ class Trade:
     exit_price: Optional[float] = None
 
     trans_fees: float = 0.0     # Total transaction fees
-    pnl: float = 0.0    # Profit and loss in absolute amount
+    gross_pnl: float = 0.0      # Profit/loss before deducting fees
+    net_pnl: float = 0.0    # Profit/loss after deducting fees
     pnl_pct: float = 0.0    # Profit and loss as a percentage
     exit_reason: str = ""
 

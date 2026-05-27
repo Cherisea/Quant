@@ -33,8 +33,9 @@ def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, e
 
     trade.exit_date = ts
     trade.exit_price = sell_price
-    trade.pnl = (sell_price - trade.entry_price) * trade.quantity - trade.trans_fees - comm
-    trade.pnl_pct = trade.pnl / (trade.entry_price * trade.quantity + trade.trans_fees)
+    trade.gross_pnl = (sell_price - trade.entry_price) * trade.quantity
+    trade.net_pnl = trade.gross_pnl - trade.trans_fees - comm
+    trade.pnl_pct = trade.net_pnl / (trade.entry_price * trade.quantity + trade.trans_fees)
     trade.exit_reason = exit_reason
     trade.trans_fees += comm
 
@@ -66,16 +67,16 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
 
     trades = state.trades
     n_trades = len(trades)
-    winners = [t for t in trades if t.pnl > 0]
+    winners = [t for t in trades if t.net_pnl > 0]
     win_rate = len(winners) / n_trades if n_trades > 0 else 0
 
     avg_win_pct = np.mean([t.pnl_pct for t in winners]) if winners else 0
-    losers = [t for t in trades if t.pnl < 0]
+    losers = [t for t in trades if t.net_pnl < 0]
     avg_loss_pct = np.mean([t.pnl_pct for t in losers]) if losers else 0 
 
     # Amount of money made relative to that lost
-    if sum(t.pnl for t in losers) != 0:
-        profit_factor = sum(t.pnl for t in winners) / abs(sum(t.pnl for t in losers))
+    if sum(t.net_pnl for t in losers) != 0:
+        profit_factor = sum(t.net_pnl for t in winners) / abs(sum(t.net_pnl for t in losers))
         
     else:
         profit_factor = float('inf')
