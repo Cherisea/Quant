@@ -41,14 +41,14 @@ def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, e
 
     return trade
 
-def resolve_signal(org_sig, state: BacktestState, price: float, risk: BacktestRisk) -> int:
+def resolve_signal(risk: BacktestRisk, state: BacktestState, price: float, org_sig: int) -> int:
     """Return trading signal after checking on trailing-stop condition.
 
     Args:
-        org_sig: original signal
-        state: a snapshot of backtest status
+        risk: a snapshot of backtest risk
+        state: a snapshot of backtest status 
         price: today's closing price
-        risk: a snapshot of backtest risk 
+        org_sig: original signal
 
     Returns:
         int: -1 or 1 for sell or buy respetively
@@ -60,6 +60,34 @@ def resolve_signal(org_sig, state: BacktestState, price: float, risk: BacktestRi
             org_sig = -1    # Overwrite original signal
     
     return org_sig
+
+def execute_sell(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.Timestamp, fee: TradeFeesHK):
+    """Close current position and write trade details into backtest state. No-op if position is empty.
+
+    Args:
+        risk: a data class storing risk configuration
+        state: a snapshot of backtest state
+        price: execution price
+        ts: pandas timestamp for logging purposes
+        fee: a data class storing HK trading fee structure
+    """
+    sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
+    proceeds = sell_price * state.position
+    comm_sell = calc_commission(fee, sell_price, state.position)
+    state.cash += proceeds - comm_sell
+    
+    # Record trade details
+    if sell_price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
+        exit_reason = "trail_stop"
+    else:
+        exit_reason = "signal"
+    t = fill_trade(state.current_trade, ts, sell_price, comm_sell, exit_reason)
+    state.trades.append(t)
+    state.current_trade = None
+
+    state.position = 0
+    state.entry_price = 0.0
+    state.highest_since_entry = 0.0
 
 def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     """Calculate various performance metrics based on current backtesting state.
@@ -144,24 +172,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
         
         # Handle sell signal
         if sig == -1 and state.position > 0:
-            sell_price = apply_slippage(risk.slippage_bps, exec_price, "SELL")
-            proceeds = sell_price * state.position
-            comm_sell = calc_commission(fees, sell_price, state.position)
-            state.cash += proceeds - comm_sell
-            
-            # Record trade details
-            if sell_price <= state.highest_since_entry * (1 - risk.stop_loss_pct):
-                exit_reason = "trail_stop"
-            else:
-                exit_reason = "signal"
-            t = fill_trade(state.current_trade, ts, sell_price, comm_sell, exit_reason)
-            state.trades.append(t)
-            state.current_trade = None
-
-            state.position = 0
-            state.entry_price = 0.0
-            state.highest_since_entry = 0.0
-
+            execute_sell()
         elif sig == 1 and state.position == 0:
             equity = state.cash
             budget = equity * risk.trade_size_pct
