@@ -14,7 +14,7 @@ import pandas as pd
 from utils import setup_logging, round_to_lot
 from typing import Optional
 from datetime import datetime
-from configs import load_settings
+from configs import AppSettings, load_settings
 
 
 # Tiger trade SDK
@@ -74,95 +74,10 @@ class TigerClients:
         cfg.timezone = settings.broker.tz
         return cfg
 
-    @property
-    def lookback_bars(self):
-        """Set lookback period as a class property
-        """
-        return settings.risk.lookback_bars
-    
-    @property
-    def symbol(self):
-        """Set stock symbol as a property.
-        """
-        return self._symbol
-
-    @property
-    def currency(self):
-        """Expose currency of traded stock as a read_only attribute.
-        """
-        return settings.broker.currency
-
-    @property
-    def fast_ema(self):
-        """Set fast EMA as a property.
-        """
-        return settings.strategy.fast_ema
-    
-    @property
-    def slow_ema(self):
-        """Set slow EMA as a property.
-        """
-        return settings.strategy.slow_ema
-    
-    @property
-    def roc_period(self):
-        """Set rate of change as a property.
-        """
-        return settings.strategy.roc_period
-
-    @property
-    def roc_threshold(self):
-        """Set ROC threshold as a property.
-        """
-        return settings.strategy.roc_threshold
-    
-    @property
-    def vol_ma(self):
-        """Set moving average volume as a property.
-        """
-        return settings.strategy.vol_ma
-    
-    @property
-    def vol_coefficient(self):
-        """Expose volume coefficient as a read-only attribute.
-        """
-        return settings.strategy.vol_coefficient
-    
-    @property
-    def account(self):
-        """Expose Tiger account as a read-only attribute.
-        """
-        return self.cfg.account or settings.broker.tiger_account  
-    
-    @property
-    def stop_loss_pct(self):
-        """Expose the percentage value that triggers stop loss orders as a 
-            read_only attribute.
-        """
-        return settings.risk.stop_loss_pct
-    
-    @property
-    def limit_buffer_bps(self):
-        """Expose limit buffer base points as a read_only attribute.
-        """
-        return settings.risk.limit_buffer_bps
-    
-    @property
-    def max_wait_sec(self):
-        """Expose max wait time as a read_only attribute.
-        """
-        return settings.risk.max_wait_sec
-    
-    @property
-    def trade_size_pct(self):
-        """Expose trade size percentage as a read_only attribute.
-        """
-        return settings.risk.trade_size_pct
-
 class TechAnalyst:
     """An analyst that pulls market data, compute technical indicators and generate trading signals.
     """
-    def __init__(self, client: TigerClients) -> None:
+    def __init__(self, client: TigerClients, settings: AppSettings) -> None:
         self.client = client
     
     def get_last_price(self) -> float:
