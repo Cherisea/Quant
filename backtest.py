@@ -219,20 +219,16 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     # Clear any open positions on the last day
     if state.position > 0:
         liquidate_at_end(risk, state, df['close'].iloc[-1], df.index[-1], fee)
-
-    print(f"==================== All trades ================")
-    for trade in state.trades:
-        print(f"{trade} \n")
     return state
 
 if __name__ == "__main__":
-    # ================== Boot up trading clients =================
+    # Step 1: Boot up trading clients
     client = TigerClient(settings)
     analyst = TechAnalyst(client, settings)
     test_duration = 3   # Number of years of historical price data
     lot_size = client.verify_lot_size()
 
-    # Fetch data 
+    # Step 2: Fetch price data from broker API 
     log.info(f"Fetching historical bars for {settings.broker.symbol}")
     bars = analyst.fetch_bars(test=True, test_duration=test_duration)
 
@@ -240,20 +236,40 @@ if __name__ == "__main__":
     end = pd.Timestamp.now().normalize()
     start = end - pd.DateOffset(years=test_duration)
     log.info(f"{'=' * 50}")
-    log.info(f"Start date: {start.strftime('%Y-%m-%d')} | End date: {end.strftime('%Y-%m-%d')}")
+    log.info(f"Start date: {start.strftime('%Y/%m/%d')} | End date: {end.strftime('%Y/%m/%d')}")
     
-    # Compute indicators and signals
+    # Step 3: Compute indicators and signals
     bars = analyst.compute_indicators(bars)
     bars = analyst.get_all_signals(bars)
     log.info("Overview: signal counts -- BUY: %d | SELL: %d",
             (bars["signal"] == 1).sum(), 
             (bars["signal"] == -1).sum())
-    log.info(f"\n{bars[bars['signal'] == 1]}\n{bars[bars['signal'] == -1]}")
 
-    # =================== Run backtest ==================
+    # Step 4: Run backtest
     log.info(f"Running backtest (capital={BacktestRisk.initial_capital:,} HKD)")
     result = run_backtest(bars, lot_size)
 
-    # Analyse and display results
+    # Step 5: Analyse and display results
     stats, eq = analyse_performance(result, bars)
-    print(stats)
+    print("\n" + "=" * 60)
+    print(f" BACKTEST RESULTS - Momentum Strategy")
+    print("=" * 60)
+    for k, v in stats.items():
+        print(f"    {k:<28s} {v}")
+    print("=" * 60)
+
+    print("\n TRADE LOG:")
+    print(f"    {'Entry':<12s} {'Exit':<12s} {'Qty':>0s} {'P&L':>10s} {'%':>6s} {'Reason':>10s}")
+    print(" " + "-" * 60)
+    for trade in result.trades:
+        print(f"{str(trade.entry_date.date()):<12s} "
+              f"{str(trade.exit_date.date()) if trade.exit_date else 'OPEN':<12s} "
+              f"{trade.quantity:>8d} "
+              f"{trade.net_pnl:>10.0f} "
+              f"{trade.pnl_pct:>7.2%} "
+              f"{trade.exit_reason:>8s}")
+    
+    # Step 6: Plot graphs
+    # plot_results(bars, eq, result.trades, stats)
+
+
