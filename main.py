@@ -28,6 +28,12 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
+settings = load_settings()
+
+# Load logger settings from root logger
+setup_logging(settings.logging.file, settings.logging.level)
+log = logging.getLogger(__name__)   # Initialize a named logger 
+
 class TigerClient:
     """Quote and trade agent for interacting with Tiger Trade platform.
     """
@@ -54,7 +60,7 @@ class TigerClient:
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
 
-    def _build_config(self):
+    def _build_config(self) -> TigerOpenClientConfig:
         """Configure tiger client by retrieving constants from settings.
         """
         if self.settings.broker.props_path:
@@ -454,12 +460,6 @@ class MomentumBot:
         log.info("Bot stopped cleanly.")
 
 if __name__ == "__main__":
-    settings = load_settings()
-
-    # Load logger settings from root logger
-    setup_logging(settings.logging.file, settings.logging.level)
-    log = logging.getLogger(__name__)   # Initialize a named logger 
-
     # Start the bot
     bot = MomentumBot(settings)
     bot.run()
