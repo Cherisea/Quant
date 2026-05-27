@@ -4,7 +4,7 @@
 Tushare for Chinese A-share market. 
 
 ## Strategy
-This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 60 days moving average. 
+This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 60 days moving average and enforcing a minimum 3% rate of change over past 14 days or an enhanced 50% more volume than the daily average of past 20 days. 
 
 ## Backtest
 Backtest must respect rules in Chinese market:

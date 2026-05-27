@@ -187,7 +187,7 @@ class TechAnalyst:
         momentum = df['roc'] > self.strategy.roc_threshold
         volume = df['volume'] > self.strategy.vol_coefficient * df['vol_ma']
 
-        df.loc[cross_up & momentum & volume, 'signal'] = 1     # Buy signal
+        df.loc[cross_up & (momentum | volume), 'signal'] = 1     # Buy signal
         df.loc[cross_down, "signal"] = -1        # Sell signal
 
         return df
