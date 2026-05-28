@@ -22,9 +22,19 @@ and factor in all transaction cost(refer to your broker for a complete list of f
 - **Drawdown**: $\frac{Peak - Trough}{Peak}$
 
 ## Roadmap
-- [ ] Move current_trade and equity_curve to a database;
-- [ ] Replace logger with a third-party logging tool (Datadog);
+### Backend
 - [ ] Store OHLC price info in Postgres to avoid repeated API calls to Tiger API;
+- [ ] Extract the backtest engine and live trading bot into a FastAPI service;
+- [ ] Store every trade, signal and euqity snapshot in Postgres;
+- [ ] Replace logger with a third-party logging tool (Datadog);
+
+### API Gateway
+- [ ] Handle authentication, aggregates data from backend and pushes updates to frontend dashboard via WebSockets;
+- [ ] Cache the latest stock quote and indicator values in Redis;
+
+### Frontend
+- [ ] Build a single-page app that shows the equity curve, open positions, trade history and live signals with React (Material-UI, Recharts);
+
 
 ## Glossary
 - Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 
