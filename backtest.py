@@ -2,7 +2,6 @@
 Backtesting momentum strategy defined in main script.
 """
 
-from cProfile import label
 import logging
 import pandas as pd
 import numpy as np
@@ -185,7 +184,7 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     return stats, eq
 
 def plot_results(bars:pd.DataFrame, eq: pd.DataFrame, trades: list, stats: dict):
-    fig, axes = plt.subplots(4, 1, sharex=True, figsize=(8, 10) ,gridspec_kw={"height_ratios": [3, 1.5, 1, 1]})
+    _, axes = plt.subplots(4, 1, sharex=True, figsize=(8, 10) ,gridspec_kw={"height_ratios": [3, 1.5, 1, 1]})
 
     # Price + EMA + Trade markers
     ax = axes[0]
@@ -226,7 +225,7 @@ def plot_results(bars:pd.DataFrame, eq: pd.DataFrame, trades: list, stats: dict)
     ax.set_ylabel("Volume")
     ax.legend(fontsize=9)
     ax.grid(True)
-    
+
     plt.show()
 
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:

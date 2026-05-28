@@ -119,8 +119,8 @@ class StrategySettings:
         period rate of change(roc) and an elevated volume compared to 20-day moving 
         average.
     """
-    fast_ema: int = 20
-    slow_ema: int = 60
+    fast_ema: int = 14
+    slow_ema: int = 30
     vol_ma: int =  20   # Rolling window for calculating average daily volume
     vol_coefficient: float = 1.5    # Min volume to initiate a trade
     roc_period: int = 14    # Rate of change lookback window
