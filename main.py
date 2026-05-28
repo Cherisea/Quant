@@ -159,7 +159,8 @@ class TechAnalyst:
         cross_up = (prev['fast_ema'] <= prev['slow_ema']) and (cur['fast_ema'] > cur['slow_ema'])
         cross_down = (prev['fast_ema'] > prev['slow_ema']) and (cur['fast_ema'] <= cur['slow_ema'])
 
-        if cross_up and cur['roc'] > self.strategy.roc_threshold and cur['volume'] > cur['vol_ma'] * self.strategy.vol_coefficient:
+        if cross_up and (cur['roc'] > self.strategy.roc_threshold or 
+                        cur['volume'] > cur['vol_ma'] * self.strategy.vol_coefficient):
             return "Buy"
         elif cross_down:
             return "Sell"
