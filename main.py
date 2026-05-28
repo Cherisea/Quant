@@ -435,7 +435,6 @@ class MomentumBot:
         except Exception as e:
             log.warning(f"Error during tick: {e}")
                 
-    
     def run(self):
         """Main loop -- schedule ticks at a set interval.
         """

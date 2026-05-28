@@ -7,7 +7,7 @@ All price data are fetched through Tiger Trade's Open API servers. Consult your 
 This project implements a momentum trading strategy that generates trading signals by comparing 14 days moving average to 30 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. 
 
 ## Backtest
-Backtest must respect rules in Chinese market:
+Backtest must respect rules in Hong Kong stock market:
 - **Trading and settlement**: intraday trading is allowed. Securities and funds are fully delivered two days after a transaction;
 - **Trading hours**: morning session lasts from 9:30 a.m. to 12 p.m., and afternoon session starts from 1:00 p.m. to 4 p.m. after a one-hour lunch break;
 - **Price limit**: although Hong Kong stocks are not subject to a daily upper or lower bounds on price swings, a 5-minute cooling-off applies to Hang Seng Index and Hang Seng China Enterprise constituent stocks if price fluctuates by more than 10% within 5 minutes;
@@ -24,7 +24,7 @@ and factor in all transaction cost(refer to your broker for a complete list of f
 ## Roadmap
 - [ ] Move current_trade and equity_curve to a database;
 - [ ] Replace logger with a third-party logging tool (Datadog);
-- [ ] Store OHLC price info in Postgres to avoid repeated API calls to Tiger Client;
+- [ ] Store OHLC price info in Postgres to avoid repeated API calls to Tiger API;
 
 ## Glossary
 - Adjusted quote VS Unadjusted quote: adjusted quote (QuoteRight.BR) accounts for corporate actions like dividents and splits, which triggers artifical price actions that don't reflect current market situation. They are smoothed out in our analysis to avoid unintended impact on quotes. 
