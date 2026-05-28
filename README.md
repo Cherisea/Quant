@@ -4,7 +4,7 @@
 All price data are fetched through Tiger Trade's Open API servers. Consult your own broker for details if you wish to use a different one or use a third-party data provider.
 
 ## Strategy
-This project implements a momentum trading strategy that generates trading signals by comparing 14 days moving average to 30 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. 
+This project implements a momentum trading strategy that generates trading signals by comparing 14 days moving average to 30 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. In practice, sell signals are also complemented by a 5% trailing stop check designed to catch a sharp decline that won't get reflected in time in EMA. 
 
 ## Backtest
 Backtest must respect rules in Hong Kong stock market:
