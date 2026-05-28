@@ -2,12 +2,14 @@
 Backtesting momentum strategy defined in main script.
 """
 
+from cProfile import label
 import logging
 import pandas as pd
 import numpy as np
-from main import TigerClient, TechAnalyst
+import matplotlib.pyplot as plt
 
 from utils import *
+from main import TigerClient, TechAnalyst
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
 # =================== Load settings and set up a logger ===================
@@ -182,6 +184,51 @@ def analyse_performance(state: BacktestState, df: pd.DataFrame) -> dict:
     stats["profit_factor"] = f"{profit_factor:.2}" if profit_factor != float('inf') else "inf"
     return stats, eq
 
+def plot_results(bars:pd.DataFrame, eq: pd.DataFrame, trades: list, stats: dict):
+    fig, axes = plt.subplots(4, 1, sharex=True, figsize=(8, 10) ,gridspec_kw={"height_ratios": [3, 1.5, 1, 1]})
+
+    # Price + EMA + Trade markers
+    ax = axes[0]
+    ax.plot(bars.index, bars["close"], label="Close", color="#333", linewidth=0.8)
+    ax.plot(bars.index, bars["fast_ema"], label="Fast EMA", color="#2196F3", linewidth=0.7)
+    ax.plot(bars.index, bars["slow_ema"], label="Slow EMA", color="#FF9800", linewidth=0.7)
+
+    for t in trades:
+        ax.axvspan(t.entry_date, t.exit_date or bars.index[-1], color='green' if t.net_pnl > 0 else 'red')
+        ax.scatter(t.entry_date, t.entry_price, marker="^", c='yellow', zorder=5)
+        if t.exit_date:
+            ax.scatter(t.exit_date, t.exit_price, marker="v", c='red', zorder=5)
+
+    ax.set_title(f"HK Momentum Backtest -- Sharpe {stats['sharpe_ratio']} | Return {stats['total_return']} | "
+                f"MaxDD {stats['max_drawdown']}", fontsize=13)
+    ax.set_ylabel("Price (HKD)")
+    ax.legend(loc="upper left", fontsize=9)
+    ax.grid(True)
+
+    # Equity curve
+    ax = axes[1]
+    ax.plot(eq.index, eq["equity"], color="#4CAF50", linewidth=1)
+    ax.axhline(500000, color="gray", linestyle="-.", linewidth=0.6)
+    ax.set_ylabel("Portfolio Value (HKD)")
+
+    # Drawdown
+    ax = axes[2]
+    running_max = eq["equity"].cummax()
+    dd = (eq["equity"] - running_max) / running_max
+    ax.fill_between(dd.index, dd, color="#F44336")
+    ax.set_ylabel("Drawdown")
+    ax.grid(True)
+
+    # Volume
+    ax = axes[3]
+    ax.bar(bars.index, bars["volume"], color="#90CAF9", width=0.8)
+    ax.plot(bars.index, bars["vol_ma"], color="#1565C0", label="Vol MA")
+    ax.set_ylabel("Volume")
+    ax.legend(fontsize=9)
+    ax.grid(True)
+    
+    plt.show()
+
 def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     """Event-driven backtest loop that iterates bar-by-bar. Execute trades based on daily trading signal.
     """
@@ -272,6 +319,6 @@ if __name__ == "__main__":
               f"{trade.exit_reason:>8s}")
     
     # Step 6: Plot graphs
-    # plot_results(bars, eq, result.trades, stats)
+    plot_results(bars, eq, result.trades, stats)
 
 
