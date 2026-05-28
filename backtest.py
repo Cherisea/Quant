@@ -259,12 +259,14 @@ if __name__ == "__main__":
     print("=" * 60)
 
     print("\n TRADE LOG:")
-    print(f"    {'Entry':<12s} {'Exit':<12s} {'Qty':>0s} {'P&L':>10s} {'%':>6s} {'Reason':>10s}")
+    print(f"    {'Entry':<12s} {'Exit':<8s} {'Qty':>3s} {'Buy':>7s} {'Sell':>5s} {'P&L':>8s} {'%':>6s} {'Reason':>10s}")
     print(" " + "-" * 60)
     for trade in result.trades:
         print(f"{str(trade.entry_date.date()):<12s} "
-              f"{str(trade.exit_date.date()) if trade.exit_date else 'OPEN':<12s} "
-              f"{trade.quantity:>8d} "
+              f"{str(trade.exit_date.date()) if trade.exit_date else 'OPEN':<8s} "
+              f"{trade.quantity:>6d} "
+              f"{trade.entry_price:>6.2f}"
+              f"{trade.exit_price:>6.2f}"
               f"{trade.net_pnl:>10.0f} "
               f"{trade.pnl_pct:>7.2%} "
               f"{trade.exit_reason:>8s}")
