@@ -1,17 +1,17 @@
 # Momentum Trading on Time Series Data
 
 ## Data Source
-Tushare for Chinese A-share market. 
+All price data are fetched through Tiger Trade's Open API servers. Consult your own broker for details if you wish to use a different one or use a third-party data provider.
 
 ## Strategy
-This project implements a momentum trading strategy that generates trading signals by comparing 20 days moving average to 60 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. 
+This project implements a momentum trading strategy that generates trading signals by comparing 14 days moving average to 30 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. 
 
 ## Backtest
 Backtest must respect rules in Chinese market:
-- T+1 settlement: can't buy and sell on the same day;
-- No short selling: retail investors are not allowed to engage in short selling;
-- Daily price limits: price swings are capped at +/- 10%;
-- Lunch break: trading completely freezes from 11:30 AM -- 1:00 PM CST;
+- **Trading and settlement**: intraday trading is allowed. Securities and funds are fully delivered two days after a transaction;
+- **Trading hours**: morning session lasts from 9:30 a.m. to 12 p.m., and afternoon session starts from 1:00 p.m. to 4 p.m. after a one-hour lunch break;
+- **Price limit**: although Hong Kong stocks are not subject to a daily upper or lower bounds on price swings, a 5-minute cooling-off applies to Hang Seng Index and Hang Seng China Enterprise constituent stocks if price fluctuates by more than 10% within 5 minutes;
+- **Trade size**: stocks must typically be traded in multiples of a designated "lot size", which varies for different issuers;
 
 and factor in all transaction cost(refer to your broker for a complete list of fees). 
 
