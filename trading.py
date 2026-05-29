@@ -8,6 +8,7 @@ import time
 import logging
 import psycopg
 import pandas as pd
+import pandas_market_calendars as pmc
 
 from utils import setup_logging
 from typing import Optional
@@ -75,6 +76,12 @@ class TechAnalyst:
         self.client = client
         self.strategy = settings.strategy
         self.risk = settings.risk
+        self.broker = settings.broker
+
+        # Market calendar for resolving valid trading days
+        self.calendar = pmc.get_calendar(self.broker.exchange)
+        
+        self.cache = PriceCache(self.client.symbol, settings)
     
     def get_last_price(self) -> float:
         """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
@@ -325,7 +332,7 @@ class PriceCache:
         CRUD operations and the lastest cached date query used by database sync job. 
     """
 
-    def __init__(self, ticker, settings: DBSettings):
+    def __init__(self, ticker, settings: AppSettings):
         """
         
         Agrs:
@@ -334,11 +341,11 @@ class PriceCache:
         """
         self.ticker = ticker
         self._db_config = {
-            "host": settings.host,
-            "database": settings.name,
-            "user": settings.user,
-            "password": settings.password,
-            "port": settings.port
+            "host": settings.db.host,
+            "database": settings.db.name,
+            "user": settings.db.user,
+            "password": settings.db.password,
+            "port": settings.db.port
         }
         self._ensure_table()
 
@@ -365,5 +372,6 @@ class PriceCache:
                 )
             """)
         log.info("Price_bars table verified.")
-        
-    
+
+client = TigerClient( settings)
+ana = TechAnalyst(client, settings)
