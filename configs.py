@@ -1,6 +1,8 @@
 """
-    Grouped settings for main script.
+    A single source of truth for HK trading fee schedule, Tiger platform commission fee, Backtest parameter settings, 
+    live trading bot settings and database settings.  
 """
+
 import os
 from enum import Enum
 import pandas as pd
@@ -143,7 +145,7 @@ class LoggingSettings:
     file: str = "./logs/trading_bot_06066.log"
     level: str = "INFO"
 
-# Setting orchestrator
+# Live trading bot setting orchestrator
 @dataclass(frozen=True)
 class AppSettings:
     """An parent class that encompasses all kinds of settings.
@@ -153,6 +155,14 @@ class AppSettings:
     strategy: StrategySettings
     schedule: ScheduleSettings
     logging: LoggingSettings
+
+# Postgres database settings
+class DBSettings:
+    host: str = "localhost"
+    name: str = "quant_db"
+    user: str
+    password: str
+    port: int = 5432
 
 def load_settings() -> AppSettings:
     """Populates values of fields in Broker and initialize other settings.
