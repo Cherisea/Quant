@@ -342,4 +342,10 @@ class PriceCache:
         }
         self._ensure_table()
 
+    def _get_conn(self) -> psycopg.Connection:
+        """ Open and return a new psycopg v3 connection.
+        """
+        return psycopg.connect(**self._db_config)
+
+    
     
