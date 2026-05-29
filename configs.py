@@ -104,7 +104,7 @@ class BrokerSettings:
     currency: str = "HKD"
     lot_size: int = 500
     tz: str = "Asia/Hong_Kong"
-    exchange: str = "HKSE"
+    exchange: str = "HKEX"
 
 @dataclass(frozen=True)
 class RiskSettings:
