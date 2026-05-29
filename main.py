@@ -27,6 +27,7 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
+_SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
 settings = load_settings()
 
 # Load logger settings from root logger
@@ -143,29 +144,13 @@ class TechAnalyst:
         df["vol_ma"] = df["volume"].rolling(self.strategy.vol_ma).mean()
         return df
 
-    def get_latest_signal(self, df: pd.DataFrame) -> str:
+    def get_latest_signal(self, df: pd.DataFrame) -> int:
         """Generate trading signals by evaluating price actions of the last two days.
 
         Returns:
             "BUY" if a cross-up signal is detected, "SELL" if a cross-down is observed. Otherwise "Hold".
         """
-        if len(df) <= 2:
-            return "Hold"
-
-        prev = df.iloc[-2]
-        cur = df.iloc[-1]
-
-        # Check if EMA crosses up or down in the last two days
-        cross_up = (prev['fast_ema'] <= prev['slow_ema']) and (cur['fast_ema'] > cur['slow_ema'])
-        cross_down = (prev['fast_ema'] > prev['slow_ema']) and (cur['fast_ema'] <= cur['slow_ema'])
-
-        if cross_up and (cur['roc'] > self.strategy.roc_threshold or 
-                        cur['volume'] > cur['vol_ma'] * self.strategy.vol_coefficient):
-            return "Buy"
-        elif cross_down:
-            return "Sell"
-        else:
-            return "Hold" 
+        return self.get_all_signals(df).iloc[-1]['signal']
 
     def get_all_signals(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generate trading signals for all rows of a dataframe. This method is 
@@ -400,14 +385,14 @@ class MomentumBot:
             roc = bars.iloc[-1]['roc']
             pos = self.pm.position
             log.info("TICK: price=%.3f | fast_ema=%.3f | slow_ema=%.3f | roc=%.4f | signal=%s | pos=%d",
-                    latest_price, fast_ema, slow_ema, roc, sig, pos)
+                    latest_price, fast_ema, slow_ema, roc, _SIGNAL_LABELS[sig], pos)
             
             # Trailing stop order check
             if self.pm.check_trailing_stop(latest_price):
-                sig = "SELL"
+                sig = -1
             
             # Execute sell
-            if sig == "SELL" and pos > 0:
+            if sig == -1 and pos > 0:
                 order_id = self.executor.place_limit_order(pos, latest_price, "SELL")
                 if order_id and self.executor.wait_for_fill(order_id):
                     log.info(f"SOLD {pos} shares of {self.client.symbol}")
@@ -416,7 +401,7 @@ class MomentumBot:
                     log.warning("SELL order did not fill -- will retry in next tick.")
             
             # Execute buy
-            elif sig == "BUY" and self.pm.position == 0:
+            elif sig == 1 and self.pm.position == 0:
                 equity = self.pm.get_balance()
                 budget = equity * self.risk.trade_size_pct
                 raw_qty = budget // latest_price
