@@ -10,3 +10,6 @@ Pipfile.lock
 
 # Trading bot logs 
 logs
+
+# Cache files
+__pycache__/
