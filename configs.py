@@ -157,11 +157,12 @@ class AppSettings:
     logging: LoggingSettings
 
 # Postgres database settings
+@dataclass(frozen=True)
 class DBSettings:
-    host: str = "localhost"
-    name: str = "quant_db"
     user: str
     password: str
+    host: str = "localhost"
+    name: str = "quant_db"
     port: int = 5432
 
 def load_settings() -> AppSettings:
