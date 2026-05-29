@@ -3,6 +3,16 @@
 ## Data Source
 All price data are fetched through Tiger Trade's Open API servers. Consult your own broker for details if you wish to use a different one or use a third-party data provider.
 
+## Database: Postgres
+A Postgres database is employed to avoid triggering [rate limit](https://quant.itigerup.com/openapi/en/python/permission/requestLimit.html) on Tiger API calls (60 times/min for mid frequency interface) caused by repeated price requests and to improve efficiency of data retrieval. 
+
+On runtime, a request will first be routed to the database and only in an event of miss will it be redirected to Tiger API. The newly fetched data will then be immediately appended to a table, allowing for faster retrieval for following requests.
+
+Postgres is chosen to store time-series price due to following considerations:
+- **Transactional integrity**: thanks to its strict ACID compliance, Postgres ensures no partial writes survive a crash and that tables always maintain continuous range of data;
+- **Efficient retrieval**: Postgres B-tree indexes allows for fast retrieval of price data that's indexed by date columns;
+- **Production-ready**: its support for concurrent connections comes in handy when multiple bot instances are run simultaneously; 
+
 ## Strategy
 This project implements a momentum trading strategy that generates trading signals by comparing 14 days moving average to 30 days moving average and enforcing a minimum 3% rate of change over past 14 days or an elevated 50% more volume than the daily average of past 20 days. In practice, sell signals are also complemented by a 5% trailing stop check designed to catch a sharp decline that won't get reflected in time in EMA. 
 
