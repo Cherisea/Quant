@@ -147,6 +147,15 @@ class LoggingSettings:
     file: str = "./logs/trading_bot_06066.log"
     level: str = "INFO"
 
+# Postgres database settings
+@dataclass(frozen=True)
+class DBSettings:
+    user: str
+    password: str
+    host: str = "localhost"
+    name: str = "quant_db"
+    port: int = 5432
+
 # Live trading bot setting orchestrator
 @dataclass(frozen=True)
 class AppSettings:
@@ -157,15 +166,7 @@ class AppSettings:
     strategy: StrategySettings
     schedule: ScheduleSettings
     logging: LoggingSettings
-
-# Postgres database settings
-@dataclass(frozen=True)
-class DBSettings:
-    user: str
-    password: str
-    host: str = "localhost"
-    name: str = "quant_db"
-    port: int = 5432
+    db: DBSettings
 
 def load_settings() -> AppSettings:
     """Populates values of fields in Broker and initialize other settings.
@@ -180,6 +181,7 @@ def load_settings() -> AppSettings:
     strategy = StrategySettings()
     schedule = ScheduleSettings()
     logging = LoggingSettings()
+    db = DBSettings()
 
     _validate_settings(broker, risk, strategy)
     return AppSettings(
@@ -187,7 +189,8 @@ def load_settings() -> AppSettings:
         risk = risk,
         strategy = strategy,
         schedule = schedule,
-        logging = logging
+        logging = logging,
+        db = db
     )
 
 def _validate_settings(broker: BrokerSettings, risk: RiskSettings, strategy: StrategySettings):
