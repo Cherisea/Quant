@@ -99,10 +99,12 @@ class BrokerSettings:
     private_key: Optional[str]
     tiger_id: Optional[str]
     tiger_account: Optional[str]
+
     symbol: str = "06066"
     currency: str = "HKD"
     lot_size: int = 500
     tz: str = "Asia/Hong_Kong"
+    exchange: str = "HKSE"
 
 @dataclass(frozen=True)
 class RiskSettings:
