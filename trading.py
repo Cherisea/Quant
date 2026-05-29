@@ -347,5 +347,23 @@ class PriceCache:
         """
         return psycopg.connect(**self._db_config)
 
-    
+    def _ensure_table(self):
+        """ Create price_bars table if it doesn't exist yet. Safe to call on every startup.
+        """
+        with self._get_conn() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXIST price_bars (
+                    ticker  VARCHAR(20)     NOT NULL,
+                    timestamp   DATE        NOT NULL,
+                    interval    VARCHAR(10)     NOT NULL,
+                    open    DECIMAL(12, 4),
+                    high    DECIMAL(12, 4),
+                    low     DECIMAL(12, 4),
+                    close   DECIMAL(12, 4),
+                    volume  BIGINT,
+                    PRIMARY KEY (ticker, timestamp, interval)
+                )
+            """)
+        log.info("Price_bars table verified.")
+        
     
