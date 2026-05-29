@@ -6,11 +6,12 @@ separate script.
 # System and third-party imports
 import time
 import logging
+import psycopg
 import pandas as pd
 
 from utils import setup_logging
 from typing import Optional
-from configs import AppSettings, load_settings
+from configs import AppSettings, DBSettings, load_settings
 
 # Tiger trade SDK
 from tigeropen.common.consts import (
@@ -319,5 +320,26 @@ class OrderExecutor:
             log.error(f"Failed to cancel order: {e}")
         return False 
 
+class PriceCache:
+    """ Local Postgres cache for OHLV price bars. This class contains everything related to the database: 
+        CRUD operations and the lastest cached date query used by database sync job. 
+    """
 
+    def __init__(self, ticker, settings: DBSettings):
+        """
+        
+        Agrs:
+            ticker: ticker symbol of a traded security
+            settings: a data class that configures params of local database
+        """
+        self.ticker = ticker
+        self._db_config = {
+            "host": settings.host,
+            "database": settings.name,
+            "user": settings.user,
+            "password": settings.password,
+            "port": settings.port
+        }
+        self._ensure_table()
 
+    
