@@ -14,6 +14,7 @@ from utils import setup_logging, round_to_lot
 from typing import Optional
 from datetime import datetime
 from configs import AppSettings, load_settings
+from strategy_signals import compute_signals
 
 
 # Tiger trade SDK
@@ -178,20 +179,9 @@ class TechAnalyst:
         Returns:
             A modified dataframe with a new "signal" column.
         """
-        df = df.copy()
-        df['signal'] = 0
-
-        # Moment of transition where fast and slow ema flips position
-        cross_up = (df['fast_ema'] > df['slow_ema']) & (df['fast_ema'].shift(1) <= df['slow_ema'].shift(1))
-        cross_down = (df['fast_ema'] < df['slow_ema']) & (df['fast_ema'].shift(1) >= df['slow_ema'].shift(1))
-
-        momentum = df['roc'] > self.strategy.roc_threshold
-        volume = df['volume'] > self.strategy.vol_coefficient * df['vol_ma']
-
-        df.loc[cross_up & (momentum | volume), 'signal'] = 1     # Buy signal
-        df.loc[cross_down, "signal"] = -1        # Sell signal
-
-        return df
+        out = df.copy()
+        out["signal"] = compute_signals(out, self.strategy)
+        return out
 
 class PositionManager:
     """A manager that tracks current position, entry price and trailing stop orders.
