@@ -145,12 +145,9 @@ class TechAnalyst:
         return df
 
     def get_latest_signal(self, df: pd.DataFrame) -> int:
-        """Generate trading signals by evaluating price actions of the last two days.
-
-        Returns:
-            "BUY" if a cross-up signal is detected, "SELL" if a cross-down is observed. Otherwise "Hold".
+        """ Retrieve yesterday's trading signal for today's transaction.
         """
-        return self.get_all_signals(df).iloc[-1]['signal']
+        return self.get_all_signals(df).iloc[-2]['signal']
 
     def get_all_signals(self, df: pd.DataFrame) -> pd.DataFrame:
         """Generate trading signals for all rows of a dataframe. This method is 
