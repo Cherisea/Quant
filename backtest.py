@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils import *
-from main import TigerClient, TechAnalyst
+from trading import TigerClient, TechAnalyst
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
 # =================== Load settings and set up a logger ===================

@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from utils import setup_logging, round_to_lot
 from configs import AppSettings, load_settings
-from main import TigerClient, PositionManager, OrderExecutor, TechAnalyst
+from trading import TigerClient, PositionManager, OrderExecutor, TechAnalyst
 
 _SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
 settings = load_settings()
