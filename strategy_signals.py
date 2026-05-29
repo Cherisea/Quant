@@ -7,7 +7,6 @@ from configs import StrategySettings
 HOLD, BUY, SELL = 0, 1, -1
 _SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
 
-
 def compute_signals(df: pd.DataFrame, strategy: StrategySettings) -> pd.Series:
     """ Vectorized EMA crossover signals for every row, complemented by a rate of change
         threshold or elevated volume. 
