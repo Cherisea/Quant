@@ -150,8 +150,8 @@ class LoggingSettings:
 # Postgres database settings
 @dataclass(frozen=True)
 class DBSettings:
-    user: str
-    password: str
+    user: str = field(default_factory=lambda: os.environ["DB_USER"])
+    password: str = field(default_factory=lambda: os.environ["DB_PASSWORD"])
     host: str = "localhost"
     name: str = "quant_db"
     port: int = 5432
