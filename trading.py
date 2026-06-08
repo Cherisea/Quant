@@ -81,7 +81,7 @@ class TechAnalyst:
         # Market calendar for resolving valid trading days
         self.calendar = pmc.get_calendar(self.broker.exchange)
         
-        self.cache = PriceCache(self.client.symbol, settings)
+        # self.cache = PriceCache(self.client.symbol, settings)
     
     def get_last_price(self) -> float:
         """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
@@ -342,7 +342,7 @@ class PriceCache:
         self.ticker = ticker
         self._db_config = {
             "host": settings.db.host,
-            "database": settings.db.name,
+            "dbname": settings.db.name,
             "user": settings.db.user,
             "password": settings.db.password,
             "port": settings.db.port
@@ -359,7 +359,7 @@ class PriceCache:
         """
         with self._get_conn() as conn:
             conn.execute("""
-                CREATE TABLE IF NOT EXIST price_bars (
+                CREATE TABLE IF NOT EXISTS price_bars (
                     ticker  VARCHAR(20)     NOT NULL,
                     timestamp   DATE        NOT NULL,
                     interval    VARCHAR(10)     NOT NULL,
