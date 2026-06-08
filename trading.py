@@ -373,5 +373,24 @@ class PriceCache:
             """)
         log.info("Price_bars table verified.")
 
+    def get_latest_date(self, interval: str) -> Optional[pd.Timestamp]:
+        """ Get the most recent date for current ticker and interval pair.
+
+        Args:
+            interval: bar timeframe stored in the table (e.g. "DAY).
+        
+        Returns:
+            Most recent date for current pair, or None if the pair doesn't exist.
+        """
+        with self._get_conn as conn:
+            row = conn.execute(
+                "SELECT MAX(timestamp) FROM price_table WHERE ticker = %s AND interval = %s",
+                (self.ticker, interval)
+            ).fetchone()
+
+        if row and row[0] is not None:
+            return pd.Timestamp(row[0])
+        return None
+
 client = TigerClient( settings)
 ana = TechAnalyst(client, settings)
