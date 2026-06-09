@@ -411,5 +411,17 @@ class PriceCache:
                 getattr(row, "volume", None),
             ))
 
+        with self._get_conn as conn:
+            conn.executemany(
+                """
+                INSERT INTO price_bars
+                    (ticker, timestamp, interval, open, high, low, close, volume)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (ticker, timestamp, interval) DO NOTHING
+                """,
+                rows,
+            )
+        log.info(f"Cached {len(rows)} bars for {self.ticker} [{interval}]")
+
 client = TigerClient( settings)
 ana = TechAnalyst(client, settings)
