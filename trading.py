@@ -391,6 +391,25 @@ class PriceCache:
         if row and row[0] is not None:
             return pd.Timestamp(row[0])
         return None
+    
+    def insert_bars(self, df: pd.DataFrame, interval: str) -> None:
+        """ Bulk insert OHLCV rows, sliently skipping any that already exists.
+        """
+        if df.empty:
+            return
+        
+        rows = []
+        for row in df.itertuples():
+            rows.append((
+                self.ticker,
+                getattr(row, "Index"),
+                interval,
+                getattr(row, "open", None),
+                getattr(row, "high", None),
+                getattr(row, "low", None),
+                getattr(row, "close", None),
+                getattr(row, "volume", None),
+            ))
 
 client = TigerClient( settings)
 ana = TechAnalyst(client, settings)
