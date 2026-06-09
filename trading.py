@@ -12,7 +12,7 @@ import pandas_market_calendars as pmc
 
 from utils import setup_logging
 from typing import Optional
-from configs import AppSettings, DBSettings, load_settings
+from configs import AppSettings, load_settings
 
 # Tiger trade SDK
 from tigeropen.common.consts import (
@@ -81,7 +81,7 @@ class TechAnalyst:
         # Market calendar for resolving valid trading days
         self.calendar = pmc.get_calendar(self.broker.exchange)
         
-        # self.cache = PriceCache(self.client.symbol, settings)
+        self.cache = PriceCache(self.client.symbol, settings)
     
     def get_last_price(self) -> float:
         """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
