@@ -8,6 +8,11 @@ A Postgres database is employed to avoid triggering [rate limit](https://quant.i
 
 On runtime, a request will first be routed to the database and only in an event of miss will it be redirected to Tiger API. The newly fetched data will then be immediately appended to a table, allowing for faster retrieval for following requests.
 
+Cache strategy is formulated as:
+- Full hit: return price data immediately if database has data up to yesterday. No API calls are initiated.
+- Partial hit: fetch only the gap between the last cached date and today, then merge the result with cached rows.
+- Full miss: fetch everything from the API and prepare the cache for future calls.
+
 Postgres is chosen to store time-series price due to following considerations:
 - **Transactional integrity**: thanks to its strict ACID compliance, Postgres ensures no partial writes survive a crash and that tables always maintain continuous range of data;
 - **Efficient retrieval**: Postgres B-tree indexes allows for fast retrieval of price data that's indexed by date columns;
