@@ -422,6 +422,41 @@ class PriceCache:
                 rows,
             )
         log.info(f"Cached {len(rows)} bars for {self.ticker} [{interval}]")
+    
+    def load_bars(self, start: pd.Timestamp, end: pd.Timestamp, interval: str) -> pd.DataFrame:
+        """ Read price bars within a specified time period, inclusive on both ends
+        
+        Args:
+            start: earliest date to retrieve
+            end: latest date to retrieve
+            interval: bar timeframe label
+        
+        Returns:
+            Dataframe with DatetimeIndex and OHLCV columns sorted ascending, or an empty Dataframe 
+            if nothing is cached for the requested time range.
+        """
+        with self._get_conn as conn:
+            rows = conn.execute(
+                """
+                    SELECT timestamp, open, high, low, close, volume
+                    FROM price_bars
+                    WHERE ticker = %s
+                    AND   interval = %s
+                    AND timestamp BETWEEN %s AND %s
+                    ORDER BY timestamp ASC
+                """,
+                (self.ticker, interval, start.date(), end.date()),
+            ).fetchall()
+
+        if not rows:
+            return pd.DataFrame()
+        
+        df = pd.DataFrame(rows, columns=["time", "open", "high", "low", "close", "volume"])
+
+        # Convert datetime.date to pandas datetime type
+        df["time"] = pd.to_datetime(df["time"])
+        df.set_index("time", inplace=True)
+        return df
 
 client = TigerClient( settings)
 ana = TechAnalyst(client, settings)
