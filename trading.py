@@ -401,7 +401,7 @@ class PriceCache:
     def _get_conn(self) -> psycopg.Connection:
         """ Open and return a new psycopg v3 connection.
         """
-        return psycopg.connect(**self._db_config)
+        return psycopg.connect(**self._db_config, autocommit=True)
 
     def _ensure_table(self):
         """ Create price_bars table if it doesn't exist yet. Safe to call on every startup.
