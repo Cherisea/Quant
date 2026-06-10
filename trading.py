@@ -460,17 +460,21 @@ class PriceCache:
                 getattr(row, "volume", None),
             ))
 
-        with self._get_conn as conn:
-            with conn.cursor() as cur:
-                cur.executemany(
-                    """
-                    INSERT INTO price_bars
-                        (ticker, timestamp, interval, open, high, low, close, volume)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (ticker, timestamp, interval) DO NOTHING
-                    """,
-                    rows,
-                )
+        conn = self._get_conn
+        try:
+            cur = conn.cursor()
+            cur.executemany(
+                """
+                INSERT INTO price_bars
+                    (ticker, timestamp, interval, open, high, low, close, volume)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (ticker, timestamp, interval) DO NOTHING
+                """,
+                rows,
+            )
+            cur.close()
+        finally:
+            conn.close()
         log.info(f"Cached {len(rows)} bars for {self.ticker} [{interval}]")
     
     def load_bars(self, start: pd.Timestamp, end: pd.Timestamp, interval: str) -> pd.DataFrame:
