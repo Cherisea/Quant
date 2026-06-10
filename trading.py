@@ -92,7 +92,7 @@ class TechAnalyst:
         
         # Initialize DB cache
         try:
-            self.cache = PriceCache(self.client.symbol, settings)
+            self.cache = PriceCache(settings)
         except Exception as e:
             log.warning("DB cache init failed (%s) - running without cache.", e)
             self.cache = None
