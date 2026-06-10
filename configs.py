@@ -102,7 +102,7 @@ class BrokerSettings:
 
     symbol: str = "06066"
     currency: str = "HKD"
-    interval: str = "DAY"          # Timeframe label for retrieving price bars
+    interval: str = "Day"          # Timeframe label for retrieving price bars
     lot_size: int = 500
     tz: str = "Asia/Hong_Kong"
     exchange: str = "HKEX"
