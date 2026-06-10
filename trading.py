@@ -81,7 +81,12 @@ class TechAnalyst:
         # Market calendar for resolving valid trading days
         self.calendar = pmc.get_calendar(self.broker.exchange)
         
-        self.cache = PriceCache(self.client.symbol, settings)
+        # Initialize DB cache
+        try:
+            self.cache = PriceCache(self.client.symbol, settings)
+        except Exception as e:
+            log.warning("DB cache init failed (%s) - running without cache.", e)
+            self.cache = None
     
     def get_last_price(self) -> float:
         """Fetch latest closing price of a security. Be mindful of exchange imposed price quote delay.
