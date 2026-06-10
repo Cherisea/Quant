@@ -332,14 +332,10 @@ class PriceCache:
         CRUD operations and the lastest cached date query used by database sync job. 
     """
 
-    def __init__(self, ticker, settings: AppSettings):
+    def __init__(self, settings: AppSettings):
         """
-        
-        Agrs:
-            ticker: ticker symbol of a traded security
-            settings: a data class that configures params of local database
         """
-        self.ticker = ticker
+        self.ticker = settings.broker.symbol
         self._db_config = {
             "host": settings.db.host,
             "dbname": settings.db.name,
@@ -458,5 +454,3 @@ class PriceCache:
         df.set_index("time", inplace=True)
         return df
 
-client = TigerClient( settings)
-ana = TechAnalyst(client, settings)
