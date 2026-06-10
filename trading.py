@@ -460,7 +460,7 @@ class PriceCache:
                 getattr(row, "volume", None),
             ))
 
-        conn = self._get_conn
+        conn = self._get_conn()
         try:
             cur = conn.cursor()
             cur.executemany(
@@ -489,20 +489,24 @@ class PriceCache:
             Dataframe with DatetimeIndex and OHLCV columns sorted ascending, or an empty Dataframe 
             if nothing is cached for the requested time range.
         """
-        with self._get_conn as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                        SELECT timestamp, open, high, low, close, volume
-                        FROM price_bars
-                        WHERE ticker = %s
-                        AND   interval = %s
-                        AND timestamp BETWEEN %s AND %s
-                        ORDER BY timestamp ASC
-                    """,
-                    (self.ticker, interval, start.date(), end.date()),
-                )
-                rows = cur.fetchall()
+        conn = self._get_conn()
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                """
+                    SELECT timestamp, open, high, low, close, volume
+                    FROM price_bars
+                    WHERE ticker = %s
+                    AND   interval = %s
+                    AND timestamp BETWEEN %s AND %s
+                    ORDER BY timestamp ASC
+                """,
+                (self.ticker, interval, start.date(), end.date()),
+            )
+            rows = cur.fetchall()
+            cur.close()
+        finally:
+            conn.close()
 
         if not rows:
             return pd.DataFrame()
