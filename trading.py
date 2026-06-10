@@ -461,15 +461,16 @@ class PriceCache:
             ))
 
         with self._get_conn as conn:
-            conn.executemany(
-                """
-                INSERT INTO price_bars
-                    (ticker, timestamp, interval, open, high, low, close, volume)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                ON CONFLICT (ticker, timestamp, interval) DO NOTHING
-                """,
-                rows,
-            )
+            with conn.cursor() as cur:
+                cur.executemany(
+                    """
+                    INSERT INTO price_bars
+                        (ticker, timestamp, interval, open, high, low, close, volume)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (ticker, timestamp, interval) DO NOTHING
+                    """,
+                    rows,
+                )
         log.info(f"Cached {len(rows)} bars for {self.ticker} [{interval}]")
     
     def load_bars(self, start: pd.Timestamp, end: pd.Timestamp, interval: str) -> pd.DataFrame:
@@ -485,17 +486,18 @@ class PriceCache:
             if nothing is cached for the requested time range.
         """
         with self._get_conn as conn:
-            rows = conn.execute(
-                """
-                    SELECT timestamp, open, high, low, close, volume
-                    FROM price_bars
-                    WHERE ticker = %s
-                    AND   interval = %s
-                    AND timestamp BETWEEN %s AND %s
-                    ORDER BY timestamp ASC
-                """,
-                (self.ticker, interval, start.date(), end.date()),
-            ).fetchall()
+            with conn.cursor() as cur:
+                rows = cur.execute(
+                    """
+                        SELECT timestamp, open, high, low, close, volume
+                        FROM price_bars
+                        WHERE ticker = %s
+                        AND   interval = %s
+                        AND timestamp BETWEEN %s AND %s
+                        ORDER BY timestamp ASC
+                    """,
+                    (self.ticker, interval, start.date(), end.date()),
+                ).fetchall()
 
         if not rows:
             return pd.DataFrame()
