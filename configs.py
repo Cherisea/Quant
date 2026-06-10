@@ -117,6 +117,8 @@ class RiskSettings:
     limit_buffer_bps: int = 10          # Overpay amount in base point for an order to be filled
     max_wait_sec: int = 60              # Max amount of time to wait before canceling an order
     lookback_bars: int = 240            # Number of daily bars to fetch at each tick
+    calender_days: int = 365            # Total number of calender days in a year
+    trading_days: int = 252             # Total number of trading days in a year
 
 @dataclass(frozen=True)
 class StrategySettings:
