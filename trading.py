@@ -487,7 +487,7 @@ class PriceCache:
         """
         with self._get_conn as conn:
             with conn.cursor() as cur:
-                rows = cur.execute(
+                cur.execute(
                     """
                         SELECT timestamp, open, high, low, close, volume
                         FROM price_bars
@@ -497,7 +497,8 @@ class PriceCache:
                         ORDER BY timestamp ASC
                     """,
                     (self.ticker, interval, start.date(), end.date()),
-                ).fetchall()
+                )
+                rows = cur.fetchall()
 
         if not rows:
             return pd.DataFrame()
