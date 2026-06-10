@@ -30,6 +30,14 @@ settings = load_settings()
 setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
+# Mapping from timeframe label to BarPeriod and vice versa
+tf_to_bp = {
+    "Hour": BarPeriod.ONE_HOUR, "Day": BarPeriod.DAY, "Week": BarPeriod.WEEK, "Month": BarPeriod.MONTH
+}
+bp_to_tf = {
+    BarPeriod.ONE_HOUR: "Hour", BarPeriod.DAY: "Day", BarPeriod.WEEK: "Week", BarPeriod.MONTH: "Month"
+}
+
 class TigerClient:
     """Quote and trade agent for interacting with Tiger Trade platform.
     """
@@ -77,6 +85,7 @@ class TechAnalyst:
         self.strategy = settings.strategy
         self.risk = settings.risk
         self.broker = settings.broker
+        self.interval = tf_to_bp[self.broker.interval]
 
         # Market calendar for resolving valid trading days
         self.calendar = pmc.get_calendar(self.broker.exchange)
@@ -98,7 +107,8 @@ class TechAnalyst:
         return brief['close'].iloc[0]
 
     def fetch_bars(self, test: bool=False, test_duration: int=3) -> pd.DataFrame:
-        """Fetch historical OHLC data.
+        """ Fetch historical OHLC data, serving from local Postgres cache where
+            possible and fall back to to Tiger API for any missing date range.
 
         Args:
             test: if backtest mode is on or not
@@ -106,37 +116,75 @@ class TechAnalyst:
                             Measured in years.
 
         Returns:
-            A dataframe with a set number of rows containing historical price information of a 
-            preset security.
+            Dataframe with DatetimeIndex and OHLCV columnsm sorted in ascending order.
         """
+        end = pd.Timestamp.now().normalize()
+
         if test:
-            # Resets to midnight local time
-            end = pd.Timestamp.now().normalize()
             start = end - pd.DateOffset(years=test_duration)
-
-            bars = self.client.quote.get_bars(
-                symbols= [self.client.symbol],
-                period= BarPeriod.DAY,
-                right= QuoteRight.BR,
-                begin_time= start.strftime("%Y-%m-%d"),
-                end_time= end.strftime("%Y-%m-%d"),
-            )
         else:
-            bars = self.client.quote.get_bars(
-                symbols = [self.client.symbol],
-                period = BarPeriod.DAY,     # Timeframe of each candlestick bar
-                right = QuoteRight.BR,      # Historical prices are adjusted for corporate actions
-                limit = self.risk.lookback_bars       # Number of days to pull data
-            )
-
-        if bars is None or bars.empty:
-            raise RuntimeError("Failed to fetch bar data.") 
+            # Convert trading day lookback into calendar days, with a generous buffer
+            # to account for public holidays and weekends.
+            cal_days = int(self.risk.lookback_bars * self.risk.calender_days / self.risk.trading_days) + 30
+            start = end - pd.DateOffset(days=cal_days)
         
-        # Convert numeric time to a human-readable format
-        bars["time"] = pd.to_datetime(bars["time"], unit="ms")
-        bars.set_index("time", inplace=True)
-        bars.sort_index(inplace=True)
-        return bars
+        # Stage 1: local cache
+        cached = pd.DataFrame()
+        if self.cache is not None:
+            try: 
+                cached = self.cache.load_bars(start, end, self.broker.interval)
+            except Exception as e:
+                log.warning("DB read failed (%s) - skipping cache.", e)
+        
+        # Check if it's a full hit or partial hit
+        if not cached.empty:
+            latest_cached = cached.index[-1]
+            if latest_cached >= end - pd.Timedelta(days=1):
+                log.info(f"Cache hit: returning {len(cached)} bars from DB for {self.broker.symbol}")
+                return cached
+            fetch_start = latest_cached + pd.Timedelta(days=1)
+            log.info(f"Partial cache hit: fetching gap {fetch_start.date()} -> {end.date()} from API.")
+        else:
+            fetch_start = start
+            log.info(f"Cache miss: fetching {start.date()} -> {end.date()} from API.")
+        
+        # Stage 2: fetch missing date range
+        api_bars = self.client.quote.get_bars(
+            symbols=[self.client.symbol],
+            period=self.interval,
+            right=QuoteRight.BR,
+            begin_time=fetch_start.strftime("%Y-%m-%d"),
+            end_time=end.strftime("%Y-%m-%d"),
+        )
+
+        if api_bars is None or api_bars.empty:
+            if not cached.empty:
+                log.warnning("API returned no new bars; returning cached data only.")
+                return cached
+            raise RuntimeError("Failed to fetch bar data.")
+
+        api_bars["time"] = pd.to_datetime(api_bars["time"], unit="ms")
+        api_bars.set_index("time", inplace=True)
+        api_bars.sort_index(inplace=True)
+
+        # Normalize to the same columns as DB output
+        ohlcv = [c for c in ("open", "high", "low", "close", "volume") if c in api_bars.columns]
+        api_bars = api_bars[ohlcv].copy()
+
+        # Stage 3: persist the new bars
+        if self.cache is not None:
+            try:
+                self.cache.insert_bars(api_bars, bp_to_tf[self.interval])
+            except Exception as e:
+                log.warning(f"DB write failed {e} - continuing without caching retrieved result.")
+        
+        # Stage 4: merge cached rows with API call result
+        if not cached.empty:
+            combined = pd.concat([cached, api_bars])
+            combined = combined[~combined.index.duplicated(keep="last")].sort_index()
+            return combined
+        return api_bars
+
 
     def compute_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Calculate technical indicators such as fast EMA, slow EMA, rate of change and average volume.
@@ -458,4 +506,3 @@ class PriceCache:
         df["time"] = pd.to_datetime(df["time"])
         df.set_index("time", inplace=True)
         return df
-
