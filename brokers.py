@@ -120,3 +120,33 @@ class BrokerAdapter(abc.ABC):
         log.warning(f"Order {order_id} not filled within {self.risk.max_wait_sec}s -- cancelling")
         self.cancel_order(order_id)
         return OrderResult(order_id=order_id, state=OrderState.CANCELLED)
+
+# ================================= Tiger Adapter =====================================
+
+# Guard against SDK imports so it runs even when it's not installed
+try:
+    from tigeropen.common.consts import (
+        BarPeriod, QuoteRight,
+        SecurityType, OrderStatus
+    )
+    from tigeropen.quote.quote_client import QuoteClient
+    from tigeropen.trade.trade_client import TradeClient
+    from tigeropen.common.util.contract_utils import stock_contract
+    from tigeropen.common.util.order_utils import limit_order
+    from tigeropen.tiger_open_config import TigerOpenClientConfig
+    _TIGER_AVAILABLE = True
+except:
+    _TIGER_AVAILABLE = False
+
+class TigerAdapter(BrokerAdapter):
+    """ Adapter for Tiger Trade via the tigeropen SDK.
+    """
+    def __init__(self, settings: AppSettings):
+        super().__init__(settings)
+        if not _TIGER_AVAILABLE:
+            raise RuntimeError("Tigeropen is not installed. Tiger Adapter unavailable.")
+        
+        self.account = settings.broker.tiger_account
+        self.quote: Optional[QuoteClient] = None
+        self.trade: Optional[TradeClient] = None
+        self.contract = None
