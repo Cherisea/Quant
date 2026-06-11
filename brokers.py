@@ -167,3 +167,16 @@ class TigerAdapter(BrokerAdapter):
         self.trade = TradeClient(cfg)
         self.contract = stock_contract(symbol=self.symbol, currency=self.currency)
         log.info("Tiger adapter connected.")
+
+    def get_lot_size(self) -> int:
+        """Fetch actual lot size from exchange metadata.
+        """
+        try:
+            meta = self.quote.get_trade_metas([self.symbol])
+            ls = meta["lot_size"].iloc[0]
+            log.info(f"Verified lot size for {self.symbol}: {ls}")
+            return ls.item()
+        except Exception as e:
+            ls = self.broker.lot_size
+            log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
+            return ls.item()
