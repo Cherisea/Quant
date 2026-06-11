@@ -189,7 +189,7 @@ class LoggingSettings:
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "standard": {"format": "%(asctime)s [%(levelname)s] %(message)s"},
+            "standard": {"format": "%(asctime)s [%(levelname)s] %(filename)s-%(lineno)d: %(message)s"},
         },
         "handlers": {
             "file":    {"class": "logging.FileHandler",   "filename": file, "formatter": "standard"},
