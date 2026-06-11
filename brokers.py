@@ -5,6 +5,7 @@
 
 import abc
 import logging
+import time
 import pandas as pd
 
 from typing import Optional
@@ -103,4 +104,19 @@ class BrokerAdapter(abc.ABC):
         return round(ref_price * factor, 3)
 
     def _wait_for_fill(self, order_id: str) -> OrderResult:
-        pass
+        """ Query order status until it reaches a terminal state or times out.
+        """
+        start = time.time()
+        while time.time() - start < self.risk.max_wait_sec:
+            res = self.get_order_status(order_id)
+            if res.state in (OrderState.FILLED, OrderState.CANCELLED, OrderState.REJECTED):
+                if res.filled:
+                    log.info(f"Order {order_id} FILLED (avg={res.avg_filled_price})")
+                else:
+                    log.warning(f"Order {order_id} ended {res.state}")
+                return res
+            time.sleep(3)
+        
+        log.warning(f"Order {order_id} not filled within {self.risk.max_wait_sec}s -- cancelling")
+        self.cancel_order(order_id)
+        return OrderResult(order_id=order_id, state=OrderState.CANCELLED)
