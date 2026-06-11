@@ -4,11 +4,14 @@
 """
 
 import abc
+import logging
 import pandas as pd
 
 from typing import Optional
-from configs import AppSettings, Position, OrderResult, OrderSide, OrderState
+from configs import AppSettings, Position, OrderResult, OrderSide, OrderState, LoggingSettings
 
+LoggingSettings()
+log = logging.getLogger(__name__)   # Initialize a named logger 
 
 class BrokerAdapter(abc.ABC):
     """ The contract every broker must satisfy.
