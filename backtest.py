@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from utils import *
 from trading import TigerClient, TechAnalyst
-from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
+from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings, LoggingSettings
 
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
@@ -266,7 +266,7 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
 
 if __name__ == "__main__":
     settings = load_settings()
-    setup_logging(settings.logging.file, settings.logging.level)
+    LoggingSettings()
 
     # Step 1: Boot up trading clients
     client = TigerClient(settings)
