@@ -91,6 +91,7 @@ class BrokerAdapter(abc.ABC):
         order_id = self.submit_limit_order(side, qty, limit_price)
         if order_id is None:
             return OrderResult(order_id=None, state=OrderState.REJECTED)
+        log.info(f"{side} order placed: {qty} @ {limit_price}, id = {order_id}")
         return self._wait_for_fill(order_id)
         
 
