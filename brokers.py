@@ -146,7 +146,24 @@ class TigerAdapter(BrokerAdapter):
         if not _TIGER_AVAILABLE:
             raise RuntimeError("Tigeropen is not installed. Tiger Adapter unavailable.")
         
-        self.account = settings.broker.tiger_account
         self.quote: Optional[QuoteClient] = None
         self.trade: Optional[TradeClient] = None
         self.contract = None
+    
+    def _build_config(self) -> TigerOpenClientConfig:
+        if self.broker.props_path:
+            cfg = TigerOpenClientConfig(props_path=self.broker.props_path)
+        else:
+            cfg = TigerOpenClientConfig()
+            cfg.private_key = self.broker.private_key
+            cfg.tiger_id = self.broker.tiger_id
+            cfg.tiger_account = self.broker.tiger_account
+        cfg.timezone = self.broker.tz
+        return cfg
+    
+    def connect(self):
+        cfg = self._build_config()
+        self.quote = QuoteClient(cfg)
+        self.trade = TradeClient(cfg)
+        self.contract = stock_contract(symbol=self.symbol, currency=self.currency)
+        log.info("Tiger adapter connected.")
