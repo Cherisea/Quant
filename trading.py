@@ -11,7 +11,7 @@ import pandas as pd
 import pandas_market_calendars as pmc
 
 from typing import Optional
-from configs import AppSettings, LoggingSettings, load_settings
+from configs import AppSettings, LoggingSettings
 
 # Tiger trade SDK
 from tigeropen.common.consts import (
@@ -24,8 +24,6 @@ from tigeropen.common.util.contract_utils import stock_contract
 from tigeropen.common.util.order_utils import limit_order
 from tigeropen.tiger_open_config import TigerOpenClientConfig
 
-# Load logger settings from root logger
-settings = load_settings()
 LoggingSettings()
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
