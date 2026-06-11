@@ -4,6 +4,7 @@
 """
 
 import os
+import logging.config
 from enum import Enum
 import pandas as pd
 from typing import Optional
@@ -184,6 +185,19 @@ class LoggingSettings:
     file: str = "./logs/trading_bot_06066.log"
     level: str = "INFO"
 
+    logging.config.dictConfig({
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "standard": {"format": "%(asctime)s [%(levelname)s] %(message)s"},
+        },
+        "handlers": {
+            "file":    {"class": "logging.FileHandler",   "filename": file, "formatter": "standard"},
+            "console": {"class": "logging.StreamHandler", "stream": "ext://sys.stdout", "formatter": "standard"},
+        },
+        "root": {"level": level.upper(), "handlers": ["file", "console"]},
+    })
+
 # Postgres database settings
 @dataclass(frozen=True)
 class DBSettings:
@@ -202,7 +216,6 @@ class AppSettings:
     risk: RiskSettings
     strategy: StrategySettings
     schedule: ScheduleSettings
-    logging: LoggingSettings
     db: DBSettings
 
 def load_settings() -> AppSettings:
@@ -217,7 +230,6 @@ def load_settings() -> AppSettings:
     risk = RiskSettings()
     strategy = StrategySettings()
     schedule = ScheduleSettings()
-    logging = LoggingSettings()
     db = DBSettings()
 
     _validate_settings(broker, risk, strategy)
@@ -226,7 +238,6 @@ def load_settings() -> AppSettings:
         risk = risk,
         strategy = strategy,
         schedule = schedule,
-        logging = logging,
         db = db
     )
 
