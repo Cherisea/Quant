@@ -412,10 +412,10 @@ class PriceCache:
                     ticker  VARCHAR(20)     NOT NULL,
                     timestamp   DATE        NOT NULL,
                     interval    VARCHAR(10)     NOT NULL,
-                    open    DECIMAL(12, 4),
-                    high    DECIMAL(12, 4),
-                    low     DECIMAL(12, 4),
-                    close   DECIMAL(12, 4),
+                    open    DOUBLE PRECISION,
+                    high    DOUBLE PRECISION,
+                    low     DOUBLE PRECISION,
+                    close   DOUBLE PRECISION,
                     volume  BIGINT,
                     PRIMARY KEY (ticker, timestamp, interval)
                 )
