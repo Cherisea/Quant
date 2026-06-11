@@ -38,7 +38,7 @@ and factor in all transaction cost(refer to your broker for a complete list of f
 
 ## Roadmap
 ### Backend
-- [ ] Store OHLC price info in Postgres to avoid repeated API calls to Tiger API;
+- [x] Store OHLC price info in Postgres to avoid repeated API calls to Tiger API;
 - [ ] Extract the backtest engine and live trading bot into a FastAPI service;
 - [ ] Store every trade, signal and euqity snapshot in Postgres;
 - [ ] Replace logger with a third-party logging tool (Datadog);
