@@ -2,29 +2,7 @@
 Utility functions to support the execution of primary scripts.
 """
 import math
-import logging.config
-
 from configs import HKPlatformFeePlan, TradeFeesHK
-
-def setup_logging(log_file: str, level: str = "INFO"):
-    """Set up a logger for a script.
-
-    Args:
-        log_file: name of file to store logs
-        level: severity of information to be logged
-    """
-    logging.config.dictConfig({
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "standard": {"format": "%(asctime)s [%(levelname)s] %(message)s"},
-        },
-        "handlers": {
-            "file":    {"class": "logging.FileHandler",   "filename": log_file, "formatter": "standard"},
-            "console": {"class": "logging.StreamHandler", "stream": "ext://sys.stdout", "formatter": "standard"},
-        },
-        "root": {"level": level.upper(), "handlers": ["file", "console"]},
-    })
 
 def round_to_lot(lot_size, qty: int) -> int:
         """Round requested quantity to a multiple of lot size.
