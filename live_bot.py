@@ -9,10 +9,6 @@ from configs import AppSettings, load_settings
 from trading import TigerClient, PositionManager, OrderExecutor, TechAnalyst
 
 _SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
-settings = load_settings()
-
-# Load logger settings from root logger
-setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
 class MomentumBot:
@@ -131,6 +127,9 @@ class MomentumBot:
         log.info("Bot stopped cleanly.")
 
 if __name__ == "__main__":
+    settings = load_settings()
+    setup_logging(settings.logging.file, settings.logging.level)
+
     # Start the bot
     bot = MomentumBot(settings)
     bot.run()

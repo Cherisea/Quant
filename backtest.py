@@ -11,9 +11,6 @@ from utils import *
 from trading import TigerClient, TechAnalyst
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings
 
-# =================== Load settings and set up a logger ===================
-settings = load_settings()
-setup_logging(settings.logging.file, settings.logging.level)
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
 def fill_trade(trade: Trade, ts: pd.Timestamp, sell_price: float, comm: float, exit_reason: str) -> Trade:
@@ -268,6 +265,9 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     return state
 
 if __name__ == "__main__":
+    settings = load_settings()
+    setup_logging(settings.logging.file, settings.logging.level)
+
     # Step 1: Boot up trading clients
     client = TigerClient(settings)
     analyst = TechAnalyst(client, settings)
