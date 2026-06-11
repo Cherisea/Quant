@@ -6,7 +6,7 @@
 import abc
 import pandas as pd
 from typing import Optional
-from configs import AppSettings, Position, OrderResult
+from configs import AppSettings, Position, OrderResult, OrderSide
 
 
 class BrokerAdapter(abc.ABC):
@@ -58,7 +58,7 @@ class BrokerAdapter(abc.ABC):
         """
     
     @abc.abstractmethod
-    def submit_limit_order(self, side: str, qty: int, limit_price: float) -> Optional[str]:
+    def submit_limit_order(self, side: OrderSide, qty: int, limit_price: float) -> Optional[str]:
         """ Place a single limit order. Returns a broker order id or None on failure.
         """
     
@@ -72,7 +72,14 @@ class BrokerAdapter(abc.ABC):
         """ Cancel an active order. No-op if already inactive.
         """
     
-    def execute(self, side: str, qty: int, ref_price: float) -> OrderResult:
+    def execute(self, side: OrderSide, qty: int, ref_price: float) -> OrderResult:
         """ 
         
         """
+
+    def _apply_slippage(self, ref_price: float, side: OrderSide) -> float:
+        """ Overpay (buy) or underbid (sell) by the configured buffer so the order fills. 
+        """
+        buf = self.risk.limit_buffer_bps / 10_000
+        factor = (1 + buf) if side == "BUY" else (1 - buf)
+        return round(ref_price * factor, 3)
