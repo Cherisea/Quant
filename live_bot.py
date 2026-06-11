@@ -4,8 +4,8 @@ import logging
 import time
 
 from datetime import datetime
-from utils import setup_logging, round_to_lot
-from configs import AppSettings, load_settings
+from utils import round_to_lot
+from configs import AppSettings, LoggingSettings, load_settings
 from trading import TigerClient, PositionManager, OrderExecutor, TechAnalyst
 
 _SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
@@ -128,7 +128,7 @@ class MomentumBot:
 
 if __name__ == "__main__":
     settings = load_settings()
-    setup_logging(settings.logging.file, settings.logging.level)
+    LoggingSettings()
 
     # Start the bot
     bot = MomentumBot(settings)

@@ -10,9 +10,8 @@ import psycopg
 import pandas as pd
 import pandas_market_calendars as pmc
 
-from utils import setup_logging
 from typing import Optional
-from configs import AppSettings, load_settings
+from configs import AppSettings, LoggingSettings, load_settings
 
 # Tiger trade SDK
 from tigeropen.common.consts import (
@@ -27,7 +26,7 @@ from tigeropen.tiger_open_config import TigerOpenClientConfig
 
 # Load logger settings from root logger
 settings = load_settings()
-setup_logging(settings.logging.file, settings.logging.level)
+LoggingSettings()
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
 # Mapping from timeframe label to BarPeriod and vice versa
