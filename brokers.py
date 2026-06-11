@@ -5,8 +5,9 @@
 
 import abc
 import pandas as pd
+
 from typing import Optional
-from configs import AppSettings, Position, OrderResult, OrderSide
+from configs import AppSettings, Position, OrderResult, OrderSide, OrderState
 
 
 class BrokerAdapter(abc.ABC):
@@ -73,9 +74,22 @@ class BrokerAdapter(abc.ABC):
         """
     
     def execute(self, side: OrderSide, qty: int, ref_price: float) -> OrderResult:
-        """ 
+        """ Sumbit a buffered limit order and wait for it to fill or cancel on timeout.
+
+        Args:
+            side: direction of transaction
+            qty: number of shares rounded by lot size
+            ref_price: reference price the limit is offset from
         
+        Returns:
+            An OrderResult; check '.filled' to know whether the trade went through.
         """
+        limit_price = self._apply_slippage(ref_price, side)
+        order_id = self.submit_limit_order(side, qty, limit_price)
+        if order_id is None:
+            return OrderResult(order_id=None, state=OrderState.REJECTED)
+        return self._wait_for_fill(order_id)
+        
 
     def _apply_slippage(self, ref_price: float, side: OrderSide) -> float:
         """ Overpay (buy) or underbid (sell) by the configured buffer so the order fills. 
@@ -83,3 +97,6 @@ class BrokerAdapter(abc.ABC):
         buf = self.risk.limit_buffer_bps / 10_000
         factor = (1 + buf) if side == "BUY" else (1 - buf)
         return round(ref_price * factor, 3)
+
+    def _wait_for_fill(self, order_id: str) -> OrderResult:
+        pass
