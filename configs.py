@@ -13,6 +13,40 @@ from dataclasses import dataclass, field
 # Load env vars from .env file 
 load_dotenv()
 
+# ============================= Broker-agnostic Objects ============================
+class OrderSide(str, Enum):
+    BUY = "BUY"
+    SELL = "SELL"
+
+class OrderState(str, Enum):
+    PENDING = "pending"
+    FILLED = "filled"
+    CANCELLED = "cancelled"
+    REJECTED = "rejected"
+    UNKNOWN = "unknown"
+
+@dataclass(frozen=True)
+class Position:
+    symbol: str
+    quantity: int
+    average_cost: float
+
+@dataclass(frozen=True)
+class OrderResult:
+    """Outcome of an order submission"""
+    order_id: Optional[str]
+    state: OrderState
+    filled_qty: int = 0
+    avg_filled_price: float = 0.0
+
+    @property
+    def filled(self) -> bool:
+        return self.state is OrderState.FILLED
+
+# Columns every adapter must return from get_bars in the exact order
+BAR_COLUMNS = ["open", "high", "low", "close", "colume"]
+
+
 # (max_monthly_orders, fee_per_order) based on Tiger's fee structure
 HK_PLATFORM_FEE_TIERS = (
     (5, 30.0),
