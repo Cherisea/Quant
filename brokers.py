@@ -279,3 +279,17 @@ class TigerAdapter(BrokerAdapter):
             self.trade.cancel_order(id=int(order_id))
         except Exception as e:
             log.error(f"Failed to cancel order {order_id}: {e}")       
+
+# ================================ Factory ==========================================
+BROKER_REGISTRY = {
+    "tiger": TigerAdapter,
+    # Add another broker by implementing an adapter and register it here
+}
+
+def build_broker(settings: AppSettings) -> BrokerAdapter:
+    name = settings.broker.name.lower()
+    try:
+        cls = BROKER_REGISTRY[name]
+    except KeyError:
+        raise ValueError(f"Unknown broker: '{name}'. Known brokers: {list(BROKER_REGISTRY)} ")
+    return cls(settings)
