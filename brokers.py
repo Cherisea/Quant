@@ -363,5 +363,5 @@ def build_broker(settings: AppSettings) -> BrokerAdapter:
     broker = cls(settings)
     if settings.db.enabled and name != "csv":
         log.info(f"DB cache enabled - wrapping {cls.__name__} with CacheBrokerAdapter.")
-        return CachedBrokerAdapter(cls, settings)
+        return CachedBrokerAdapter(broker, settings)
     return broker
