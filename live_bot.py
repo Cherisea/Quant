@@ -5,8 +5,9 @@ import time
 
 from datetime import datetime
 from utils import round_to_lot
+from brokers import build_broker
 from configs import AppSettings, LoggingSettings, load_settings
-from trading import TigerClient, PositionManager, OrderExecutor, TechAnalyst
+from trading import PositionManager, TechAnalyst
 
 _SIGNAL_LABELS = {0: "HOLD", 1: "BUY", -1: "SELL"}
 log = logging.getLogger(__name__)   # Initialize a named logger 
@@ -14,15 +15,14 @@ log = logging.getLogger(__name__)   # Initialize a named logger
 class MomentumBot:
     
     def __init__(self, settings: AppSettings) -> None:
-        self.client = TigerClient(settings)
-        self.lot_size = self.client.verify_lot_size()
+        self.broker = build_broker(settings)
+        self.broker.connect()
+        self.lot_size = self.broker.get_lot_size()
         self.risk = settings.risk
-        self.broker = settings.broker
         self.strategy = settings.strategy
 
         self.pm = PositionManager(self.client, self.lot_size, settings)
         self.analyst = TechAnalyst(self.client, settings)
-        self.executor = OrderExecutor(self.client, settings)
         self._running = True
 
         # Register system signals with a custom function
