@@ -202,6 +202,7 @@ class LoggingSettings:
 # Postgres database settings
 @dataclass(frozen=True)
 class DBSettings:
+    enabled: bool = field(default_factory=lambda: os.getenv("DB_ENABLED", "false").lower() == "true")
     user: str = field(default_factory=lambda: os.environ["DB_USER"])
     password: str = field(default_factory=lambda: os.environ["DB_PASSWORD"])
     host: str = "localhost"
