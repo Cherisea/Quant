@@ -280,8 +280,9 @@ class TigerAdapter(BrokerAdapter):
             log.error(f"Failed to cancel order {order_id}: {e}")       
 
 # ================================= A Cache Decorator =====================================
-class CachedBrokerAdapter:
+class CachedBrokerAdapter(BrokerAdapter):
     def __init__(self, inner: BrokerAdapter, settings: AppSettings):
+        super.__init__(settings)
         self._inner = inner
         try:
             self._cache = PriceCache(settings)
