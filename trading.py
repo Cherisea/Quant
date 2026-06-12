@@ -148,9 +148,11 @@ class PriceCache:
         }
         self._ensure_table()
 
-    def _get_conn(self) -> psycopg.Connection:
+    def _get_conn(self):
         """ Open and return a new psycopg v3 connection.
         """
+        if psycopg is None:
+            raise RuntimeError("psycopg is not installed. PriceCache is unavailable.")
         return psycopg.connect(**self._db_config, autocommit=True)
 
     def _ensure_table(self):
