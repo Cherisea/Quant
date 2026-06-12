@@ -232,3 +232,15 @@ class TigerAdapter(BrokerAdapter):
         except Exception as e:
             log.warning(f"Couldn't sync position: {e}")
             return None
+    
+    def get_cash(self) -> float:
+        try:
+            data = self.trade.get_prime_assets(account=self.account)
+            cash = data.segments['S'].currency_assets.get(self.currency).cash_available_for_trade
+            if cash <= 0:
+                log.warning(f"No {self.currency} cash available for {self.symbol}")
+                return 0.0
+            return float(cash)
+        except Exception as e:
+            log.warning(f"Couldn't fetch balance: {e}")
+            return 0.0 
