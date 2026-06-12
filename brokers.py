@@ -186,3 +186,18 @@ class TigerAdapter(BrokerAdapter):
             ls = self.broker.lot_size
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
+    
+    def get_bars(self, lookback=None, start=None, end=None) -> pd.DataFrame:
+        if start and end:
+            bars = self.quote.get_bars(
+                symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
+                begin_time=start, end_time=end,
+            )
+        else:
+            bars = self.quote.get_bars(
+                symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
+                limit=lookback or self.risk.lookback_bars,
+            )
+        if bars is None or bars.empty:
+            raise RuntimeError("Failed to fetch bar data from Tiger.")
+        return self._normalize_bars(bars)
