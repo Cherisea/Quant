@@ -55,7 +55,7 @@ class BrokerAdapter(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_last_price(self):
+    def get_last_price(self) -> float:
         """ Fetch latest trading/close price of the configured symbol.
         """
     
@@ -212,3 +212,7 @@ class TigerAdapter(BrokerAdapter):
         df["time"] = pd.to_datetime(df["time"], unit="ms")
         df = df.set_index("time").sort_index()
         return df[BAR_COLUMNS]
+
+    def get_last_price(self) -> float:
+        brief = self.quote.get_stock_briefs([self.symbol])
+        return brief['close'].iloc[0]
