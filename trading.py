@@ -11,7 +11,7 @@ All broker I/O now lives behind brokers.BrokerAdapter class. This modules keeps:
 # System and third-party imports
 import logging
 import pandas as pd
-import pandas_market_calendars as pmc
+from brokers import BrokerAdapter
 
 from typing import Optional
 from configs import AppSettings, LoggingSettings
@@ -77,10 +77,9 @@ class TechAnalyst:
 class PositionManager:
     """A manager that tracks current position, entry price and trailing stop orders.
     """
-    def __init__(self, clients:TigerClient, lot_size: int, settings: AppSettings) -> None:
-        self.clients = clients
+    def __init__(self, broker: BrokerAdapter, lot_size: int, settings: AppSettings) -> None:
         self.risk = settings.risk
-        self.broker = settings.broker
+        self.broker = broker
         self.lot_size = lot_size
 
         self.position = 0
@@ -91,19 +90,14 @@ class PositionManager:
     def _sync_from_broker(self):
         """Read actual positions and average cost from Tiger Trade on startup.
         """
-        try:
-            data = self.clients.trade.get_positions(account=self.broker.tiger_account, 
-                    sec_type=SecurityType.STK, symbol=self.clients.symbol)
-            if data is not None and len(data) != 0:
-                row = data[0]
-                self.position = int(row.quantity)
-                self.entry_price = float(row.average_cost)
-                self.highest_since_entry = self.entry_price
-                log.info(f"Synced position: {self.position} shares @{self.entry_price:.3f}")
-            else:
-                log.info(f"No existing position in {self.clients.symbol}")
-        except Exception as e:
-            log.warning(f"Couldn't sync position: {e}")
+        pos = self.broker.get_position()
+        if pos and pos.quantity:
+            self.position = int(pos.quantity)
+            self.entry_price = float(pos.average_cost)
+            self.highest_since_entry = self.entry_price
+            log.info(f"Synced position: {self.position} shares @ {self.entry_price:.3f}")
+        else:
+            log.info(f"No existing position in {self.broker.symbol}")
 
     def close_pos(self):
         """Close all positions in an account.
