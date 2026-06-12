@@ -281,7 +281,7 @@ class TigerAdapter(BrokerAdapter):
 
 # ================================= A Cache Decorator =====================================
 class CachedBrokerAdapter:
-    def __int__(self, inner: BrokerAdapter, settings: AppSettings):
+    def __init__(self, inner: BrokerAdapter, settings: AppSettings):
         super().__init__(settings)
         self._inner = inner
         try:
