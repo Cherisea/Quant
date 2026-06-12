@@ -336,6 +336,16 @@ class CachedBrokerAdapter(BrokerAdapter):
             combined = pd.concat([cached, api_bars])
             return combined[~combined.index.duplicated(keep="last")].sort_index()
         return api_bars
+    
+    # --- all other methods delegate straight through ---
+    def connect(self)                              : self._inner.connect()
+    def get_lot_size(self)                         : return self._inner.get_lot_size()
+    def get_last_price(self)                       : return self._inner.get_last_price()
+    def get_position(self)                         : return self._inner.get_position()
+    def get_cash(self)                             : return self._inner.get_cash()
+    def submit_limit_order(self, s, q, p)          : return self._inner.submit_limit_order(s, q, p)
+    def poll_order(self, oid)                      : return self._inner.poll_order(oid)
+    def cancel_order(self, oid)                    : return self._inner.cancel_order(oid)
 
         
 
