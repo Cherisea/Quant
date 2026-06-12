@@ -285,14 +285,62 @@ class CachedBrokerAdapter(BrokerAdapter):
         super().__init__(settings)
         self._inner = inner
         try:
-            self.cache = PriceCache(settings)
+            self._cache = PriceCache(settings)
         except Exception as e:
             log.warning(f"DB cache init failed {e} -- running without cache.")
             self._cache = None
 
-    def get_bars(self, lookback = None, start=None, end=None) -> pd.DataFrame:
+    def get_bars(self, lookback = None, start=None) -> pd.DataFrame:
         end_ts = pd.Timestamp.now().normalize()
-        start_ts = pd.Timestamp(start) if start else end_ts 
+        
+        # Backtest mode
+        if start:
+            start_ts = pd.Timestamp(start)
+        else:
+            cal_days = int(self.risk.lookback_bars * self.risk.calender_days / self.risk.trading_days) + 30
+            start_ts = end_ts - pd.DateOffset(days=cal_days)
+        
+        # Stage 1: local cache
+        cached = pd.DataFrame()
+        if self._cache is not None:
+            try:
+                cached = self._cache.load_bars(start_ts, end_ts, self.broker.interval)
+            except Exception as e:
+                log.warning(f"DB read failed: {e} -- skipping cache. ")
+        
+        # Full hit
+        if not cached.empty:
+            if cached.index[-1] >= end_ts - pd.Timedelta(days=1):
+                log.info(f"Cache hit: {len(cached)} bars from DB for {self.symbol}")
+                return cached
+            # Partial hit
+            fetch_start = cached.index[-1] + pd.Timedelta(days=1)
+            log.info(f"Partial cache hit: fetching gap {fetch_start.date()} -> {end_ts.date()} from broker.")
+        else:
+            fetch_start = start_ts
+            log.info(f"Cache miss: fetching {start_ts.date()} -> {end_ts.date()} from broker.")
+
+        # Stage 2: fetch missing range from the inner adapter
+        api_bars = self._inner.get_bars(
+            start=fetch_start.strftime("%Y-%m-%d"),
+            end = end_ts.strftime("%Y-%m-%d")
+        )
+
+        # Stage 3: persist new bars
+        if self._cache is not None:
+            try:
+                self._cache.insert_bars(api_bars, self.broker.interval)
+            except Exception as e:
+                log.warning(f"DB write failed: {e} -- continuing without caching result.")
+        
+        # Stage 4: merge
+        if not cached.empty:
+            combined = pd.concat([cached, api_bars])
+            return combined[~combined.index.duplicated(keep="last")].sort_index()
+        return api_bars
+
+        
+
 # ================================ Factory ==========================================
 BROKER_REGISTRY = {
     "tiger": TigerAdapter,
