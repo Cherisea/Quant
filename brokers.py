@@ -42,12 +42,11 @@ class BrokerAdapter(abc.ABC):
         """
     
     @abc.abstractmethod
-    def get_bars(self, lookback: Optional[int] = None, start: Optional[str] = None) -> pd.DataFrame:
+    def get_bars(self, start: Optional[str] = None) -> pd.DataFrame:
         """ Fetch historical OHLCV data for a fixed lookback window (live mode) 
             or a specified start date (backtesting mode). 
 
             Args:
-                lookback: how far back to pull historical price bars, measured in days
                 start: starting date of price query formatted as 'YYYY-MM-DD'
 
             Returns:
@@ -189,7 +188,7 @@ class TigerAdapter(BrokerAdapter):
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
     
-    def get_bars(self, lookback=None, start=None) -> pd.DataFrame:
+    def get_bars(self, start=None) -> pd.DataFrame:
         if start:
             bars = self.quote.get_bars(
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
@@ -198,7 +197,7 @@ class TigerAdapter(BrokerAdapter):
         else:
             bars = self.quote.get_bars(
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
-                limit=lookback or self.risk.lookback_bars,
+                limit=self.risk.lookback_bars,
             )
         if bars is None or bars.empty:
             raise RuntimeError("Failed to fetch bar data from Tiger.")
