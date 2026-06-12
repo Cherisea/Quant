@@ -6,6 +6,7 @@
 import abc
 import logging
 import time
+from datetime import datetime
 import pandas as pd
 from trading import PriceCache
 
@@ -41,15 +42,13 @@ class BrokerAdapter(abc.ABC):
         """
     
     @abc.abstractmethod
-    def get_bars(self, lookback: Optional[int] = None, start: Optional[str] = None, 
-                 end: Optional[str] = None) -> pd.DataFrame:
+    def get_bars(self, lookback: Optional[int] = None, start: Optional[str] = None) -> pd.DataFrame:
         """ Fetch historical OHLCV data for a fixed lookback window (live mode) 
-            or a specified date range (backtesting mode). 
+            or a specified start date (backtesting mode). 
 
             Args:
                 lookback: how far back to pull historical price bars, measured in days
                 start: starting date of price query formatted as 'YYYY-MM-DD'
-                end: end date of price query formatted as 'YYYY-MM-DD'
 
             Returns:
                 A Dataframe indexed by DatetimeIndex with BAR_COLUMNS in configs.
@@ -190,11 +189,11 @@ class TigerAdapter(BrokerAdapter):
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
     
-    def get_bars(self, lookback=None, start=None, end=None) -> pd.DataFrame:
-        if start and end:
+    def get_bars(self, lookback=None, start=None) -> pd.DataFrame:
+        if start:
             bars = self.quote.get_bars(
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
-                begin_time=start, end_time=end,
+                begin_time=start, end_time=datetime.today().strftime('%Y-%m-%d'),
             )
         else:
             bars = self.quote.get_bars(
@@ -291,6 +290,9 @@ class CachedBrokerAdapter(BrokerAdapter):
             log.warning(f"DB cache init failed {e} -- running without cache.")
             self._cache = None
 
+    def get_bars(self, lookback = None, start=None, end=None) -> pd.DataFrame:
+        end_ts = pd.Timestamp.now().normalize()
+        start_ts = pd.Timestamp(start) if start else end_ts 
 # ================================ Factory ==========================================
 BROKER_REGISTRY = {
     "tiger": TigerAdapter,
