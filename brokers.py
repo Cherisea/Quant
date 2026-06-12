@@ -267,4 +267,11 @@ class TigerAdapter(BrokerAdapter):
             return OrderResult(order_id, OrderState.FILLED,
                                filled_qty=int(getattr(order, "filled", 0) or 0),
                                avg_filled_price=float(getattr(order, "avg_filled_price", 0) or 0))
+        elif status in (OrderStatus.CANCELLED, "Cancelled", "CANCELLED"):
+            return OrderResult(order_id, OrderState.CANCELLED)
+        elif status in (OrderStatus.REJECTED, "Rejected", "REJECTED"):
+            return OrderResult(order_id, OrderState.REJECTED)
+        else:
+            return OrderResult(order_id, OrderState.PENDING)
     
+        
