@@ -274,4 +274,8 @@ class TigerAdapter(BrokerAdapter):
         else:
             return OrderResult(order_id, OrderState.PENDING)
     
-        
+    def cancel_order(self, order_id):
+        try:
+            self.trade.cancel_order(id=int(order_id))
+        except Exception as e:
+            log.error(f"Failed to cancel order {order_id}: {e}")       
