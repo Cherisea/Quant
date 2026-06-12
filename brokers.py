@@ -361,4 +361,9 @@ def build_broker(settings: AppSettings) -> BrokerAdapter:
         cls = BROKER_REGISTRY[name]
     except KeyError:
         raise ValueError(f"Unknown broker: '{name}'. Known brokers: {list(BROKER_REGISTRY)} ")
-    return cls(settings)
+    
+    broker = cls(settings)
+    if settings.db.enabled and name != "csv":
+        log.info(f"DB cache enabled - wrapping {cls.__name__} with CacheBrokerAdapter.")
+        return CachedBrokerAdapter(settings)
+    return broker
