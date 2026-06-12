@@ -8,7 +8,7 @@ import logging
 import time
 from datetime import datetime
 import pandas as pd
-from trading import PriceCache
+from cache import PriceCache
 
 from typing import Optional
 from configs import (AppSettings, Position, OrderResult, OrderSide, 
