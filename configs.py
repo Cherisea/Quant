@@ -135,6 +135,7 @@ class BrokerSettings:
     tiger_id: Optional[str]
     tiger_account: Optional[str]
 
+    name: str = "tiger"
     symbol: str = "06066"
     currency: str = "HKD"
     interval: str = "Day"          # Timeframe label for retrieving price bars
