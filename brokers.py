@@ -17,6 +17,7 @@ from configs import (AppSettings, Position, OrderResult, OrderSide,
 LoggingSettings()
 log = logging.getLogger(__name__)   # Initialize a named logger 
 
+# ================================= Adapter Interface =====================================
 class BrokerAdapter(abc.ABC):
     """ The contract every broker must satisfy.
         
@@ -128,7 +129,6 @@ class BrokerAdapter(abc.ABC):
         return OrderResult(order_id=order_id, state=OrderState.CANCELLED)
 
 # ================================= Tiger Adapter =====================================
-
 # Guard against SDK imports so it runs even when it's not installed
 try:
     from tigeropen.common.consts import (
@@ -279,6 +279,7 @@ class TigerAdapter(BrokerAdapter):
         except Exception as e:
             log.error(f"Failed to cancel order {order_id}: {e}")       
 
+# ================================= A Cache Decorator =====================================
 class CachedBrokerAdapter(BrokerAdapter):
     def __int__(self, inner: BrokerAdapter, settings: AppSettings):
         super().__init__(settings)
@@ -346,8 +347,6 @@ class CachedBrokerAdapter(BrokerAdapter):
     def submit_limit_order(self, s, q, p)          : return self._inner.submit_limit_order(s, q, p)
     def poll_order(self, oid)                      : return self._inner.poll_order(oid)
     def cancel_order(self, oid)                    : return self._inner.cancel_order(oid)
-
-        
 
 # ================================ Factory ==========================================
 BROKER_REGISTRY = {
