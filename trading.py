@@ -1,78 +1,28 @@
 """
-A live momentum trading bot that connects to Tiger Trade via tigeropen SDK. Trading strategy can be configured in a 
-separate script. 
+Strategy/analysis layer and position tracking for the momentum bot.
+
+All broker I/O now lives behind brokers.BrokerAdapter class. This modules keeps:
+    - TechAnalyst: pure indicator/signal computations over a DataFrame.
+    - PositionManager: in-memory position and trailing stop state, seeded from the broker.
+    - PriceCache: optional local Postgres cache for OHLCV bars.
+
 """
 
 # System and third-party imports
-import time
 import logging
-import psycopg
 import pandas as pd
 import pandas_market_calendars as pmc
 
 from typing import Optional
 from configs import AppSettings, LoggingSettings
 
-# Tiger trade SDK
-from tigeropen.common.consts import (
-    BarPeriod, QuoteRight,
-    SecurityType, OrderStatus
-)
-from tigeropen.quote.quote_client import QuoteClient
-from tigeropen.trade.trade_client import TradeClient
-from tigeropen.common.util.contract_utils import stock_contract
-from tigeropen.common.util.order_utils import limit_order
-from tigeropen.tiger_open_config import TigerOpenClientConfig
+try:
+    import psycopg
+except ImportError:
+    psycopg = None
 
 LoggingSettings()
 log = logging.getLogger(__name__)   # Initialize a named logger 
-
-# Mapping from timeframe label to BarPeriod and vice versa
-tf_to_bp = {
-    "Hour": BarPeriod.ONE_HOUR, "Day": BarPeriod.DAY, "Week": BarPeriod.WEEK, "Month": BarPeriod.MONTH
-}
-bp_to_tf = {
-    BarPeriod.ONE_HOUR: "Hour", BarPeriod.DAY: "Day", BarPeriod.WEEK: "Week", BarPeriod.MONTH: "Month"
-}
-
-class TigerClient:
-    """Quote and trade agent for interacting with Tiger Trade platform.
-    """
-    def __init__(self, settings: AppSettings) -> None:
-        self.symbol = settings.broker.symbol
-        self.settings = settings
-        self.cfg = self._build_config()
-
-        self.quote = QuoteClient(self.cfg)
-        self.trade = TradeClient(self.cfg)
-        self.contract = stock_contract(symbol=self.symbol, currency=settings.broker.currency)    # Security to trade
-        log.info(f"Tiger client initialized.")
-    
-    def verify_lot_size(self) -> int:
-        """Fetch actual lot size from exchange metadata.
-        """
-        try:
-            meta = self.quote.get_trade_metas([self.symbol])
-            ls = meta["lot_size"].iloc[0]
-            log.info(f"Verified lot size for {self.symbol}: {ls}")
-            return ls.item()
-        except Exception as e:
-            ls = self.settings.broker.lot_size
-            log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
-            return ls.item()
-
-    def _build_config(self) -> TigerOpenClientConfig:
-        """Configure tiger client by retrieving constants from settings.
-        """
-        if self.settings.broker.props_path:
-            cfg = TigerOpenClientConfig(props_path=self.settings.broker.props_path)
-        else:
-            cfg = TigerOpenClientConfig()
-            cfg.private_key = self.settings.broker.private_key
-            cfg.tiger_id = self.settings.broker.tiger_id
-            cfg.tiger_account = self.settings.broker.tiger_account
-        cfg.timezone = self.settings.broker.tz
-        return cfg
 
 class TechAnalyst:
     """An analyst that pulls market data, compute technical indicators and generate trading signals.
