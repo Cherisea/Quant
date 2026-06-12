@@ -107,21 +107,7 @@ class PositionManager:
         self.highest_since_entry = 0.0
     
     def get_balance(self) -> float:
-        """Fetch available cash from prime/paper account.
-
-        Returns:
-            Balance in account if no exception is thrown, otherwise returns 0.0.
-        """
-        try:
-            data = self.clients.trade.get_prime_assets(account=self.broker.tiger_account)
-            cash = data.segments['S'].currency_assets.get(self.clients.currency).cash_available_for_trade
-            if cash <= 0:
-                log.warning(f"No {self.clients.currency} cash available for trading {self.clients.symbol}.")
-            else:
-                return cash 
-        except Exception as e:
-            log.warning(f"Couldn't fetch balance: {e}")
-        return 0.0
+        return self.broker.get_cash()
     
     def check_trailing_stop(self, current_price: float) -> bool:
         """Check if a trailing stop order set at a fixed percentage point should be triggered. Note
