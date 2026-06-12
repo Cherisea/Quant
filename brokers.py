@@ -7,6 +7,7 @@ import abc
 import logging
 import time
 import pandas as pd
+from trading import PriceCache
 
 from typing import Optional
 from configs import (AppSettings, Position, OrderResult, OrderSide, 
@@ -279,6 +280,16 @@ class TigerAdapter(BrokerAdapter):
             self.trade.cancel_order(id=int(order_id))
         except Exception as e:
             log.error(f"Failed to cancel order {order_id}: {e}")       
+
+class CachedBrokerAdapter(BrokerAdapter):
+    def __int__(self, inner: BrokerAdapter, settings: AppSettings):
+        super().__init__(settings)
+        self._inner = inner
+        try:
+            self.cache = PriceCache(settings)
+        except Exception as e:
+            log.warning(f"DB cache init failed {e} -- running without cache.")
+            self._cache = None
 
 # ================================ Factory ==========================================
 BROKER_REGISTRY = {
