@@ -282,7 +282,7 @@ class TigerAdapter(BrokerAdapter):
 # ================================= A Cache Decorator =====================================
 class CachedBrokerAdapter(BrokerAdapter):
     def __init__(self, inner: BrokerAdapter, settings: AppSettings):
-        super.__init__(settings)
+        super().__init__(settings)
         self._inner = inner
         try:
             self._cache = PriceCache(settings)
