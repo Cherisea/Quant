@@ -244,3 +244,15 @@ class TigerAdapter(BrokerAdapter):
         except Exception as e:
             log.warning(f"Couldn't fetch balance: {e}")
             return 0.0 
+    
+    def submit_limit_order(self, side, qty, limit_price) -> Optional[str]:
+        order = limit_order(account=self.account, contract=self.contract,
+                            action=side, limit_price=limit_price, quantity=qty)
+        try:
+            self.trade.place_order(order)
+            log.info(f"{side} order placed: {qty} at {limit_price}, order_id={order.id}")
+            return str(order.id)
+        except Exception as e:
+            log.error(f"Failed to place {side} order: {e}")
+            return None
+    
