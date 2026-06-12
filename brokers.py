@@ -44,7 +44,13 @@ class BrokerAdapter(abc.ABC):
         """ Fetch historical OHLCV data for a fixed lookback window (live mode) 
             or a specified date range (backtesting mode). 
 
-            Returns a Dataframe indexed by DatetimeIndex with BAR_COLUMNS in configs.
+            Args:
+                lookback: how far back to pull historical price bars, measured in days
+                start: starting date of price query formatted as 'YYYY-MM-DD'
+                end: end date of price query formatted as 'YYYY-MM-DD'
+
+            Returns:
+                A Dataframe indexed by DatetimeIndex with BAR_COLUMNS in configs.
         """
 
     @abc.abstractmethod
