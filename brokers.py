@@ -153,6 +153,7 @@ class TigerAdapter(BrokerAdapter):
         if not _TIGER_AVAILABLE:
             raise RuntimeError("Tigeropen is not installed. Tiger Adapter unavailable.")
         
+        self.account = settings.broker.tiger_account
         self.quote: Optional[QuoteClient] = None
         self.trade: Optional[TradeClient] = None
         self.contract = None
@@ -164,7 +165,7 @@ class TigerAdapter(BrokerAdapter):
             cfg = TigerOpenClientConfig()
             cfg.private_key = self.broker.private_key
             cfg.tiger_id = self.broker.tiger_id
-            cfg.tiger_account = self.broker.tiger_account
+            cfg.tiger_account = self.account
         cfg.timezone = self.broker.tz
         return cfg
     
@@ -216,3 +217,18 @@ class TigerAdapter(BrokerAdapter):
     def get_last_price(self) -> float:
         brief = self.quote.get_stock_briefs([self.symbol])
         return brief['close'].iloc[0]
+    
+    def get_position(self) -> Optional[Position]:
+        try:
+            data = self.trade.get_positions(account=self.account, sec_type=SecurityType.STK,
+                                            symbol=self.symbol)
+            if data:
+                row = data[0]
+                pos = Position(self.symbol, int(row.quantity), float(row.average_cost))
+                log.info(f"Syncd position: {pos.quantity} @ {pos.average_cost:.3f}")
+                return pos
+            log.info(f"No existing position in {self.symbol}")
+            return None
+        except Exception as e:
+            log.warning(f"Couldn't sync position: {e}")
+            return None
