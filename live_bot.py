@@ -21,8 +21,8 @@ class MomentumBot:
         self.risk = settings.risk
         self.strategy = settings.strategy
 
-        self.pm = PositionManager(self.client, self.lot_size, settings)
-        self.analyst = TechAnalyst(self.client, settings)
+        self.pm = PositionManager(self.broker, self.lot_size, settings)
+        self.analyst = TechAnalyst(settings)
         self._running = True
 
         # Register system signals with a custom function
@@ -78,7 +78,7 @@ class MomentumBot:
             if sig == -1 and pos > 0:
                 result = self.broker.execute("SELL", pos, latest_price)
                 if result.filled:
-                    log.info(f"SOLD {pos} shares of {self.client.symbol}")
+                    log.info(f"SOLD {pos} shares of {self.broker.symbol}")
                     self.pm.close_pos()
                 else:
                     log.warning("SELL order did not fill -- will retry in next tick.")
@@ -98,7 +98,7 @@ class MomentumBot:
                     self.pm.position = qty 
                     self.pm.entry_price = latest_price
                     self.pm.highest_since_entry = latest_price
-                    log.info(f"BOUGHT {qty} shares of {self.client.symbol} at {latest_price:.3f}")
+                    log.info(f"BOUGHT {qty} shares of {self.broker.symbol} at {latest_price:.3f}")
                 else:
                     log.warning("BUY order did not fill -- will retry in next tick.")
         except Exception as e:
@@ -108,7 +108,7 @@ class MomentumBot:
         """Main loop -- schedule ticks at a set interval.
         """
         log.info("=" * 60)
-        log.info(f"  Momentum Bot STARTED -- Trading {self.client.symbol} on Tiger Trade")
+        log.info(f"  Momentum Bot STARTED -- Trading {self.broker.symbol} on Tiger Trade")
         log.info(f"  Account: {self.broker.tiger_account} | Lot size: {self.lot_size}")
         log.info("  Strategy: EMA(%d/%d)  +  ROC(%.3f)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
                     self.strategy.fast_ema, self.strategy.slow_ema, self.strategy.roc_threshold, 
