@@ -58,10 +58,10 @@ class MomentumBot:
 
         try:
             # Analyst: fetch data and compute trading signals
-            bars = self.analyst.fetch_bars()
+            bars = self.broker.get_bars()
             bars = self.analyst.compute_indicators(bars)
             sig = self.analyst.get_latest_signal(bars)
-            latest_price = self.analyst.get_last_price()
+            latest_price = self.broker.get_last_price()
 
             fast_ema = bars.iloc[-1]['fast_ema']
             slow_ema = bars.iloc[-1]['slow_ema']
@@ -76,8 +76,8 @@ class MomentumBot:
             
             # Execute sell
             if sig == -1 and pos > 0:
-                order_id = self.executor.place_limit_order(pos, latest_price, "SELL")
-                if order_id and self.executor.wait_for_fill(order_id):
+                result = self.broker.execute("SELL", pos, latest_price)
+                if result.filled:
                     log.info(f"SOLD {pos} shares of {self.client.symbol}")
                     self.pm.close_pos()
                 else:
@@ -88,13 +88,13 @@ class MomentumBot:
                 equity = self.pm.get_balance()
                 budget = equity * self.risk.trade_size_pct
                 raw_qty = budget // latest_price
-                qty = round_to_lot(raw_qty)
+                qty = round_to_lot(self.lot_size, raw_qty)
                 if qty <= 0:
                     log.warning(f"Insufficient equity for a full lot (equity={equity}, price={latest_price})")
                     return
                 
-                order_id = self.executor.place_limit_order(qty, latest_price, "BUY")
-                if order_id and self.executor.wait_for_fill(order_id):
+                result = self.broker.execute("BUY", qty, latest_price)
+                if result.filled:
                     self.pm.position = qty 
                     self.pm.entry_price = latest_price
                     self.pm.highest_since_entry = latest_price
