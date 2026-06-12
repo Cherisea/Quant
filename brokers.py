@@ -256,3 +256,15 @@ class TigerAdapter(BrokerAdapter):
             log.error(f"Failed to place {side} order: {e}")
             return None
     
+    def get_order_status(self, order_id) -> OrderResult:
+        try:
+            order = self.trade.get_order(id=int(order_id))
+        except Exception as e:
+            log.warning(f"Error checking order {order_id}: {e}")
+            return OrderResult(order_id, OrderState.UNKNOWN)
+        status = getattr(order, "status", None)
+        if status in (OrderStatus.FILLED, "Filled", "FILLED"):
+            return OrderResult(order_id, OrderState.FILLED,
+                               filled_qty=int(getattr(order, "filled", 0) or 0),
+                               avg_filled_price=float(getattr(order, "avg_filled_price", 0) or 0))
+    
