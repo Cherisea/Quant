@@ -345,7 +345,7 @@ class CachedBrokerAdapter(BrokerAdapter):
     def get_position(self)                         : return self._inner.get_position()
     def get_cash(self)                             : return self._inner.get_cash()
     def submit_limit_order(self, s, q, p)          : return self._inner.submit_limit_order(s, q, p)
-    def poll_order(self, oid)                      : return self._inner.poll_order(oid)
+    def get_order_status(self, oid)                : return self._inner.get_order_status(oid)
     def cancel_order(self, oid)                    : return self._inner.cancel_order(oid)
 
 # ================================ Factory ==========================================
