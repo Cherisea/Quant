@@ -289,7 +289,7 @@ class CachedBrokerAdapter(BrokerAdapter):
             log.warning(f"DB cache init failed {e} -- running without cache.")
             self._cache = None
 
-    def get_bars(self, lookback = None, start=None) -> pd.DataFrame:
+    def get_bars(self, start=None) -> pd.DataFrame:
         end_ts = pd.Timestamp.now().normalize()
         
         # Backtest mode
@@ -321,8 +321,7 @@ class CachedBrokerAdapter(BrokerAdapter):
 
         # Stage 2: fetch missing range from the inner adapter
         api_bars = self._inner.get_bars(
-            start=fetch_start.strftime("%Y-%m-%d"),
-            end = end_ts.strftime("%Y-%m-%d")
+            start=fetch_start.strftime("%Y-%m-%d")
         )
 
         # Stage 3: persist new bars
