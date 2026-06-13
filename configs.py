@@ -132,8 +132,8 @@ class BrokerSettings:
     """
     props_path: Optional[str]
     private_key: Optional[str]
-    tiger_id: Optional[str]
-    tiger_account: Optional[str]
+    id: Optional[str]
+    account: Optional[str]
 
     name: str = "tiger"
     symbol: str = "06066"
@@ -226,8 +226,8 @@ def load_settings() -> AppSettings:
     broker = BrokerSettings(
         props_path = os.getenv("PROPS_PATH"),
         private_key = os.getenv("PRIVATE_KEY"),
-        tiger_id = os.getenv("TIGER_ID"),
-        tiger_account = os.getenv("TIGER_ACCOUNT")
+        id = os.getenv("TIGER_ID"),
+        account = os.getenv("TIGER_ACCOUNT")
     )
     risk = RiskSettings()
     strategy = StrategySettings()
