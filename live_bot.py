@@ -53,8 +53,8 @@ class MomentumBot:
     def tick(self):
         """One evaluation cycle.
         """
-        if not self.is_market_hours():
-            return
+        # if not self.is_market_hours():
+        #     return
 
         try:
             # Analyst: fetch data and compute trading signals
