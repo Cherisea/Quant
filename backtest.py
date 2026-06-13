@@ -99,7 +99,7 @@ def execute_buy(risk: BacktestRisk, state: BacktestState, price: float,
     budget = equity * risk.trade_size_pct
     buy_price = apply_slippage(risk.slippage_bps, price, "BUY")
     raw_qty = int(budget / buy_price)
-    qty = round_to_lot(lot_size, raw_qty)
+    qty = (raw_qty // lot_size) * lot_size
     if qty <= 0:
         state.equity_curve.append((ts, state.cash))
         return 0

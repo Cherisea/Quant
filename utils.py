@@ -4,18 +4,6 @@ Utility functions to support the execution of primary scripts.
 import math
 from configs import HKPlatformFeePlan, TradeFeesHK
 
-def round_to_lot(lot_size, qty: int) -> int:
-        """Round requested quantity to a multiple of lot size.
-
-        Args:
-            lot_size: number of shares in one lot
-            qty: number of requested shares.
-        
-        Returns:
-            Requested shares as a multiple of lot size.
-        """
-        return (qty // lot_size) * lot_size
-
 def apply_slippage(slippage_bps, price: float, side: str) -> float:
     """Calculate slippage adjusted stock price based on action type. As slippage always works 
         against us, selling prices are adjusted lower, while buying prices higher.
