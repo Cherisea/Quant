@@ -49,6 +49,7 @@ class BrokerAdapter(abc.ABC):
 
             Args:
                 start: starting date of price query formatted as 'YYYY-MM-DD'
+                end: end date of price query formatted as 'YYYY-MM-DD'
 
             Returns:
                 A Dataframe indexed by DatetimeIndex with BAR_COLUMNS in configs.

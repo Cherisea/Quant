@@ -280,9 +280,9 @@ if __name__ == "__main__":
     end = pd.Timestamp.now().normalize()
     start = end - pd.DateOffset(years=test_duration)
     log.info(f"Fetching historical bars for {settings.broker.symbol}")
-    bars = client.get_bars(start.strftime('%Y/%m/%d'))
+    bars = client.get_bars(start.strftime('%Y-%m-%d'))
     log.info(f"{'=' * 50}")
-    log.info(f"Start date: {start.strftime('%Y/%m/%d')} | End date: {end.strftime('%Y/%m/%d')}")
+    log.info(f"Start date: {start.strftime('%Y-%m-%d')} | End date: {end.strftime('%Y-%m-%d')}")
     
     # Step 3: Compute indicators and signals
     bars = analyst.compute_indicators(bars)
