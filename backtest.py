@@ -70,7 +70,7 @@ def execute_sell(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.
         ts: pandas timestamp for logging purposes
         fee: a data class storing HK trading fee structure
     """
-    sell_price = apply_slippage(risk.slippage_bps, price, "SELL")
+    sell_price = _apply_slippage(risk.slippage_bps, price, "SELL")
     proceeds = sell_price * state.position
     comm_sell = calc_commission(fee, sell_price, state.position)
     state.cash += proceeds - comm_sell
@@ -97,7 +97,7 @@ def execute_buy(risk: BacktestRisk, state: BacktestState, price: float,
     """
     equity = state.cash
     budget = equity * risk.trade_size_pct
-    buy_price = apply_slippage(risk.slippage_bps, price, "BUY")
+    buy_price = _apply_slippage(risk.slippage_bps, price, "BUY")
     raw_qty = int(budget / buy_price)
     qty = (raw_qty // lot_size) * lot_size
     if qty <= 0:
@@ -115,7 +115,7 @@ def execute_buy(risk: BacktestRisk, state: BacktestState, price: float,
 def liquidate_at_end(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.Timestamp, fee: TradeFeesHK):
     """Close any remaining position at the end of test period and log trade in backtest state.
     """
-    sell_px = apply_slippage(risk.slippage_bps, price, "SELL")
+    sell_px = _apply_slippage(risk.slippage_bps, price, "SELL")
     comm = calc_commission(fee, sell_px, state.position)
     state.cash += sell_px * state.position - comm
 
@@ -264,6 +264,21 @@ def run_backtest(df: pd.DataFrame, lot_size) -> BacktestState:
     if state.position > 0:
         liquidate_at_end(risk, state, df['close'].iloc[-1], df.index[-1], fee)
     return state
+
+def _apply_slippage(slippage_bps, price: float, side: str) -> float:
+    """Calculate slippage adjusted stock price based on action type. As slippage always works 
+        against us, selling prices are adjusted lower, while buying prices higher.
+
+    Args:
+        slippage_bps: assumed trading price gap measured in base point
+        price: expected stock price
+        side: a string indicating type of price action
+
+    Returns:
+        slippage adjusted price.
+    """
+    offset = price * slippage_bps / 10_000
+    return price + offset if side == "BUY" else price - offset
 
 if __name__ == "__main__":
     settings = load_settings()
