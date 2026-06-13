@@ -4,7 +4,6 @@ import logging
 import time
 
 from datetime import datetime
-from utils import round_to_lot
 from brokers import build_broker
 from configs import AppSettings, LoggingSettings, load_settings
 from trading import PositionManager, TechAnalyst
@@ -88,7 +87,7 @@ class MomentumBot:
                 equity = self.pm.get_balance()
                 budget = equity * self.risk.trade_size_pct
                 raw_qty = budget // latest_price
-                qty = round_to_lot(self.lot_size, raw_qty)
+                qty = (raw_qty // self.lot_size) * self.lot_size
                 if qty <= 0:
                     log.warning(f"Insufficient equity for a full lot (equity={equity}, price={latest_price})")
                     return
