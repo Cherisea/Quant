@@ -190,7 +190,6 @@ class TigerAdapter(BrokerAdapter):
     
     def get_bars(self, start=None) -> pd.DataFrame:
         if start:
-            print(f"Start: {start}, End: {datetime.today().strftime('%Y-%m-%d')}")
             bars = self.quote.get_bars(
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
                 begin_time=start, end_time=datetime.today().strftime('%Y-%m-%d'),
@@ -211,7 +210,7 @@ class TigerAdapter(BrokerAdapter):
         df = bars.copy()
         df["time"] = (pd.to_datetime(df["time"], unit="ms", utc=True)
                       .dt.tz_convert(self.broker.tz)
-                      .dt.tz_localize(None).normalize())
+                      .dt.tz_localize(None))
         df = df.set_index("time").sort_index()
         return df[BAR_COLUMNS]
 
