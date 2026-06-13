@@ -45,7 +45,7 @@ class OrderResult:
         return self.state is OrderState.FILLED
 
 # Columns every adapter must return from get_bars in the exact order
-BAR_COLUMNS = ["open", "high", "low", "close", "colume"]
+BAR_COLUMNS = ["open", "high", "low", "close", "volume"]
 
 
 # (max_monthly_orders, fee_per_order) based on Tiger's fee structure
