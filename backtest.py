@@ -271,6 +271,7 @@ if __name__ == "__main__":
 
     # Step 1: Boot up trading clients
     client = build_broker(settings)
+    client.connect()
     analyst = TechAnalyst(settings)
     test_duration = 3   # Number of years of historical price data
     lot_size = client.get_lot_size()
