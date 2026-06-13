@@ -95,12 +95,12 @@ class PriceCache:
             conn.close()
         log.info(f"Cached {len(rows)} bars for {self.ticker} [{interval}]")
     
-    def load_bars(self, start: str, end: str, interval: str) -> pd.DataFrame:
+    def load_bars(self, start: pd.Timestamp, end: pd.Timestamp, interval: str) -> pd.DataFrame:
         """ Read price bars within a specified time period, inclusive on both ends
         
         Args:
-            start: earliest date to retrieve in "%Y-%m-%D" format
-            end: latest date to retrieve in in "%Y-%m-%D" format
+            start: earliest date to retrieve
+            end: latest date to retrieve in
             interval: bar timeframe label
         
         Returns:
@@ -119,7 +119,7 @@ class PriceCache:
                     AND timestamp BETWEEN %s AND %s
                     ORDER BY timestamp ASC
                 """,
-                (self.ticker, interval, start, end),
+                (self.ticker, interval, start.date(), end.date()),
             )
             rows = cur.fetchall()
             cur.close()
