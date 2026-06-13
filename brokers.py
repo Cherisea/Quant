@@ -224,7 +224,6 @@ class TigerAdapter(BrokerAdapter):
             if data:
                 row = data[0]
                 pos = Position(self.symbol, int(row.quantity), float(row.average_cost))
-                log.info(f"Syncd position: {pos.quantity} @ {pos.average_cost:.3f}")
                 return pos
             log.info(f"No existing position in {self.symbol}")
             return None
