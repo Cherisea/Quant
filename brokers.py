@@ -43,7 +43,7 @@ class BrokerAdapter(abc.ABC):
         """
     
     @abc.abstractmethod
-    def get_bars(self, start: Optional[str] = None) -> pd.DataFrame:
+    def get_bars(self, start: Optional[str] = None, end: Optional[str] = None) -> pd.DataFrame:
         """ Fetch historical OHLCV data for a fixed lookback window (live mode) 
             or a specified start date (backtesting mode). 
 
@@ -188,11 +188,11 @@ class TigerAdapter(BrokerAdapter):
             log.warning(f"{e}. Could not verify lot size. Using default size of {ls}")
             return ls.item()
     
-    def get_bars(self, start=None) -> pd.DataFrame:
+    def get_bars(self, start=None, end=None) -> pd.DataFrame:
         if start:
             bars = self.quote.get_bars(
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
-                begin_time=start, end_time=datetime.today().strftime('%Y-%m-%d'),
+                begin_time=start, end_time=end,
             )
         else:
             bars = self.quote.get_bars(
@@ -309,21 +309,31 @@ class CachedBrokerAdapter(BrokerAdapter):
             except Exception as e:
                 log.warning(f"DB read failed: {e} -- skipping cache. ")
         
-        # Full hit
         if not cached.empty:
-            if cached.index[-1] >= end_ts - pd.Timedelta(days=1):
+            # Full hit: cached interval encompasses requested range
+            if cached.index[-1] >= end_ts - pd.Timedelta(days=1) and cached.index[0] <= start_ts:
                 log.info(f"Cache hit: {len(cached)} bars from DB for {self.symbol}")
                 return cached
-            # Partial hit
-            fetch_start = cached.index[-1] + pd.Timedelta(days=1)
-            log.info(f"Partial cache hit: fetching gap {fetch_start.date()} -> {end_ts.date()} from broker.")
+            # Partial hit: last row of cached price falls short
+            elif cached.index[-1] < end_ts - pd.Timedelta(days=1):
+                fetch_start = cached.index[-1] + pd.Timedelta(days=1)
+                fetch_end = end_ts
+                log.info(f"Partial cache hit: fetching gap {fetch_start.date()} -> {fetch_end.date()} from broker.")
+            # Partial hit: first row of cached price happens after
+            elif cached.index[0] > start_ts:
+                fetch_start = start_ts
+                fetch_end = cached.index[0] - pd.Timedelta(days=1)
+                log.info(f"Partial cache hit: fetching gap {fetch_start.date()} -> {fetch_end.date()} from broker.")
+        # Full miss
         else:
             fetch_start = start_ts
+            fetch_end = end_ts
             log.info(f"Cache miss: fetching {start_ts.date()} -> {end_ts.date()} from broker.")
 
         # Stage 2: fetch missing range from the inner adapter
         api_bars = self._inner.get_bars(
-            start=fetch_start.strftime("%Y-%m-%d")
+            start=fetch_start.strftime("%Y-%m-%d"),
+            end = fetch_end.strftime("%Y-%m-%d")
         )
 
         # Stage 3: persist new bars
