@@ -109,7 +109,7 @@ class MomentumBot:
         """
         log.info("=" * 60)
         log.info(f"  Momentum Bot STARTED -- Trading {self.broker.symbol} on Tiger Trade")
-        log.info(f"  Account: {self.broker.tiger_account} | Lot size: {self.lot_size}")
+        log.info(f"  Account: {self.broker.account} | Lot size: {self.lot_size}")
         log.info("  Strategy: EMA(%d/%d)  +  ROC(%.3f)  +  Vol_MA(%d) + Vol_Coefficient(%.1f)",
                     self.strategy.fast_ema, self.strategy.slow_ema, self.strategy.roc_threshold, 
                     self.strategy.vol_ma, self.strategy.vol_coefficient)

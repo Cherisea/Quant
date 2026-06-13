@@ -284,6 +284,7 @@ class CachedBrokerAdapter(BrokerAdapter):
     def __init__(self, inner: BrokerAdapter, settings: AppSettings):
         super().__init__(settings)
         self._inner = inner
+        self.account = settings.broker.account
         try:
             self._cache = PriceCache(settings)
         except Exception as e:
