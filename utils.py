@@ -4,21 +4,6 @@ Utility functions to support the execution of primary scripts.
 import math
 from configs import HKPlatformFeePlan, TradeFeesHK
 
-def apply_slippage(slippage_bps, price: float, side: str) -> float:
-    """Calculate slippage adjusted stock price based on action type. As slippage always works 
-        against us, selling prices are adjusted lower, while buying prices higher.
-
-    Args:
-        slippage_bps: assumed trading price gap measured in base point
-        price: expected stock price
-        side: a string indicating type of price action
-
-    Returns:
-        slippage adjusted price.
-    """
-    offset = price * slippage_bps / 10_000
-    return price + offset if side == "BUY" else price - offset
-
 def set_platform_fee_hk(tiers: tuple[tuple[float, float], ...], monthly_orders: int, 
                         plan: HKPlatformFeePlan = "fixed") -> float:
     """Set platform fees based on pricing plan. Note this is only applicable to HK securities traded
