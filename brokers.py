@@ -152,7 +152,7 @@ class TigerAdapter(BrokerAdapter):
         if not _TIGER_AVAILABLE:
             raise RuntimeError("Tigeropen is not installed. Tiger Adapter unavailable.")
         
-        self.account = settings.broker.tiger_account
+        self.account = settings.broker.account
         self.quote: Optional[QuoteClient] = None
         self.trade: Optional[TradeClient] = None
         self.contract = None
@@ -163,7 +163,7 @@ class TigerAdapter(BrokerAdapter):
         else:
             cfg = TigerOpenClientConfig()
             cfg.private_key = self.broker.private_key
-            cfg.tiger_id = self.broker.tiger_id
+            cfg.tiger_id = self.broker.id
             cfg.tiger_account = self.account
         cfg.timezone = self.broker.tz
         return cfg
