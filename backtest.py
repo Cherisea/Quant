@@ -8,7 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils import *
-from trading import TigerClient, TechAnalyst
+from trading import TechAnalyst
+from brokers import build_broker
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings, LoggingSettings
 
 log = logging.getLogger(__name__)   # Initialize a named logger 
@@ -269,18 +270,16 @@ if __name__ == "__main__":
     LoggingSettings()
 
     # Step 1: Boot up trading clients
-    client = TigerClient(settings)
-    analyst = TechAnalyst(client, settings)
+    client = build_broker(settings)
+    analyst = TechAnalyst(settings)
     test_duration = 3   # Number of years of historical price data
-    lot_size = client.verify_lot_size()
+    lot_size = client.get_lot_size()
 
     # Step 2: Fetch price data from broker API 
-    log.info(f"Fetching historical bars for {settings.broker.symbol}")
-    bars = analyst.fetch_bars(test=True, test_duration=test_duration)
-
-    # Compute custom start and end time
     end = pd.Timestamp.now().normalize()
     start = end - pd.DateOffset(years=test_duration)
+    log.info(f"Fetching historical bars for {settings.broker.symbol}")
+    bars = client.get_bars(start.strftime('%Y/%m/%d'))
     log.info(f"{'=' * 50}")
     log.info(f"Start date: {start.strftime('%Y/%m/%d')} | End date: {end.strftime('%Y/%m/%d')}")
     
