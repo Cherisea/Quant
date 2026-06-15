@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils import *
 from trading import TechAnalyst
 from brokers import build_broker
 from configs import BacktestRisk, BacktestState, Trade, TradeFeesHK, load_settings, LoggingSettings
