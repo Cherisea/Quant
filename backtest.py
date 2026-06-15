@@ -3,6 +3,7 @@ Backtesting momentum strategy defined in main script.
 """
 
 import logging
+import math
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -72,7 +73,7 @@ def execute_sell(risk: BacktestRisk, state: BacktestState, price: float, ts: pd.
     """
     sell_price = _apply_slippage(risk.slippage_bps, price, "SELL")
     proceeds = sell_price * state.position
-    comm_sell = calc_commission(fee, sell_price, state.position)
+    comm_sell = _calc_commission(fee, sell_price, state.position)
     state.cash += proceeds - comm_sell
     
     # Record trade details
@@ -104,7 +105,7 @@ def execute_buy(risk: BacktestRisk, state: BacktestState, price: float,
         state.equity_curve.append((ts, state.cash))
         return 0
 
-    comm_buy = calc_commission(fee, buy_price, qty)
+    comm_buy = _calc_commission(fee, buy_price, qty)
     state.cash -= buy_price * qty + comm_buy
     state.position = qty
     state.entry_price = buy_price
@@ -116,7 +117,7 @@ def liquidate_at_end(risk: BacktestRisk, state: BacktestState, price: float, ts:
     """Close any remaining position at the end of test period and log trade in backtest state.
     """
     sell_px = _apply_slippage(risk.slippage_bps, price, "SELL")
-    comm = calc_commission(fee, sell_px, state.position)
+    comm = _calc_commission(fee, sell_px, state.position)
     state.cash += sell_px * state.position - comm
 
     t_last = fill_trade(state.current_trade, ts, sell_px, comm, "end_of_data")
@@ -279,6 +280,33 @@ def _apply_slippage(slippage_bps, price: float, side: str) -> float:
     """
     offset = price * slippage_bps / 10_000
     return price + offset if side == "BUY" else price - offset
+
+def _calc_commission(fees: TradeFeesHK, price: float, qty: int, 
+                    platform_per_order: float = 15.0, orders: int = 1) -> float:
+    """Calculate all HK trading costs per HKEX fee schedule. Adjust for other markets and
+        brokerage.
+
+    Args:
+        fees: securities trading fee schedule in a particular stock market.
+        price: security price after applying slippage.
+        qty: number of shares to purchase.
+        platform_per_order: Tiger platform fees per order.
+        orders: number of orders to be placed.
+    Returns:
+        total sum of various fees.
+    """
+    # Brokerage fees
+    turnover = price * qty
+    platform_fee = platform_per_order * orders
+    brokerage = turnover * fees.commission_rate + platform_fee * orders
+
+    # Third-party fees
+    stamp = math.ceil(turnover * fees.stamp_duty)
+    sfc = round(turnover * fees.sfc_levy, 2)
+    trading = round(turnover * fees.trading_fee, 2)
+    settlement = round(turnover * fees.settlement_fee, 2)
+    afrc = round(turnover * fees.afrc_levy, 2)
+    return brokerage + stamp + sfc + trading + afrc + settlement
 
 if __name__ == "__main__":
     settings = load_settings()
