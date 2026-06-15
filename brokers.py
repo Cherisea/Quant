@@ -200,8 +200,10 @@ class TigerAdapter(BrokerAdapter):
                 symbols=[self.symbol], period=BarPeriod.DAY, right=QuoteRight.BR,
                 limit=self.risk.lookback_bars,
             )
-        if bars is None or bars.empty:
+        if bars is None:
             raise RuntimeError("Failed to fetch bar data from Tiger.")
+        elif bars.empty:
+            return bars
         return self._normalize_bars(bars)
     
     def _normalize_bars(self, bars: pd.DataFrame) -> pd.DataFrame:
@@ -338,7 +340,7 @@ class CachedBrokerAdapter(BrokerAdapter):
         )
 
         # Stage 3: persist new bars
-        if self._cache is not None:
+        if self._cache is not None and not api_bars.empty:
             try:
                 self._cache.insert_bars(api_bars, self.broker.interval)
             except Exception as e:
