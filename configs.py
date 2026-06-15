@@ -48,6 +48,8 @@ class OrderResult:
 BAR_COLUMNS = ["open", "high", "low", "close", "volume"]
 
 
+# ============================= Tiger Fees for Trading HK Securities ============================
+
 # (max_monthly_orders, fee_per_order) based on Tiger's fee structure
 HK_PLATFORM_FEE_TIERS = (
     (5, 30.0),
@@ -88,6 +90,8 @@ class TradeFeesHK:
     settlement_fee: float = 0.0000565   # Min 0.01 HKD
     afrc_levy: float = 0.0000015 
 
+# ============================= Backtest Objects ============================
+
 @dataclass(frozen=True)
 class BacktestRisk:
     """Risk settings for backtesting momentum strategy.
@@ -124,6 +128,8 @@ class BacktestState:
     highest_since_entry: float = 0.0
     trades: list = field(default_factory=list)      # Complete trade log
     current_trade: Optional[Trade] = None
+
+# ============================= AppSettings Objects ============================
 
 @dataclass(frozen=True)
 class BrokerSettings:
