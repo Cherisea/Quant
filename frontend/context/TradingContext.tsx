@@ -77,4 +77,25 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     // Get a WebSocket connection
     const wsConnected = useWebSocket(WS_URL, handleMessage);
 
+    // Fetch live values from API calls on mount
+    useEffect(() => {
+        api.status().then(s => {
+            if (s.position) setPosition(s.position);
+            if (s.engine) setRunning(s.engine);
+        }).catch(() => {});
+
+        api.strategy().then(d => {
+            if (d.strategy) setStrategy(s => ({ ...s, ...d.strategy }));
+            if (d.risk) setRisk(r => ({ ...r, ...d.risk }));
+        }).catch(() => {});
+    }, []);
+
+    return (
+        <TradingContext.Provider value={{
+            price, position, running, wsConnected, trades,
+            strategy, risk, setRunning, setStrategy, setRisk,
+        }}>
+            {children}
+        </TradingContext.Provider>
+    )
 }
