@@ -1,3 +1,8 @@
+/**
+ * All FastAPI endpoints and their request format.
+ * 
+ */
+
 import { EquityPoint, Trade } from "./types";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
