@@ -1,13 +1,14 @@
+/**
+ * Manages WebSocket lifecyle in browser. Maintains connection by pinging client every 25 seconds 
+ * when connected. Retries connection after being closed.
+ * 
+ */
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import type { WsMessage } from "@/lib/types";
 
-/**
- * Reconnecting WebSocket hook.
- * Callers stabilize onMessage with useCallback to prevent re-connecting on
- * every render — the hook intentionally omits it from the dependency array.
- */
 export function useWebSocket(
   url: string,
   onMessage: (msg: WsMessage) => void,
