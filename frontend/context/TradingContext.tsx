@@ -5,6 +5,8 @@ import { createContext, useContext, useState, useEffect,
          useCallback, type ReactNode, type Dispatch, type  SetStateAction,
 } from "react";
 import { TRADES_SEED } from "@/data/seed";
+import { useWebSocket } from "@/hooks/useWebSocket"
+import { api, WS_URL } from "@/lib/api";
 
 interface TradingState {
     price:          number;
@@ -72,7 +74,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-
-
+    // Get a WebSocket connection
+    const wsConnected = useWebSocket(WS_URL, handleMessage);
 
 }
