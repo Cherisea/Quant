@@ -99,3 +99,10 @@ export function TradingProvider({ children }: { children: ReactNode }) {
         </TradingContext.Provider>
     )
 }
+
+// Consumer hook
+export function useTradingContext(): TradingState {
+    const ctx = useContext(TradingContext);
+    if (!ctx) throw new Error("useTradingContext must be inside <TradingProvider>");
+    return ctx;
+}
