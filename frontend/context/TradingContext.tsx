@@ -1,5 +1,5 @@
 "use client";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
 interface TradingState {
     price:          number;
@@ -16,3 +16,8 @@ interface TradingState {
 
 
 const TradingContext = createContext<TradingState | null>(null);
+
+// Consumer hook
+export function useTradingContext(): TradingState | null {
+    return useContext(TradingContext);
+}
