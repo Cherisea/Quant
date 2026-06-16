@@ -30,3 +30,40 @@ export const BT_STATS: [string, string, boolean | null][] = [
   ["Avg loss",     "-5.1%",  false], ["Profit factor", "2.18",   null ],
   ["Buy & hold",   "+22.1%", null ], ["Capital",       "HK$500K",null ],
 ];
+
+export function generateEquityCurve(): EquityPoint[] {
+    const phases = [
+        { n:50, d: 0.0006, v:0.007 }, { n:30, d:-0.003,  v:0.012 },
+        { n:80, d: 0.001,  v:0.007 }, { n:35, d:-0.0008, v:0.009 },
+        { n:57, d: 0.0018, v:0.006 },
+    ];
+    let eq = 500_000;
+    const pts: EquityPoint[] = [];
+    const start = new Date("2024-01-02");
+    let day = 0;
+    for (const {n, d, v} of phases)
+        for (let i = 0; i < n; i++) {
+            const dt = new Date(start);
+            dt.setDate(dt.getDate() + day++);
+            eq = Math.max(eq * (1 + d + (Math.random() - 0.5) * v), 300_000);
+            pts.push({ date: dt.toLocaleDateString("en-US", { month:"short", day:"numeric"}), equity: Math.round(eq) });
+    }
+
+    return pts;
+}
+
+export function generateBtEquity() {
+  let eq = 500_000, bnh = 500_000;
+  const pts: Array<{ date:string; strat:number; bnh:number }> = [];
+  const start = new Date("2022-01-01");
+  for (let i = 0; i < 756; i++) {
+    const dt = new Date(start);
+    dt.setDate(dt.getDate() + Math.floor(i * 365 / 252));
+    eq  = Math.max(eq  * (1 + 0.0004 + (Math.random() - 0.49) * 0.013), 300_000);
+    bnh = bnh * (1 + 0.00018 + (Math.random() - 0.5) * 0.01);
+    if (i % 6 === 0)
+      pts.push({ date: dt.toLocaleDateString("en-US", { month:"short", year:"2-digit" }),
+                 strat: Math.round(eq), bnh: Math.round(bnh) });
+  }
+  return pts;
+}
