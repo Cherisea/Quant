@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TradingProvider } from "@/context/TradingContext";
-// import AppShell from "@/components/layout/AppShell";
+import AppShell from "@/components/layout/AppShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
