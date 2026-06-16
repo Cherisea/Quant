@@ -1,3 +1,8 @@
+/**
+ * A fixed side bar for navigating to different subpages.
+ * 
+ */
+
 "use client";
 
 import Link from "next/link";

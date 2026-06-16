@@ -1,3 +1,8 @@
+/**
+ * A consistent status bar at the top of the home page.
+ * 
+ */
+
 "use client";
 import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
