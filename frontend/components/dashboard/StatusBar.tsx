@@ -3,7 +3,7 @@ import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
 
 function Divider() {
-    return <div style={{ width:1, height:24, background: "white", flexShrink:0 }} />;
+    return <div style={{ width:1, height:36, background: "white", flexShrink:0 }} />;
 }
 
 export default function StatusBar() {
