@@ -45,5 +45,34 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     const [strategy, setStrategy] = useState<StrategySettings>(DEFAULT_STRATEGY);
     const [risk, setRisk] = useState<RiskSettings>(DEFAULT_RISK);
 
+    // Stable handler: no re-rendering
+    const handleMessage = useCallback((msg: WsMessage) => {
+        switch (msg.type) {
+            case "tick":
+                setPrice(msg.price as number);
+                if (msg.position) setPosition(msg.position as Position);
+                break;
+            case "trade":
+                setTrades(prev => [{
+                    id: Date.now(),
+                    entry: new Date().toLocaleDateString("en-US", { month:"short", day:"numeric"}),
+                    exit: msg.action === "SELL"
+                            ? new Date().toLocaleDateString("en-US", { month:"short", day: "numeric"})
+                            : null,
+                    qty: msg.qty as number,
+                    buy: msg.action === "BUY" ? msg.price as number : 0,
+                    sell: msg.action === "SELL" ? msg.price as number: null,
+                    net: null,
+                    pct: null,
+                    reason: msg.action === "SELL" ? "signal" : "open",
+                } as Trade, ...prev].slice(0, 20));
+                break;
+            case "engine":
+                setRunning(msg.status === "running");
+        }
+    }, []);
+
+
+
 
 }
