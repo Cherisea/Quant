@@ -37,7 +37,31 @@ export default function StrategyView() {
                 {/* Signal settings */}
                 <Card title="Signal settings" sub="Crossover · ROC · volume filter">
                     <Field label="Fast EMA" hint="periods">
-                        <NumInput />
+                        <NumInput  value={strategy.fast_ema} onChange={v => us(setStrategy)("fast_ema", v)} min={2} max={50}/>
+                    </Field>
+
+                    <Field label="Slow EMA" hint="periods">
+                        <NumInput  value={strategy.slow_ema} onChange={v => us(setStrategy)("slow_ema", v)} min={10} max={200}/>
+                    </Field>
+
+                    <Field label="ROC period" hint="days">
+                        <NumInput value={strategy.roc_period} onChange={v => us(setStrategy)("roc_period", v)} min={2} max={60}/>
+                    </Field>
+
+                    <Field label="Volume MA window" hint="days">
+                        <NumInput value={strategy.vol_ma} onChange={v => us(setStrategy)("vol_ma", v)} min={5} max={60}/>
+                    </Field>
+
+                    <Field label="ROC threshold" hint={`${(strategy.roc_threshold*100).toFixed(1)}% min`}>
+                        <input type="range" min={0.5} max={10} step={0.5} value={strategy.roc_threshold*100}
+                        onChange={e => us(setStrategy)("roc_threshold", +e.target.value/100)}
+                        style={{ width:"100%", accentColor:T.accent }}/>
+                    </Field>
+
+                    <Field label="Volume coefficient" hint={`${strategy.vol_coefficient.toFixed(1)}× avg`}>
+                        <input type="range" min={1} max={3} step={0.1} value={strategy.vol_coefficient}
+                        onChange={e => us(setStrategy)("vol_coefficient", +e.target.value)}
+                        style={{ width:"100%", accentColor:T.accent }}/>
                     </Field>
                 </Card>
             </div>
