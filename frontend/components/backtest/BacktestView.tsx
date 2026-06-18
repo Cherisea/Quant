@@ -4,6 +4,8 @@ import {T} from "@/lib/theme";
 import { useTradingContext } from "@/context/TradingContext";
 import { useState, useMemo, useRef } from "react";
 import { api } from "@/lib/api";
+import Card from "@/components/ui/Card";
+import Field from "@/components/ui/Field";
 import { BT_STATS, generateBtEquity } from "@/data/seed";
 
 const selectStyle = {
@@ -64,5 +66,18 @@ export default function BacktestView() {
         }
     };
 
-    
+    return (
+        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 16, alignItems: "start" }}>
+            {/* Config */}
+            <Card title="Configuration">
+                <Field label="Test duration">
+                    <select value={dur} onChange={e => setDur(+e.target.value)} style={selectStyle}>
+                        {[1, 2, 3, 5].map(v => <option key={v} value={v}>{v} year{v>1?"s": ""}</option>)}
+                    </select>
+                </Field>
+
+                
+            </Card>
+        </div>
+    )
 }
