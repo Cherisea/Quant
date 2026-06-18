@@ -1,6 +1,13 @@
+/**
+ * An intermediate UI design component for rendering a card-like section
+ * on a web page.
+ * 
+ */
+
 import type { CSSProperties, ReactNode } from "react";
 import { T } from "@/lib/theme";
 
+// Defines a contract of properties expected for a card component
 interface CardProps {
     title: string;
     sub?: string;
