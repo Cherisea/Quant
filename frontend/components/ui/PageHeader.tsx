@@ -1,3 +1,9 @@
+/**
+ * A page header component that applies a specific style to a header
+ * and optional subtitle of a web page.
+ * 
+ */
+
 import { T } from "@/lib/theme";
 
 interface PageHeaderProps { title: string, sub?: string};
