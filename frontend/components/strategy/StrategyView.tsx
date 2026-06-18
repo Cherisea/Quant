@@ -2,6 +2,7 @@
 
 import { T } from "@/lib/theme";
 import { api } from "@/lib/api";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
@@ -64,6 +65,42 @@ export default function StrategyView() {
                         style={{ width:"100%", accentColor:T.accent }}/>
                     </Field>
                 </Card>
+
+                {/* Risk settings */}
+                <Card title="Risk settings" sub="Sizing · stops · execution">
+                    <Field label="Position size" hint={`${(risk.trade_size_pct * 100).toFixed(0)}% of capital`}>
+                        <input type="range" min={10} max={100} step={5} value={risk.trade_size_pct*100} 
+                            onChange={e => us(setRisk)("trade_size_pct", +e.target.value/100)}
+                            style={{ width: "100%", accentColor: T.accent }}/>
+                    </Field>
+
+                    <Field label="Trailing stop" hint={`${(risk.stop_loss_pct*100).toFixed(1)}% from peak`}>
+                        <input type="range" min={1} max={15} step={0.5} value={risk.stop_loss_pct*100}
+                        onChange={e => us(setRisk)("stop_loss_pct", +e.target.value/100)}
+                        style={{ width:"100%", accentColor:T.accent }}/>
+                    </Field>
+
+                    <Field label="Limit buffer" hint="bps">
+                        <NumInput value={risk.limit_buffer_bps} onChange={v => us(setRisk)("limit_buffer_bps", v)} min={1} max={50}/>
+                    </Field>
+
+                    <Field label="Order timeout" hint="seconds">
+                        <NumInput value={risk.max_wait_sec} onChange={v => us(setRisk)("max_wait_sec", v)} min={10} max={300} step={10}/>
+                    </Field>
+
+                    <Field label="Lookback bars" hint="daily bars">
+                        <NumInput value={risk.lookback_bars} onChange={v => us(setRisk)("lookback_bars", v)} min={60} max={600} step={10}/>
+                    </Field>
+                    <div style={{ marginTop:10, padding:"9px 10px", background:T.elevated, borderRadius:5, fontSize:10, color:T.muted, lineHeight:1.7 }}>
+                        <span style={{ color:T.amber }}>ⓘ</span> Saving POSTs to <code>/api/strategy</code>, which writes to Redis. Engine picks up changes at next tick.
+                    </div>
+                </Card>
+            </div>
+
+            <div style={{ marginTop:16, display:"flex", justifyContent:"flex-end" }}>
+                <button onClick={save} style={{ ...btnPrimary, minWidth:130, justifyContent:"center" }}>
+                {saved ? <><Check size={11}/> Saved</> : "Save changes"}
+                </button>
             </div>
         </>
     )
