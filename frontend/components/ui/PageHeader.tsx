@@ -6,6 +6,7 @@
 
 import { T } from "@/lib/theme";
 
+// Defines a contract of what properties are expected for a header
 interface PageHeaderProps { title: string, sub?: string};
 
 export default function PageHeader({ title, sub }: PageHeaderProps) {
