@@ -11,6 +11,7 @@ import { Activity, BarChart2, Zap, Settings, TrendingUp, Wifi, WifiOff } from "l
 import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
 
+// Four sidebar links to other pages
 const NAV = [
     { href: "/", label: "Dashboard", Icon:Activity},
     { href: "/backtest", label: "Backtest", Icon: BarChart2},
@@ -47,12 +48,12 @@ export default function SideBar() {
                 const active = pathname === href;
                 return (
                     <Link key={href} href={href} style={{
-                    display:"flex", alignItems:"center", gap:9, padding:"8px 14px",
-                    background: active ? T.elevated : "transparent",
-                    color:       active ? T.text    : T.muted,
-                    borderLeft:  `2px solid ${active ? T.accent : "transparent"}`,
-                    fontSize:12, fontWeight: active ? 500 : 400,
-                    }}>
+                        display:"flex", alignItems:"center", gap:9, padding:"8px 14px",
+                        background: active ? T.elevated : "transparent",
+                        color:       active ? T.text    : T.muted,
+                        borderLeft:  `2px solid ${active ? T.accent : "transparent"}`,
+                        fontSize:12, fontWeight: active ? 500 : 400,
+                        }}>
                     <Icon size={13}/>{label}
                     </Link>
                 );
