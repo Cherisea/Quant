@@ -1,4 +1,5 @@
 import PageHeader from "@/components/ui/PageHeader";
+import BacktestView from "@/components/backtest/BacktestView";
 
 export default function BacktestPage() {
     return (
