@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import { BT_STATS, generateBtEquity } from "@/data/seed";
+import { Play, RefreshCw } from "lucide-react";
 
 const selectStyle = {
     width: "100%", boxSizing: "border-box" as const, background: T.elevated,
@@ -80,7 +81,16 @@ export default function BacktestView() {
                     EMA {strategy.fast_ema}/{strategy.slow_ema} · ROC {(strategy.roc_threshold*100).toFixed(0)}%
                     ({strategy.roc_period}d) · Vol {strategy.vol_coefficient}×MA({strategy.vol_ma})
                 </div>
+
+                <button onClick={run} disabled={busy} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity:busy?.65:1 }}>
+                    {busy 
+                        ? <><RefreshCw size={11} style={{ animation: "spin 1s linear infinite" }}/> Running </>
+                        : <><Play size={11}/> Run Backtest</>
+                    }
+                </button>
             </Card>
+
+            
         </div>
     )
 }
