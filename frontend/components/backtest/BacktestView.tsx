@@ -1,6 +1,10 @@
 "use client";
 
 import {T} from "@/lib/theme";
+import { useTradingContext } from "@/context/TradingContext";
+import { useState, useMemo, useRef } from "react";
+import { api } from "@/lib/api";
+import { BT_STATS, generateBtEquity } from "@/data/seed";
 
 const selectStyle = {
     width: "100%", boxSizing: "border-box" as const, background: T.elevated,
@@ -22,5 +26,43 @@ function BtTooltip({ active, payload}: any) {
             <div style={{ color:T.accent }}>Strategy: HK${fmtEq(payload[0]?.value)}</div>
             <div style={{ color:T.muted }}>B&H: HK${fmtEq(payload[1]?.value)}</div>
         </div>
-    )
+    );
+}
+
+export default function BacktestView() {
+    const { strategy } = useTradingContext();
+    const [dur, setDur] = useState(3);
+    const [busy, setBusy] = useState(false);
+    const [prog, setProg] = useState(0);
+    const [done, setDone] = useState(false);
+    const btData = useMemo(() => generateBtEquity(), []);
+    const pollRef = useRef<ReturnType<typeof setInterval>>();
+
+    const run = async () => {
+        setBusy(true); setProg(0); setDone(false);
+
+        try {
+            const { job_id } = await api.submitBacktest(dur);
+            pollRef.current = setInterval(async () => {
+                const job = await api.backtestStatus(job_id);
+                setProg(job.progress ?? 0);
+                if (job.status === "done") {
+                    clearInterval(pollRef.current);
+                    setDone(true);
+                    setBusy(false);
+                }
+            }, 500);
+        } catch {
+            // API unreachable -- simulate locally
+            let p = 0;
+            const id = setInterval(() => {
+                p += Math.random() * 15 + 3;
+                if (p >= 100) { 
+                    clearInterval(id); setProg(100); setDone(true); setBusy(false);
+                } else setProg(p);
+            }, 200);
+        }
+    };
+
+    
 }
