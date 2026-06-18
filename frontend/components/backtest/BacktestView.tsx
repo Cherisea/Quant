@@ -76,7 +76,10 @@ export default function BacktestView() {
                     </select>
                 </Field>
 
-                
+                <div style={{ margin:"12px 0", padding:10, background:T.elevated, borderRadius:6, fontSize:10, color:T.muted, lineHeight:1.75 }}>
+                    EMA {strategy.fast_ema}/{strategy.slow_ema} · ROC {(strategy.roc_threshold*100).toFixed(0)}%
+                    ({strategy.roc_period}d) · Vol {strategy.vol_coefficient}×MA({strategy.vol_ma})
+                </div>
             </Card>
         </div>
     )
