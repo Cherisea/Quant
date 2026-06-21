@@ -8,19 +8,8 @@ import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import { BT_STATS, generateBtEquity } from "@/data/seed";
 import { Play, RefreshCw } from "lucide-react";
+import { select, btnPrimary } from "@/lib/style";
 import { CartesianGrid, ResponsiveContainer, LineChart, Line, XAxis, Tooltip, YAxis } from "recharts";
-
-const selectStyle = {
-    width: "100%", boxSizing: "border-box" as const, background: T.elevated,
-    border: `1px solid ${T.border}`, borderRadius: 6, color: T.text, padding: "7px 10px",
-    fontSize: 12, fontFamily: "system-ui", outline: "none"
-};
-
-const btnPrimary = { 
-    display:"inline-flex", alignItems:"center", gap:5, padding:"7px 14px",
-    borderRadius:6, border:"none", fontSize:12, fontWeight:500, cursor:"pointer",
-    background:T.accent, color:"#fff" 
-} as const;
 
 function BtTooltip({ active, payload}: any) {
     if (!active || !payload?.length) return null;
@@ -73,7 +62,7 @@ export default function BacktestView() {
             {/* Config */}
             <Card title="Configuration">
                 <Field label="Test duration">
-                    <select value={dur} onChange={e => setDur(+e.target.value)} style={selectStyle}>
+                    <select value={dur} onChange={e => setDur(+e.target.value)} className={select}>
                         {[1, 2, 3, 5].map(v => <option key={v} value={v}>{v} year{v>1?"s": ""}</option>)}
                     </select>
                 </Field>
@@ -83,7 +72,7 @@ export default function BacktestView() {
                     ({strategy.roc_period}d) · Vol {strategy.vol_coefficient}×MA({strategy.vol_ma})
                 </div>
 
-                <button onClick={run} disabled={busy} style={{ ...btnPrimary, width: "100%", justifyContent: "center", opacity:busy?.65:1 }}>
+                <button onClick={run} disabled={busy} className={btnPrimary} style={{ width: "100%", justifyContent: "center" }}>
                     {busy 
                         ? <><RefreshCw size={11} style={{ animation: "spin 1s linear infinite" }}/> Running </>
                         : <><Play size={11}/> Run Backtest</>
