@@ -24,7 +24,12 @@ export default function NavBar() {
                 </span>
             </div>
 
-                    
+            {/* Search */}
+            <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, maxWidth:300,
+                background:T.raised, border:`1px solid ${T.border}`, borderRadius:8, padding:"7px 12px" }}>
+                <Search size={13} color={T.muted}/>
+                <span style={{ fontSize:13, color:T.dim }}>Search dashboard…</span>
+            </div>
 
         </nav>
     )
