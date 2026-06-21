@@ -51,8 +51,16 @@ export default function NavBar() {
                 </span>
             </div>
 
+            {/* Broker selector */}
+            <div style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0,
+                background:T.raised, border:`1px solid ${T.border}`, borderRadius:8, padding:"7px 12px" }}>
+                <div style={{ width:18, height:18, borderRadius:"50%", background:"#1A3A2A",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontSize:9, fontWeight:700, color:T.green }}>T</div>
+                <span style={{ fontSize:12, color:T.muted }}>Tiger Trade</span>
+                <ChevronDown size={11} color={T.dim}/>
+            </div>
 
-            
         </nav>
     )
 }
