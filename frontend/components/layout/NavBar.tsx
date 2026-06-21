@@ -1,0 +1,31 @@
+"use client";
+
+import { T } from "@/lib/theme";
+import { useTradingContext } from "@/context/TradingContext";
+import { Search, Plus, Wifi, WifiOff, ChevronDown, ArrowUpRight } from "lucide-react";
+
+export default function NavBar() {
+    const { wsConnected } = useTradingContext();
+
+    return (
+        <nav style={{
+            display: "flex", alignItems: "center", gap: 14,
+            padding: "12px 24px", background: T.card,
+            borderBottom: `1px solid ${T.border},`
+        }}>
+            {/* Logo */}
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginRight:8, flexShrink:0 }}>
+                <div style={{ width:30, height:30, borderRadius:8, background:T.accent,
+                display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <ArrowUpRight size={15} color="#000"/>
+                </div>
+                <span style={{ fontSize:15, fontWeight:600, color:T.text, letterSpacing:"-0.02em" }}>
+                MomentumBot
+                </span>
+            </div>
+
+                    
+
+        </nav>
+    )
+}
