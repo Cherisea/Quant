@@ -4,15 +4,16 @@
  */
 
 export const T = {
-  bg:       "#FFFFFF",
-  surface:  "#F8FAFC",
-  elevated: "#EFF2F6",
-  border:   "#E2E8F0",
-  accent:   "#4F46E5",
-  text:     "#111827",
-  muted:    "#6B7280",
-  dim:      "#9CA3AF",
-  green:    "#059669",
-  red:      "#DC2626",
-  amber:    "#B45309",
+  bg:     "#0F1117",
+  card:   "#181B24",
+  raised: "#1E2130",
+  border: "#252836",
+  accent: "#00D46A",
+  text:   "#FFFFFF",
+  muted:  "#7E839A",
+  dim:    "#464A5D",
+  green:  "#00D46A",
+  red:    "#FF4D6A",
+  amber:  "#FFB800",
+  blue:   "#4D94FF",
 } as const;
