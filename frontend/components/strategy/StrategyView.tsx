@@ -8,14 +8,7 @@ import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import NumInput from "@/components/ui/NumInput";
 import { useTradingContext } from "@/context/TradingContext";
-
-
-// Defines a primary style for a botton
-const btnPrimary = {
-    display: "inline-flex", alignItem: "center", gap: 5, padding: "7px 14px",
-    borderRadius: 6, border: "none", fontSize: 12, fontWeight: 500, 
-    cursor: "pointer", background: T.accent, color: "#fff"
-} as const;
+import { btnPrimary } from "@/lib/style";
 
 export default function StrategyView() {
     const { strategy, setStrategy, risk, setRisk } = useTradingContext();
@@ -98,7 +91,7 @@ export default function StrategyView() {
             </div>
 
             <div style={{ marginTop:16, display:"flex", justifyContent:"flex-end" }}>
-                <button onClick={save} style={{ ...btnPrimary, minWidth:130, justifyContent:"center" }}>
+                <button onClick={save} className={btnPrimary} style={{ minWidth:130, justifyContent:"center" }}>
                 {saved ? <><Check size={11}/> Saved</> : "Save changes"}
                 </button>
             </div>
