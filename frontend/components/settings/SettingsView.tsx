@@ -3,6 +3,8 @@
 import { T } from "@/lib/theme";
 import { useState } from "react";
 import { api } from "@/lib/api";
+import Card from "@/components/ui/Card";
+import Field from "@/components/ui/Field";
 import { useTradingContext } from "@/context/TradingContext";
 
 // CSS styling to be migrated into a central script or Tailwind
@@ -43,5 +45,18 @@ export default function SettingsView() {
         setWarn(false);
     }
 
-    
+    return (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
+            {/* Borker */}
+            <Card title="Broker" sub="Active adapter profile">
+                <Field label="Adapter">
+                    <select value={broker.name} onChange={e => setBroker(b => ({ ...b, name: e.target.value }))} style={selStyle}>
+                        <option value="tiger">Tiger Trade</option>
+                        <option value="csv">Paper Trading</option>
+                    </select>
+                </Field>
+                
+            </Card>
+        </div>
+    )
 }
