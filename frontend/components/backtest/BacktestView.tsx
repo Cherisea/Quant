@@ -90,7 +90,34 @@ export default function BacktestView() {
                 </button>
             </Card>
 
-            
+            {/* Results */}
+            <div>
+                {!done && !busy && (
+                    <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                        background: T.surface, border: `1px dashed ${T.border}`, borderRadius: 8, color: T.muted}}>
+                        <div style={{ fontSize:28, opacity:.15, marginBottom:10 }}>📊</div>
+                        <div style={{ fontSize:12 }}>Configure and run a backtest</div>
+                    </div>
+                )}
+
+                {busy && (
+                    <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                        background:T.surface, border: `1px dashed ${T.border}`, borderRadius: 8}}>
+                            <div style={{ width: 220, marginBottom: 12 }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.muted, marginBottom: 5}}>
+                                    <span>Simulating {dur}-year dataset</span>
+                                    <span style={{ fontFamily: "monospace"}}>{Math.round(prog)}</span>
+                                </div>
+                                <div style={{ height: 3, background: T.elevated, borderRadius: 2}}>
+                                    <div style={{ height: "100%", width: `${prog}%`, background: T.accent, borderRadius: 2, transition: "width .15s"}}/>
+                                </div>
+                            </div>
+                            <div style={{ fontSize: 10, color: T.dim}}>Bar-by-bar with slippage + fees...</div>
+                    </div>
+                )}
+
+                
+            </div>
         </div>
     )
 }
