@@ -7,6 +7,7 @@ import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
+import NumInput from "../ui/NumInput";
 
 // CSS styling to be migrated into a central script or Tailwind
 const inpStyle = {
@@ -74,7 +75,17 @@ export default function SettingsView() {
                         />
                     </Field>
                 ))}
+
+                <Field label="Lot size" hint="shares">
+                    <NumInput value={broker.lot_size} onChange={v => setBroker(b => ({ ...b, lot_size: v }))} min={1} />
+                </Field>
+                <div style={{ marginTop: 10, padding: "9px 10px", background: T.elevated, borderRadius: 5, fontSize: 10, color: T.muted, lineHeight: 1.75}}>
+                    <span style={{ color: T.accent }}>Credentials</span> are server-side env vars.
+                    Set <code>BROKER_NAME</code>, <code>TIGER_ID</code>, etc. on the host.
+                </div>
             </Card>
+
+            
         </div>
     )
 }
