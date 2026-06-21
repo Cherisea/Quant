@@ -53,6 +53,7 @@ export default function SideBar() {
                         color:       active ? T.text    : T.muted,
                         borderLeft:  `2px solid ${active ? T.accent : "transparent"}`,
                         fontSize:12, fontWeight: active ? 500 : 400,
+                        textDecoration: "none",
                         }}>
                     <Icon size={13}/>{label}
                     </Link>
