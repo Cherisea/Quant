@@ -33,12 +33,24 @@ export default function NavBar() {
 
             <div style={{ flex:1 }}/>
 
-            {/* New backtest CTA */}
+            {/* New backtest */}
             <button style={{ display:"flex", alignItems:"center", gap:6, background:T.accent,
                 color:"#000", border:"none", borderRadius:8, padding:"8px 16px",
                 fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0 }}>
                 New backtest <Plus size={13}/>
             </button>
+
+            {/* WebSocket status */}
+            <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0,
+                background:T.raised, border:`1px solid ${T.border}`, borderRadius:8, padding:"7px 12px" }}>
+                {wsConnected
+                ? <Wifi    size={12} color={T.green}/>
+                : <WifiOff size={12} color={T.red  }/>}
+                <span style={{ fontSize:12, color:T.muted }}>
+                {wsConnected ? "Connected" : "Disconnected"}
+                </span>
+            </div>
+
 
             
         </nav>
