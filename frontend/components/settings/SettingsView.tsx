@@ -8,7 +8,7 @@ import Field from "@/components/ui/Field";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import NumInput from "../ui/NumInput";
-import { AlertTriangle, Play, Square } from "lucide-react";
+import { AlertTriangle, Play, Square, Database } from "lucide-react";
 
 // CSS styling to be migrated into a central script or Tailwind
 const inpStyle = {
@@ -132,8 +132,21 @@ export default function SettingsView() {
                     ].map(t => <div key={t} style={{ fontSize: 10, color: T.dim, padding: "3px 0"}}>· {t}</div>)}
                 </Card>
 
-                
+                {/* Cache status */}
+                <Card title="Price cache" sub="Postgres OHLCV store" style={{ marginTop: 14}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10}}>
+                        <Database size={11} color={T.green}/>
+                        <span style={{ fontSize: 11, color: T.muted }}>quant_db @ localhost:5432</span>
+                    </div>
+                    {[["Cached bars","1,247"],["Symbol","06066 · DAY"],["Latest","Jun 14, 2026"],["Adapter","CachedBrokerAdapter"]].map(([k,v]) => (
+                        <div key={k} style={{ display:"flex", justifyContent:"space-between", padding:"5px 0",
+                        fontSize:11, borderBottom:`1px solid ${T.border}` }}>
+                        <span style={{ color:T.muted }}>{k}</span>
+                        <span style={{ color:T.text, fontFamily:"monospace" }}>{v}</span>
+                        </div>
+                    ))}
+                </Card>
             </div>
         </div>
-    )
+    );
 }
