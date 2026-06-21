@@ -8,8 +8,8 @@ export default function DashboardPage() {
     <>
       <StatusBar />
       <div style={{ padding: 20 }}>
-        <EquityChart />
         <KpiGrid />
+        <EquityChart />
         <TradeLog />
       </div>
     </>
