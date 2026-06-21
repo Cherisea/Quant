@@ -5,6 +5,7 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
+import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 
 // CSS styling to be migrated into a central script or Tailwind
@@ -26,9 +27,17 @@ const btnD = { ...btnP, background: "#FEE2E2", color: T.red } as const;
 
 const btnS = { ...btnP, background: T.elevated, color: T.muted, border: `1px solid ${T.border}` } as const;
 
+const BROKER_TEXT_FIELDS: { label: string; key: keyof BrokerSettings }[] = [
+    { label: "Symbol", key: "symbol" },
+    { label: "Currency", key: "currency" },
+    { label: "Exchange", key: "exchange" },
+];
+
 export default function SettingsView() {
     const { running, setRunning, position } = useTradingContext();
-    const [broker, setBroker] = useState({ name: "tiger", symbol: "06066", currency: "HKD", exchange: "HKEX", lot_size: 500 });
+    const [broker, setBroker] = useState<BrokerSettings>({ 
+        name: "tiger", symbol: "06066", currency: "HKD", exchange: "HKEX", lot_size: 500 
+    });
     const [warn, setWarn] = useState(false);
 
     // Turn on/off backtest engine
@@ -47,7 +56,7 @@ export default function SettingsView() {
 
     return (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
-            {/* Borker */}
+            {/* Broker */}
             <Card title="Broker" sub="Active adapter profile">
                 <Field label="Adapter">
                     <select value={broker.name} onChange={e => setBroker(b => ({ ...b, name: e.target.value }))} style={selStyle}>
@@ -55,7 +64,16 @@ export default function SettingsView() {
                         <option value="csv">Paper Trading</option>
                     </select>
                 </Field>
-                
+
+                {BROKER_TEXT_FIELDS.map(({ label, key}) => (
+                    <Field key={key} label={label}>
+                        <input 
+                            value = {broker[key]}
+                            onChange = { e => setBroker(b => ({ ...b, [key]: e.target.value}))}
+                            style = {inpStyle}
+                        />
+                    </Field>
+                ))}
             </Card>
         </div>
     )
