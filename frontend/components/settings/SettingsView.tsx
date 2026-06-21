@@ -8,6 +8,7 @@ import Field from "@/components/ui/Field";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import NumInput from "../ui/NumInput";
+import { AlertTriangle, Play, Square } from "lucide-react";
 
 // CSS styling to be migrated into a central script or Tailwind
 const inpStyle = {
@@ -85,7 +86,54 @@ export default function SettingsView() {
                 </div>
             </Card>
 
-            
+            <div>
+                {/* Engine control */}
+                <Card title="Engine control">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                        padding: "12px 14px", background: T.elevated, borderRadius: 7, marginBottom: 12}}>
+                        <div>
+                            <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>Trading engine</div>
+                            <div style={{ fontSize: 10, color: T.muted, marginTop: 2}}>
+                                {running ? "Ticking every 10 min during market hours" : "Stopped - no orders will be placed"}
+                            </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8}}>
+                            <div style={{ width: 6, height: 6, borderRadius: "50%", background:running?T.green:T.dim }}/>
+                            <button onClick={toggle} style={running ? btnD: btnP}>
+                                {running ? <><Square size={10}/>Stop</> : <><Play size={10}/>Start</>}
+                            </button>
+                        </div>
+                    </div>
+
+                    {warn && (
+                        <div style={{ padding: "11px 13px", background: "#FEF2F2", border: `1px solid #FECACA`, borderRadius: 7, marginBottom: 12}}>
+                            <div style={{ display: "flex", gap: 8 }}>
+                                <AlertTriangle size={13} color={T.amber} style={{ flexShrink: 0, marginTop: 1}} />
+                                <div>
+                                    <div style={{ fontSize: 11, fontWeight: 500, color: T.amber, marginBottom: 4 }}>
+                                        Open position - trailing stop will stop watching
+                                    </div>
+                                    <div style={{ fontSize: 10, color:T.muted, lineHeight: 1.7, marginBottom: 10}}>
+                                        You hold <b style={{ color: T.text}}>{position?.qty.toLocaleString()} shares.</b>{" "}
+                                        Place a resting broker-side stop order before stopping the engine.
+                                    </div>
+                                    <div style={{ display: "flex", gap: 8 }}>
+                                        <button onClick={forceStop} style={btnD}>Stop anyway</button>
+                                        <button onClick={() => setWarn(false)} style={btnS}>Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {["Engine runs independently - logout doesn't stop it.",
+                       "Positions remain protected when the UI is closed.",
+                       "To switch brokers: go flat, change BROKER_NAME, restart."
+                    ].map(t => <div key={t} style={{ fontSize: 10, color: T.dim, padding: "3px 0"}}>· {t}</div>)}
+                </Card>
+
+                
+            </div>
         </div>
     )
 }
