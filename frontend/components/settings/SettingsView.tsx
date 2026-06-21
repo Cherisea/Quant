@@ -9,25 +9,10 @@ import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import NumInput from "../ui/NumInput";
 import { AlertTriangle, Play, Square, Database } from "lucide-react";
-
-// CSS styling to be migrated into a central script or Tailwind
-const inpStyle = {
-    width:"100%", boxSizing:"border-box" as const, background:T.elevated,
-    border:`1px solid ${T.border}`, borderRadius:6, color:T.text, padding:"7px 10px",
-    fontSize:12, fontFamily:"ui-monospace,monospace", outline:"none"
-};
-
-const selStyle = { ...inpStyle, fontFamily: "system-ui"};
-
-const btnP = {
-    display: "inline-flex", alignItems: "center", gap: 5, paddng: "5px 12px",
-    borderRadius: 6, border: "none", fontSize: 11, fontWeight: 500, cursor: "pointer",
-    background: T.accent, color: "#fff"
-} as const;
-
-const btnD = { ...btnP, background: "#FEE2E2", color: T.red } as const;
-
-const btnS = { ...btnP, background: T.elevated, color: T.muted, border: `1px solid ${T.border}` } as const;
+import {
+    input, select, btnPrimary, btnDanger, 
+    btnSecondarySmall, btnDangerSmall
+} from "@/lib/style";
 
 const BROKER_TEXT_FIELDS: { label: string; key: keyof BrokerSettings }[] = [
     { label: "Symbol", key: "symbol" },
@@ -61,7 +46,7 @@ export default function SettingsView() {
             {/* Broker */}
             <Card title="Broker" sub="Active adapter profile">
                 <Field label="Adapter">
-                    <select value={broker.name} onChange={e => setBroker(b => ({ ...b, name: e.target.value }))} style={selStyle}>
+                    <select value={broker.name} onChange={e => setBroker(b => ({ ...b, name: e.target.value }))} className={select}>
                         <option value="tiger">Tiger Trade</option>
                         <option value="csv">Paper Trading</option>
                     </select>
@@ -72,7 +57,7 @@ export default function SettingsView() {
                         <input 
                             value = {broker[key]}
                             onChange = { e => setBroker(b => ({ ...b, [key]: e.target.value}))}
-                            style = {inpStyle}
+                            className = {input}
                         />
                     </Field>
                 ))}
@@ -99,7 +84,8 @@ export default function SettingsView() {
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: 8}}>
                             <div style={{ width: 6, height: 6, borderRadius: "50%", background:running?T.green:T.dim }}/>
-                            <button onClick={toggle} style={running ? btnD: btnP}>
+                            <button onClick={toggle} className = {running ? btnDanger: btnPrimary} 
+                                style={{ padding: "5px 12px", fontSize:11 }}>
                                 {running ? <><Square size={10}/>Stop</> : <><Play size={10}/>Start</>}
                             </button>
                         </div>
@@ -118,8 +104,8 @@ export default function SettingsView() {
                                         Place a resting broker-side stop order before stopping the engine.
                                     </div>
                                     <div style={{ display: "flex", gap: 8 }}>
-                                        <button onClick={forceStop} style={btnD}>Stop anyway</button>
-                                        <button onClick={() => setWarn(false)} style={btnS}>Cancel</button>
+                                        <button onClick={forceStop} className={btnDangerSmall}>Stop anyway</button>
+                                        <button onClick={() => setWarn(false)} className={btnSecondarySmall}>Cancel</button>
                                     </div>
                                 </div>
                             </div>
