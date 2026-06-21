@@ -1,6 +1,9 @@
 "use client";
 
 import { T } from "@/lib/theme";
+import { useState } from "react";
+import { api } from "@/lib/api";
+import { useTradingContext } from "@/context/TradingContext";
 
 // CSS styling to be migrated into a central script or Tailwind
 const inpStyle = {
@@ -21,4 +24,24 @@ const btnD = { ...btnP, background: "#FEE2E2", color: T.red } as const;
 
 const btnS = { ...btnP, background: T.elevated, color: T.muted, border: `1px solid ${T.border}` } as const;
 
+export default function SettingsView() {
+    const { running, setRunning, position } = useTradingContext();
+    const [broker, setBroker] = useState({ name: "tiger", symbol: "06066", currency: "HKD", exchange: "HKEX", lot_size: 500 });
+    const [warn, setWarn] = useState(false);
 
+    // Turn on/off backtest engine
+    const toggle = async () => {
+        if (running && (position?.qty ?? 0) > 0) { setWarn(true); return; }
+        try { running ? await api.engineStop() : await api.engineStart(); } catch {}
+        setRunning(r => !r);
+    };
+
+    // Force stop backtest engine
+    const forceStop = async () => {
+        try { await api.engineStop(); } catch {}
+        setRunning(false);
+        setWarn(false);
+    }
+
+    
+}
