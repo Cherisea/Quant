@@ -26,22 +26,8 @@ export default function SideBar() {
     return (
         <aside style={{
             width:200, display:"flex", flexDirection:"column",
-            background:T.surface, borderRight:`1px solid ${T.border}`, flexShrink:0,
+            background:T.card, borderRight:`1px solid ${T.border}`, flexShrink:0,
         }}>
-            {/* Logo */}
-            <div style={{ padding:"16px 14px 14px", borderBottom:`1px solid ${T.border}` }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                <div style={{ width:26, height:26, borderRadius:5, background:T.accent,
-                    display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <TrendingUp size={12} color="#fff"/>
-                </div>
-                <div>
-                    <div style={{ fontSize:12, fontWeight:600, color:T.text }}>MomentumBot</div>
-                    <div style={{ fontSize:9, color:T.muted }}>06066 · HKEX · DAY</div>
-                </div>
-                </div>
-            </div>
-
             {/* Nav links */}
             <nav style={{ flex:1, padding:"6px 0" }}>
                 {NAV.map(({ href, label, Icon }) => {
@@ -49,30 +35,25 @@ export default function SideBar() {
                 return (
                     <Link key={href} href={href} style={{
                         display:"flex", alignItems:"center", gap:9, padding:"8px 14px",
-                        background: active ? T.elevated : "transparent",
+                        background: active ? T.raised : "transparent",
                         color:       active ? T.text    : T.muted,
                         borderLeft:  `2px solid ${active ? T.accent : "transparent"}`,
-                        fontSize:12, fontWeight: active ? 500 : 400,
+                        fontSize:13, fontWeight: active ? 500 : 400,
                         textDecoration: "none",
                         }}>
-                    <Icon size={13}/>{label}
+                    <Icon size={14}/>{label}
                     </Link>
                 );
                 })}
             </nav>
-
-            {/* Engine + WS status */}
-            <div style={{ padding:"10px 14px", borderTop:`1px solid ${T.border}`, fontSize:10 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:4 }}>
-                <div style={{ width:5, height:5, borderRadius:"50%", background:running?T.green:T.red,
-                    animation: running?"pulse 2s infinite":"none" }}/>
-                <span style={{ color:T.muted }}>{running?"Engine running":"Engine stopped"}</span>
-                </div>
+            
+            {/* Engine status */}
+            <div style={{ padding:"12px 16px", borderTop:`1px solid ${T.border}`, fontSize:10 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                {wsConnected
-                    ? <Wifi    size={9} color={T.green}/>
-                    : <WifiOff size={9} color={T.red}/>}
-                <span style={{ color:T.muted }}>WS {wsConnected?"connected":"disconnected"}</span>
+                <div style={{ width:5, height:5, borderRadius:"50%",
+                    background: running ? T.green : T.red,
+                    animation: running ? "pulse 2s infinite" : "none" }}/>
+                <span style={{ color:T.muted }}>{running ? "Engine running" : "Engine stopped"}</span>
                 </div>
             </div>
 
