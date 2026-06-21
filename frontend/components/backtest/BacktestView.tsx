@@ -8,6 +8,7 @@ import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import { BT_STATS, generateBtEquity } from "@/data/seed";
 import { Play, RefreshCw } from "lucide-react";
+import { CartesianGrid, ResponsiveContainer, LineChart, Line, XAxis, Tooltip, YAxis } from "recharts";
 
 const selectStyle = {
     width: "100%", boxSizing: "border-box" as const, background: T.elevated,
@@ -92,6 +93,7 @@ export default function BacktestView() {
 
             {/* Results */}
             <div>
+                {/* Default view */}
                 {!done && !busy && (
                     <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                         background: T.surface, border: `1px dashed ${T.border}`, borderRadius: 8, color: T.muted}}>
@@ -99,7 +101,8 @@ export default function BacktestView() {
                         <div style={{ fontSize:12 }}>Configure and run a backtest</div>
                     </div>
                 )}
-
+                
+                {/* A view when request is being processed */}
                 {busy && (
                     <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                         background:T.surface, border: `1px dashed ${T.border}`, borderRadius: 8}}>
@@ -116,7 +119,36 @@ export default function BacktestView() {
                     </div>
                 )}
 
-                
+                {/* Final view after receiving results */}
+                {done && (
+                    <>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1r)", gap: 8, marginBottom: 14 }}>
+                            {BT_STATS.map(([k, v, pos]) => (
+                                <div key={k} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 6, padding: "9px 12px"}}>
+                                    <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", 
+                                                    letterSpacing: ".05em", marginBottom: 2}}>{k}</div>
+                                    <div style={{ fontSize: 14, fontWeight: 600, fontFamily: "monospace",
+                                                    color: pos === null ? T.text : pos ? T.green : T.red}}>{v}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <Card title="Strategy vs buy & hold">
+                                <div style={{ height: 190 }}>
+                                    <ResponsiveContainer>
+                                        <LineChart data={btData} margin={{ top: 4, right: 4, bottom: 0, left: 0}}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke={T.border}/>
+                                            <XAxis dataKey="date" tick={{ fontSize: 8, fill:T.muted}} axisLine={false} tickLine={false} interval={18}/>
+                                            <YAxis tick={false} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
+                                            <Tooltip content={<BtTooltip/>}/>
+                                            <Line type="monotone" dataKey="strat" stroke={T.accent} strokeWidth={1.5} dot={false}/>
+                                            <Line type="monotone" dataKey="bnh"   stroke={T.dim}    strokeWidth={1}   dot={false} strokeDasharray="4 4"/>
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                        </Card>
+                    </>
+                )}
             </div>
         </div>
     )
