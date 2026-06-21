@@ -44,6 +44,14 @@ export interface RiskSettings {
     lookback_bars:      number;
 }
 
+export interface BrokerSettings {
+    name:               string;
+    symbol:             string;
+    currency:           string;
+    exchange:           string;
+    lot_size:           number;
+}
+
 export interface WsMessage {
     type:               "tick" | "trade" | "equity" | "engine" | "signal";
     _channel?:           string;
