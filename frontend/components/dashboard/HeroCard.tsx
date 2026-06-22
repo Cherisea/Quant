@@ -25,9 +25,25 @@ function Landscape() {
             style={{ position: "absolute", inset:0, width: "100%", height: "100%"}}
             aria-hidden="true">
             <rect width="520" height="200" fill="#0D1F1D"/>
-        </svg>
-    )
+            <polygon
+                points="0,200 60,78 122,118 182,48 244,95 304,32 364,82 424,42 484,68 520,52 520,200"
+                fill="#122B26"/>
+            <polygon
+                points="0,200 42,142 94,158 154,108 214,142 274,96 334,132 394,86 454,118 520,82 520,200"
+                fill="#0D2120"/>
+            <polygon points={`${treeLine} 520,200 0,200`} fill="#091815"/>
+            <circle cx="432" cy="42" r="20" fill="#152924"/>
+            <circle cx="439" cy="37" r="16" fill="#0D1F1D"/>
+            {stars.map(([cx, cy], i) => (
+                <circle key={i} cx={cx} cy={cy} r={i % 3 === 0 ? 1.5 : 1} 
+                fill="white" opacity={0.35 + (i % 3) * 0.15}/>
+            ))}
 
+            {/* Highlight dot -- echoes the chart's active point */}
+            <circle cx="390" cy="88" r="4"  fill="#00D46A"/>
+            <circle cx="390" cy="88" r="10" fill="#00D46A" opacity="0.15"/>
+        </svg>
+    );
 }
 
 export default function HeroCard() {
