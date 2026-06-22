@@ -1,4 +1,5 @@
 import HeroCard from "@/components/dashboard/HeroCard";
+import BalanceChart from "@/components/dashboard/BalanceChart";
 import { T } from "@/lib/theme";
 
 function Section({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export default function DashboardPage() {
       <div style={{ display: "grid", gridTemplateColumns: "1.7fr 1.3fr 1fr",
         gap: 16, marginBottom: 26}}>
           <HeroCard />
+          <BalanceChart />
       </div>
 
 
