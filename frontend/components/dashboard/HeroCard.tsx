@@ -47,15 +47,50 @@ function Landscape() {
 }
 
 export default function HeroCard() {
+    const { price, position } = useTradingContext();
+    const entryPrice = position?.entry_price ?? 0;
+    const qty = position?.qty ?? 0;
+    const cashBalance = 511_173;    // Replace it with a real value
+    const portfolio = cashBalance + qty * price;
+    const dailyChange = qty > 0 ? (price - entryPrice) * qty : 0;
+
+
     return (
         <div style={{
             borderRadius:14, overflow:"hidden", position:"relative",
             background:T.card, border:`1px solid ${T.border}`, minHeight:210,
             }}>
             <Landscape />
+            
+            <div style={{ position: "relative", zIndex: 1, padding: 22 }}>
+                <div style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.45)",
+                    letterSpacing: "0.06em", marginBottom: 6
+                }}>
+                    Currently trading
+                </div>
 
+                <div style={{ fontSize:34, fontWeight:700, color:T.text,
+                    letterSpacing:"-0.03em", fontFamily:"monospace", marginBottom:20 }}>
+                    HK${portfolio.toLocaleString(undefined, { maximumFractionDigits:0 })}
+                </div>
 
-
+                <div style={{ display:"flex", gap:28 }}>
+                    {([
+                        ["Open positions", qty > 0 ? "1"        : "0",               T.text ],
+                        ["Symbol",         qty > 0 ? "06066"     : "—",               T.text ],
+                        ["Today",          `${dailyChange >= 0 ? "+" : ""}HK$${
+                        (Math.abs(dailyChange)/1000).toFixed(1)}K`,
+                        dailyChange >= 0 ? T.green : T.red],
+                    ] as [string, string, string][]).map(([label, value, color]) => (
+                        <div key={label}>
+                        <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginBottom:4 }}>
+                            {label}
+                        </div>
+                        <div style={{ fontSize:20, fontWeight:600, color }}>{value}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }
