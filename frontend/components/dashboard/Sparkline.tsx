@@ -26,6 +26,17 @@ export default function Sparkline({ data, color = T.green, height = 72 }: Sparkl
     const line = vals.map((v, i) => `${px(i).toFixed(2)}, ${py(v).toFixed(2)}`).join(" ");
     const fill = `${px(0)},${H} ${line} ${px(vals.length - 1)},${H}`;
     const id = `spark-${color.replace("#", "")}`;
-    
-    
+
+    return (
+        <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+            <defs>
+                <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor={color} stopOpacity="0.28"/>
+                    <stop offset="100%" stopColor={color} stopOpacity="0"/>
+                </linearGradient>
+            </defs>
+            <polygon points={fill} fill={`url(#${id})`}/>
+            <polyline points={line} fill="none" stroke={color} strokeWidth="1.8" strokeLinejoin="round"/>
+        </svg>
+    )
 }
