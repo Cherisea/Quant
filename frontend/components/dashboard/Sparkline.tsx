@@ -29,6 +29,7 @@ export default function Sparkline({ data, color = T.green, height = 72 }: Sparkl
 
     return (
         <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+            {/* Defines how gradient should be rendered */}
             <defs>
                 <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor={color} stopOpacity="0.28"/>
