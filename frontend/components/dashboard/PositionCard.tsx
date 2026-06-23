@@ -1,6 +1,7 @@
 "use client";
 
 import {T} from "@/lib/theme";
+import { MoreHorizontal, Plus } from "lucide-react";
 
 export default function PositionCard() {
     return (
@@ -17,11 +18,21 @@ export default function PositionCard() {
                         06
                         </div>
                         <div>
-                            
+                            <div style={{fontSize:13, fontWeight:500, color:T.text}}>06066</div>
+                            <div style={{fontSize:10, color:T.muted, marginTop:2}}>
+                                HKEX · Live since June 2026
+                            </div>
                         </div>
                     </div>
-                    
+                    <div style={{ display:"flex", alignItems:"center", gap:8}}>
+                        <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
+                            background:"rgba(0,212,106,0.12)", color:T.green,
+                            padding:"3px 7px", borderRadius:4}}>LIVE</span>
+                        <MoreHorizontal size={14} color={T.dim} style={{cursor:"pointer"}}/>
+                    </div>
                 </div>
+
+                
             </div>
         </div>
     )
