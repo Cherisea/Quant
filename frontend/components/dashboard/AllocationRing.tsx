@@ -33,7 +33,17 @@ export default function AllocationRing() {
                             startAngle={90} endAngle={-270}>
                         </Pie>
                     </PieChart>
+                    <div style={{
+                        position: "absolute", inset: 0,
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center"}}>
+                        <div style={{ fontSize:20, fontWeight:700, color:T.text}}>{posPercent}%</div>
+                        <div style={{ fontSize:9, color:T.muted}}>deployed</div>
+                    </div>
                 </div>
+
+                {/* Legend */}
+                
             </div>
         </div>
     )
