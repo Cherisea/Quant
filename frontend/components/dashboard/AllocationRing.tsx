@@ -15,7 +15,7 @@ export default function AllocationRing() {
 
     const slices = [
         {name: "Position", value: posPercent, fill: T.green},
-        {name: "Cash", value: cashPercent, fill: T.raised},
+        {name: "Cash", value: cashPercent, fill: T.blue},
     ];
 
 
@@ -43,8 +43,21 @@ export default function AllocationRing() {
                 </div>
 
                 {/* Legend */}
-                
+                <div>
+                    {slices.map(s => (
+                        <div key={s.name} style={{ display: "flex", alignItems: "center",
+                            justifyContent: "space-between", padding: "4px 0"}}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 7}}>
+                                <div style={{ width: 7, height: 7, borderRadius: "50%", background:s.fill}}/>
+                                <span style={{ fontSize: 12, color: T.muted}}>{s.name}</span>
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 500, color: T.text }}>
+                                {s.value}%
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
-    )
+    );
 }
