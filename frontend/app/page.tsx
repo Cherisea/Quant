@@ -1,6 +1,7 @@
 import HeroCard from "@/components/dashboard/HeroCard";
 import BalanceChart from "@/components/dashboard/BalanceChart";
 import AllocationRing from "@/components/dashboard/AllocationRing";
+import PositionCard from "@/components/dashboard/PositionCard";
 import { T } from "@/lib/theme";
 
 function Section({ children }: { children: React.ReactNode }) {
