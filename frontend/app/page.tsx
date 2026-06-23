@@ -25,9 +25,23 @@ export default function DashboardPage() {
       </div>
 
       <Section>Active position</Section>
-      <div>
+      <div style={{ display: "grid", gridTemplateColumns:"1fr 200px", gap:14, marginBottom:26}}>
         <PositionCard />
+        {/* Open new position */}
+        <div style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
+          borderRadius:14, display:"flex", flexDirection:"column",
+          alignItems:"center", justifyContent:"center", gap:10,
+          padding:24, cursor:"pointer", minHeight:190 }}>
+          <div style={{ width:48, height:48, borderRadius:12, background:T.raised,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontSize:22, color:T.green }}>+</div>
+          <span style={{ fontSize:12, fontWeight:500, color:T.muted }}>
+            Open new position
+          </span>
+        </div>
       </div>
+
+      
     </div>
   )
 }
