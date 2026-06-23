@@ -4,6 +4,10 @@ import { useMemo } from "react";
 import { useTradingContext } from "@/context/TradingContext";
 import { T } from "@/lib/theme";
 import { ArrowUpRight } from "lucide-react";
+import {
+    AreaChart, Area, XAxis, YAxis,
+    ResponsiveContainer, Tooltip,
+} from "recharts";
 
 // Generate synthetic data for plotting equity curve
 function generateEquityData() {
@@ -42,6 +46,26 @@ export default function BalanceChart() {
             <div style={{ fontSize: 24, fontWeight: 700, color: T.text,
                 fontFamily: "monospace", marginBottom: 12}}>
                 HK${(portfolio / 1000).toFixed(1)}K
+            </div>
+
+            <div style={{ height: 118 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                        <defs>
+                            <linearGradient id="balance-fill" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor={T.green} stopOpacity={0.25} />
+                                <stop offset="95%" stopColor={T.green} stopOpacity={0}/>
+                            </linearGradient>
+                        </defs>
+                        <XAxis dataKey="i" hide/>
+                        <YAxis hide domain={["auto", "auto"]}/>
+                        <Area 
+                            type = "monotone" dataKey="v"
+                            stroke = {T.green} strokeWidth = {1.8}
+                            fill = "url{#balance-fill}" dot = {false}
+                            activeDot = {{ r: 4, fill:T.green, strokeWidth: 0 }}/>
+                    </AreaChart>
+                </ResponsiveContainer>
             </div>
         </div>
     )
