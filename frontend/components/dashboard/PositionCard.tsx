@@ -2,16 +2,27 @@
 
 import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
+import { useMemo } from "react";
 import { MoreHorizontal, Plus } from "lucide-react";
+
+// Synthetic data for drawing sparkline in bottom of card
+function generateSparkData(seed: number) {
+    return Array.from({length: 30}, (_, i) => ({
+        v: 100 + Math.sin(i*0.4 + seed) * 8 + i * 1.5 + Math.sin(i*1.2) * 3,
+    }));
+}
 
 export default function PositionCard() {
     const { price, position } = useTradingContext();
+    const spark = useMemo(() => generateSparkData(1), []);
     
     const qty = position?.qty ?? 0;
     const isOpen = qty > 0;
     const entryPrice = position?.entry_price ?? 0;
     const capital = Math.round(qty * entryPrice);
-    
+    const gain = Math.round(price - entryPrice) * qty;
+    const gainPct = entryPrice > 0 ? ((price - entryPrice) / entryPrice) * 100 : 0;
+    const gainColor = gain >= 0 ? T.green : T.red;
 
     return (
         <div style={{ background:T.card, border: `1px solid ${T.border}`,
@@ -52,9 +63,17 @@ export default function PositionCard() {
 
                     <div>
                         <div style={{ fontSize:10, color:T.muted, marginBottom:4}}>Unrealized</div>
+                        <div style={{ fontSize:16, fontWeight:700, fontFamily:"monospace", color:gainColor }}>
+                            {gain >= 0 ? "+" : ""}{gain.toLocaleString(undefined, {maximumFractionDigits:0})}
+                            <span style={{ fontSize:11, marginLeft:4 }}>
+                                ({gainPct >= 0 ? "+" : ""}{gainPct.toFixed(1)}%)
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
+
+
         </div>
     )
 }
