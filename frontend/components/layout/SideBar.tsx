@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BarChart2, Zap, Settings, TrendingUp, Wifi, WifiOff } from "lucide-react";
+import { Activity, BarChart2, Zap, Settings } from "lucide-react";
 import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
 
@@ -21,7 +21,7 @@ const NAV = [
 
 export default function SideBar() {
     const pathname = usePathname();
-    const { running, wsConnected } = useTradingContext();
+    const { running } = useTradingContext();
 
     return (
         <aside style={{
