@@ -9,6 +9,19 @@ import {
     ResponsiveContainer, Tooltip,
 } from "recharts";
 
+function ChartTooltip({ active, payload }: any) {
+    if (!active || !payload?.length) return null;
+    return (
+        <div style={{ background: T.raised, border:`1px solid ${T.border}`,
+            borderRadius: 6, padding: "6px 10px", fontSize: 11}}>
+            <div style={{ color: T.muted, marginBottom: 2}}>Equity</div>
+            <div style={{ color: T.text, fontFamily: "monospace", fontWeight: 500}}>
+                HK${(payload[0].value / 1000).toFixed(1)}K
+            </div>
+        </div>
+    )
+}
+
 // Generate synthetic data for plotting equity curve
 function generateEquityData() {
     let v = 500_000;
@@ -59,6 +72,7 @@ export default function BalanceChart() {
                         </defs>
                         <XAxis dataKey="i" hide/>
                         <YAxis hide domain={["auto", "auto"]}/>
+                        <Tooltip content={<ChartTooltip />} />
                         <Area 
                             type = "monotone" dataKey="v"
                             stroke = {T.green} strokeWidth = {1.8}
