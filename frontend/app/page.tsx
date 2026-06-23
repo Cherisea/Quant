@@ -3,6 +3,7 @@ import BalanceChart from "@/components/dashboard/BalanceChart";
 import AllocationRing from "@/components/dashboard/AllocationRing";
 import PositionCard from "@/components/dashboard/PositionCard";
 import { T } from "@/lib/theme";
+import TradeLog from "@/components/dashboard/TradeLog";
 
 function Section({ children }: { children: React.ReactNode }) {
   return (
@@ -23,7 +24,8 @@ export default function DashboardPage() {
           <BalanceChart />
           <AllocationRing />
       </div>
-
+      
+      {/* Active position */}
       <Section>Active position</Section>
       <div style={{ display: "grid", gridTemplateColumns:"1fr 200px", gap:14, marginBottom:26}}>
         <PositionCard />
@@ -41,7 +43,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      
+      {/* Trade history */}
+      <Section>Trade History</Section>
+      <TradeLog />
     </div>
   )
 }
