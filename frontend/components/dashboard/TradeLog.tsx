@@ -2,7 +2,6 @@
 
 import { T } from "@/lib/theme";
 import { useTradingContext } from "@/context/TradingContext";
-import Card from "@/components/ui/Card";
 
 const REASON_STYLE: Record<string, { bg: string; color: string}> = {
     signal: {bg: "#DCFCE7", color: T.green},
@@ -15,7 +14,8 @@ export default function TradeLog() {
     const { trades } = useTradingContext();
 
     return (
-        <Card title="Trade log" sub="Most recent first">
+        <div style={{ background: T.card, border: `1px solid ${T.border}`,
+            borderRadius:14, overflow:"hidden"}}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, fontFamily: "monospace"}}>
                 <thead>
                     <tr>{["Entry", "Exit", "Qty", "Buy", "Sell", "Net P&L", "%", "Reason"].map(h => (
@@ -54,6 +54,6 @@ export default function TradeLog() {
                     })}
                 </tbody>
             </table>
-        </Card>
+        </div>
     )
 }
