@@ -1,9 +1,18 @@
 "use client";
 
+import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
 import { MoreHorizontal, Plus } from "lucide-react";
 
 export default function PositionCard() {
+    const { price, position } = useTradingContext();
+    
+    const qty = position?.qty ?? 0;
+    const isOpen = qty > 0;
+    const entryPrice = position?.entry_price ?? 0;
+    const capital = Math.round(qty * entryPrice);
+    
+
     return (
         <div style={{ background:T.card, border: `1px solid ${T.border}`,
             borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column"}}>
@@ -32,7 +41,19 @@ export default function PositionCard() {
                     </div>
                 </div>
 
-                
+                {/* Stats */}
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
+                    <div>
+                        <div style={{ fontSize:10, color:T.muted, marginBottom:4}}>Capital</div>
+                        <div>
+                            HK${capital.toLocaleString(undefined, {maximumFractionDigits:0})}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style={{ fontSize:10, color:T.muted, marginBottom:4}}>Unrealized</div>
+                    </div>
+                </div>
             </div>
         </div>
     )
