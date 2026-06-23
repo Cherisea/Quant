@@ -24,8 +24,10 @@ export default function DashboardPage() {
           <AllocationRing />
       </div>
 
-
       <Section>Active position</Section>
+      <div>
+        <PositionCard />
+      </div>
     </div>
   )
 }
