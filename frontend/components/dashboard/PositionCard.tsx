@@ -3,6 +3,7 @@
 import { useTradingContext } from "@/context/TradingContext";
 import {T} from "@/lib/theme";
 import { useMemo } from "react";
+import Sparkline from "./Sparkline";
 import { MoreHorizontal, Plus } from "lucide-react";
 
 // Synthetic data for drawing sparkline in bottom of card
@@ -24,6 +25,7 @@ export default function PositionCard() {
     const gainPct = entryPrice > 0 ? ((price - entryPrice) / entryPrice) * 100 : 0;
     const gainColor = gain >= 0 ? T.green : T.red;
 
+    // No open position view
     if (!isOpen) {
         return (
         <div style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
@@ -87,8 +89,11 @@ export default function PositionCard() {
                     </div>
                 </div>
             </div>
-
-
+            
+            {/* Sparkline flush to card bottom */}
+            <div style={{ marginTop: "auto" }}>
+                <Sparkline data={spark} color={gainColor} height={72} />
+            </div>
         </div>
     )
 }
