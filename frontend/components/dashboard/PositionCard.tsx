@@ -24,6 +24,21 @@ export default function PositionCard() {
     const gainPct = entryPrice > 0 ? ((price - entryPrice) / entryPrice) * 100 : 0;
     const gainColor = gain >= 0 ? T.green : T.red;
 
+    if (!isOpen) {
+        return (
+        <div style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
+            borderRadius:14, display:"flex", flexDirection:"column",
+            alignItems:"center", justifyContent:"center", gap:10,
+            padding:24, cursor:"pointer", minHeight:190 }}>
+            <div style={{ width:48, height:48, borderRadius:12, background:T.raised,
+            display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <Plus size={20} color={T.green}/>
+            </div>
+            <span style={{ fontSize:12, fontWeight:500, color:T.muted }}>No open position</span>
+        </div>
+        );
+    }
+
     return (
         <div style={{ background:T.card, border: `1px solid ${T.border}`,
             borderRadius:14, overflow:"hidden", display:"flex", flexDirection:"column"}}>
