@@ -1,9 +1,22 @@
 "use client";
 
+import { useMemo } from "react";
+import { useTradingContext } from "@/context/TradingContext";
 import { T } from "@/lib/theme";
 import { ArrowUpRight } from "lucide-react";
 
+// Generate synthetic data for plotting equity curve
+function generateEquityData() {
+    let v = 500_000;
+    return Array.from({ length: 60 }, (_, i) => {
+        v = Math.max(v * (1 + 0.003 + (Math.sin(i * 0.7) * 0.5 - 0.25) * 0.018), 400_000);
+        return { i, v: Math.round(v) };
+    })
+}
+
 export default function BalanceChart() {
+    const { price, position } = useTradingContext();
+    const data = useMemo(() => generateEquityData(), []); 
 
     return (
         <div style={{ background: T.card, border: `1px solid ${T.border}`,
