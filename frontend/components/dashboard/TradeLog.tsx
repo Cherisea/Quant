@@ -18,10 +18,11 @@ export default function TradeLog() {
             borderRadius:14, overflow:"hidden"}}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, fontFamily: "monospace"}}>
                 <thead>
-                    <tr>{["Entry", "Exit", "Qty", "Buy", "Sell", "Net P&L", "%", "Reason"].map(h => (
-                        <th key={h} style={{ padding: "6px 10px", textAlign: "left", color: T.muted, fontWeight: 400,
-                            borderBottom: `1px solid ${T.border}`, fontSize: 9, textTransform: "uppercase",
-                            letterSpacing: ".05em"
+                    <tr style={{ borderBottom:`1px solid ${T.border}` }}>
+                        {["Entry", "Exit", "Qty", "Buy", "Sell", "Net P&L", "%", "Reason"].map(h => (
+                        <th key={h} style={{ padding: "11px 16px", textAlign: "left", color: T.dim, fontWeight:500,
+                            borderBottom: `1px solid ${T.border}`, fontSize: 10, textTransform: "uppercase",
+                            letterSpacing: ".07em"
                         }}> {h}
                         </th>
                     ))}
@@ -34,20 +35,21 @@ export default function TradeLog() {
 
                         return (
                             <tr key={t.id} style={{ borderBottom: `1px solid ${T.border}` }}>
-                                <td style={{ padding:"7px 10px", color:T.muted }}>{t.entry}</td>
-                                <td style={{ padding:"7px 10px", color:t.exit ? T.muted : T.amber }}>{t.exit ?? "OPEN"}</td>
-                                <td style={{ padding:"7px 10px", color:T.text }}>{t.qty.toLocaleString()}</td>
-                                <td style={{ padding:"7px 10px", color:T.text }}>{t.buy.toFixed(2)}</td>
-                                <td style={{ padding:"7px 10px", color:T.text }}>{t.sell?.toFixed(2) ?? "—"}</td>
-                                <td style={{ padding:"7px 10px", fontWeight:t.net !== null ? 500 : 400,
+                                <td style={{ padding:"11px 16px", color:T.muted }}>{t.entry}</td>
+                                <td style={{ padding:"11px 16px", color:t.exit ? T.muted : T.amber }}>{t.exit ?? "OPEN"}</td>
+                                <td style={{ padding:"11px 16px", color:T.text }}>{t.qty.toLocaleString()}</td>
+                                <td style={{ padding:"11px 16px", color:T.text }}>{t.buy.toFixed(2)}</td>
+                                <td style={{ padding:"11px 16px", color:T.text }}>{t.sell?.toFixed(2) ?? "—"}</td>
+                                <td style={{ padding:"11px 16px", fontWeight:500,
                                 color: t.net === null ? T.muted : t.net >= 0 ? T.green : T.red }}>
                                 {t.net === null ? "—" : `${t.net >= 0 ? "+" : ""}${t.net.toLocaleString()}`}
                                 </td>
-                                <td style={{ padding:"7px 10px", color: t.pct === null ? T.muted : t.pct >= 0 ? T.green : T.red }}>
+                                <td style={{ padding:"11px 16px", color: t.pct === null ? T.muted : t.pct >= 0 ? T.green : T.red }}>
                                 {t.pct === null ? "—" : `${t.pct >= 0 ? "+" : ""}${t.pct.toFixed(2)}%`}
                                 </td>
-                                <td style={{ padding:"7px 10px" }}>
-                                <span style={{ fontSize:9, padding:"2px 6px", borderRadius:3, ...rs }}>{t.reason}</span>
+                                <td style={{ padding:"11px 16px" }}>
+                                <span style={{ fontSize:9, padding:"3px 8px", borderRadius:4, 
+                                    fontWeight:700, letterSpacing:"0.05em", ...rs }}>{t.reason}</span>
                                 </td>
                             </tr>
                         );
