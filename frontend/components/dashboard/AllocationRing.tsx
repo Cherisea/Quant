@@ -43,7 +43,7 @@ export default function AllocationRing() {
                 </div>
 
                 {/* Legend */}
-                <div>
+                <div style={{ width: "100%", marginTop: 12 }}>
                     {slices.map(s => (
                         <div key={s.name} style={{ display: "flex", alignItems: "center",
                             justifyContent: "space-between", padding: "4px 0"}}>
