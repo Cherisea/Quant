@@ -1,9 +1,10 @@
+import { T } from "@/lib/theme";
+import StrategySection from "@/components/dashboard/StrategySection";
 import HeroCard from "@/components/dashboard/HeroCard";
+import PositionCard from "@/components/dashboard/PositionCard";
 import BalanceChart from "@/components/dashboard/BalanceChart";
 import AllocationRing from "@/components/dashboard/AllocationRing";
-import PositionCard from "@/components/dashboard/PositionCard";
-import { T } from "@/lib/theme";
-import TradeLog from "@/components/dashboard/TradeLog";
+
 
 function Section({ children }: { children: React.ReactNode }) {
   return (
@@ -43,9 +44,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Trade history */}
-      <Section>Trade History</Section>
-      <TradeLog />
+      {/* Active strategy */}
+      <Section>Active strategy</Section>
+      <StrategySection />
     </div>
   )
 }
