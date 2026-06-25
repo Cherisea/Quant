@@ -54,3 +54,12 @@ export const paramBox = "bg-[#1E2130] rounded-lg px-[10px] py-2";
 
 // Uppercase micro-label above a stat value
 export const statLabel = "text-[9px] text-[#7E839A] uppercase tracking-[0.05em] mb-[3px]";
+
+// Monospace stat value
+export const statValue = "text-[13px] font-semibold text-white font-mon";
+
+// Status badge variants
+export const badgeActive  = "text-[9px] font-bold tracking-[0.06em] px-[7px] py-[3px] rounded bg-[rgba(0,212,106,0.12)] text-[#00D46A]";
+export const badgePaused  = "text-[9px] font-bold tracking-[0.06em] px-[7px] py-[3px] rounded bg-[#1E2130] text-[#7E839A]";
+export const badgeLive    = "text-[9px] font-bold tracking-[0.06em] px-[7px] py-[3px] rounded bg-[rgba(0,212,106,0.12)] text-[#00D46A]";
+export const badgeDraft   = "text-[9px] font-bold tracking-[0.06em] px-[7px] py-[3px] rounded bg-[#1E2130] text-[#7E839A]";
