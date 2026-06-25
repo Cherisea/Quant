@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { T } from "@/lib/theme";
 import Link from "next/link";
 import { Settings, LogOut, User } from "lucide-react";
@@ -14,8 +14,23 @@ const MENU_ITEMS = [
 
 export default function UserMenu() {
     const [ open, setOpen ] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    // Close on click outside
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e: MouseEvent) => {
+            if (ref.current && ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [open]);
+
     return (
-        <div>
+        <div ref={ref} style={{ position:"relative"}}>
             {/* Avatar trigger */}
             <button
                 onClick={() => setOpen(o => !o)}
