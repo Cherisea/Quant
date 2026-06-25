@@ -3,8 +3,12 @@
 import Link from "next/link";
 import {T} from "@/lib/theme";
 import { ArrowLeft } from "lucide-react";
+import { useTradingContext } from "@/context/TradingContext";
 
 export default function TradeHistoryView({ symbol } : {symbol:string}) {
+    const { trades } = useTradingContext();
+    const filtered = trades.filter(t => !symbol || t.reason !== undefined);
+
     return (
         <div style={{ padding: "22px 24px"}}>
             {/* Back link */}
@@ -26,7 +30,17 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
             </div>
 
             {/* Summary cards */}
-            
+            <div>
+                {[
+                    {label:"Total trades", value:String(), color:T.text},
+                    
+                ].map(c => (
+                    <div>
+                        <div>{c.label}</div>
+                        <div>{c.value}</div>
+                    </div>
+                ))}
+            </div>
 
 
         </div>
