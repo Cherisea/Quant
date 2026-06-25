@@ -6,4 +6,3 @@ export default function TradeHistoryPage(
 {
     return <TradeHistoryView symbol={params.symbol}/>
 }
-

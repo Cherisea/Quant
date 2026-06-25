@@ -25,7 +25,7 @@ export default function PositionCard() {
     const gain = Math.round(price - entryPrice) * qty;
     const gainPct = entryPrice > 0 ? ((price - entryPrice) / entryPrice) * 100 : 0;
     const gainColor = gain >= 0 ? T.green : T.red;
-    const symbol = position?.entry_price ?? "06066";
+    const symbol = position?.symbol ?? "06066";
 
     // No open position view
     if (!isOpen) {
