@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Zap, MoreHorizontal, Plus } from "lucide-react";
+import { Zap, MoreVertical, Plus } from "lucide-react";
 import {T} from "@/lib/theme";
 import { useTradingContext } from "@/context/TradingContext";
 import { useMemo } from "react";
@@ -51,19 +51,19 @@ function StrategyCard() {
                             {running ? "ACTIVE" : "PASUED"}
                         </span>
                         <Link href="/strategy">
-                            <MoreHorizontal size={14} color={T.dim} style={{ cursor: "pointer" }}/>
+                            <MoreVertical size={14} color={T.dim} style={{ cursor: "pointer" }}/>
                         </Link>
                     </div>
                 </div>
 
                 {/* Params */}
-                <div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 12}}>
                     {params.map(p => (
                         <div key={p.label} style={{ background:T.raised, borderRadius:8, padding:"8px 10px"}}>
                             <div style={{ fontSize:9, color:T.muted, marginBottom:3,
                                 textTransform:"uppercase", letterSpacing:"0.05em"}}>{p.label}
                             </div>
-                            <div style={{ fontSize:13, fontWeight:600, color:T.text, fontFamily:"monospace"}}></div>
+                            <div style={{ fontSize:13, fontWeight:600, color:T.text, fontFamily:"monospace"}}>{p.value}</div>
                         </div>
                     ))}
                 </div>
