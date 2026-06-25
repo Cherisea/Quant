@@ -25,13 +25,6 @@ function StrategyCard() {
         { label: "Stop loss", value: `${(risk.stop_loss_pct * 100).toFixed(0)}%`},
     ];
 
-    // Replace with real values from backend
-    const metrics = [
-        { label: "Win rate", value: "66.7%", color: T.green},
-        { label: "Sharpe", value: "1.82%", color: T.text},
-        { label: "Max DD", value: "-7.84%", color: T.red},
-    ];
-
     return (
         <div style={{ background: T.card, border: `1px solid ${T.border}`,
             borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
@@ -74,21 +67,6 @@ function StrategyCard() {
                         </div>
                     ))}
                 </div>
-
-                {/* Metrics */}
-                <div style={{ display: "flex", gap: 20}}>
-                    {metrics.map(m => (
-                        <div key={m.label}>
-                            <div style={{ fontSize:9, color:T.muted, marginBottom:2, textTransform:"uppercase",
-                                letterSpacing: "0.05em"}}>
-                                {m.label}
-                            </div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: m.color, fontFamily:"monospace"}}>
-                                {m.value}
-                            </div>
-                        </div>
-                    ))}
-                </div>
             </div>
 
             <div style={{ marginTop:"auto" }}>
@@ -100,8 +78,24 @@ function StrategyCard() {
 
 export default function StrategySection() {
     return (
-        <div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: 14}}>
             <StrategyCard />
+
+            {/* Add new strategy slot */}
+            <Link href="/strategy" style={{
+                background:"transparent", border:`1.5px dashed ${T.border}`,
+                borderRadius:14, display:"flex", flexDirection:"column",
+                alignItems:"center", justifyContent:"center", gap:10,
+                padding:24, cursor:"pointer", minHeight:190, textDecoration:"none",
+            }}>
+                <div style={{ width:48, height:48, borderRadius:12, background:T.raised,
+                display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <Plus size={20} color={T.green}/>
+                </div>
+                <span style={{ fontSize:12, fontWeight:500, color:T.muted }}>
+                Add new strategy
+                </span>
+            </Link>
         </div>
     )
 }
