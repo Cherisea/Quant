@@ -28,7 +28,10 @@ export default function StrategyCard() {
     return (
         <Link href="/strategy" style={{ textDecoration: "none"}}>
             <div style={{ background: T.card, border: `1px solid ${T.border}`,
-                borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
+                borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column",
+                cursor:"pointer", transition:"border-color 0.15s"}}
+                onMouseEnter={e => ((e.currentTarget as HTMLDivElement).style.borderColor = T.accent)}
+                onMouseLeave={e => ((e.currentTarget as HTMLDivElement).style.borderColor = T.border)}>
                 <div style={{ padding: "16px 16px 12px"}}>
                     {/* Header */}
                     <div style={{ display: "flex", alignItems: "center", 
