@@ -20,10 +20,13 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                     <h1 style={{ fontSize:22, fontWeight:600, color:T.text, margin:0 }}>
                         {symbol}
                     </h1>
+                    <span style={{ fontSize:13, color:T.muted }}>Trade history</span>
                 </div>
+                <div style={{ fontSize:11, color:T.dim }}>HKEX · All completed and open trades</div>
             </div>
 
-
+            {/* Summary cards */}
+            
 
 
         </div>
