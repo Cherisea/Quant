@@ -4,7 +4,7 @@ import Link from "next/link";
 import {T} from "@/lib/theme";
 import { useMemo } from "react";
 import Sparkline from "./Sparkline";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreVertical, Plus } from "lucide-react";
 import { useTradingContext } from "@/context/TradingContext";
 
 // Synthetic data for drawing sparkline in bottom of card
@@ -71,7 +71,7 @@ export default function PositionCard() {
                             <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
                                 background:"rgba(0,212,106,0.12)", color:T.green,
                                 padding:"3px 7px", borderRadius:4}}>LIVE</span>
-                            <MoreHorizontal size={14} color={T.dim} style={{cursor:"pointer"}}/>
+                            <MoreVertical size={14} color={T.dim} style={{cursor:"pointer"}}/>
                         </div>
                     </div>
 
