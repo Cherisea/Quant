@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import { T } from "@/lib/theme";
+import { Settings, LogOut, User } from "lucide-react";
+
+// Dropdown menu on user avatar
+const MENU_ITEMS = [
+    {label: "Settings", href: "/settings", Icon: Settings},
+    {label: "Profile", href: "/profile", Icon: User},
+    {label: "Sign out", href: "/", Icon: LogOut},
+] as const;
 
 export default function UserMenu() {
     const [ open, setOpen ] = useState(false);
@@ -18,6 +26,9 @@ export default function UserMenu() {
                 outlineOffset: 2
                 }}>J
             </button>
+
+            {/* Dropdown */}
+
         </div>
     )
 }
