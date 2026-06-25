@@ -43,7 +43,7 @@ function StrategyCard() {
                             <div style={{fontSize:10, color:T.muted, marginTop:2}}>06066 · Momentum strategy</div>
                         </div>
                     </div>
-                    <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8}}>
                         <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
                             background: running ? "rgba(0, 212, 106, 0.12)" : T.raised,
                             color: running ? T.green : T.muted,
