@@ -15,9 +15,9 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
             </Link>
 
             {/* Header */}
-            <div>
-                <div>
-                    <h1>
+            <div style={{ marginBottom:24 }}>
+                <div style={{ display:"flex", alignItems:"baseline", gap:12, marginBottom:4 }}>
+                    <h1 style={{ fontSize:22, fontWeight:600, color:T.text, margin:0 }}>
                         {symbol}
                     </h1>
                 </div>
