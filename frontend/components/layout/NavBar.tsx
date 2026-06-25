@@ -1,6 +1,7 @@
 "use client";
 
 import { T } from "@/lib/theme";
+import Link from "next/link";
 import { useTradingContext } from "@/context/TradingContext";
 import { Search, Plus, Wifi, WifiOff, ChevronDown, ArrowUpRight } from "lucide-react";
 
@@ -33,12 +34,13 @@ export default function NavBar() {
 
             <div style={{ flex:1 }}/>
 
-            {/* New backtest */}
-            <button style={{ display:"flex", alignItems:"center", gap:6, background:T.accent,
+            {/* New backtest -- links to /backtest */}
+            <Link href="/backtest" style={{ 
+                display:"flex", alignItems:"center", gap:6, background:T.accent,
                 color:"#000", border:"none", borderRadius:8, padding:"8px 16px",
                 fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0 }}>
                 New backtest <Plus size={13}/>
-            </button>
+            </Link>
 
             {/* WebSocket status */}
             <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0,
