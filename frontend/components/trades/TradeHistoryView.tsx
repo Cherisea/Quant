@@ -14,7 +14,14 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                 <ArrowLeft size={13}/>Back to dashboard
             </Link>
 
-            
+            {/* Header */}
+            <div>
+                <div>
+                    <h1>
+                        {symbol}
+                    </h1>
+                </div>
+            </div>
 
 
 
