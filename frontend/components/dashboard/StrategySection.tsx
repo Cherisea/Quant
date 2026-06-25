@@ -17,12 +17,16 @@ function StrategyCard() {
     const spark = useMemo(() => generateStrategySpark(), []);
 
     return (
-        <div>
-            <div>
+        <div style={{ background: T.card, border: `1px solid ${T.border}`,
+            borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
+            <div style={{ padding: "16px 16px 12px"}}>
                 {/* Header */}
-                <div>
-                    <div>
-                        <div>
+                <div style={{ display: "flex", alignItems: "center", 
+                    justifyContent: "space-between", marginBottom: 14}}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10}}>
+                        <div style={{ width: 38, height: 38, borderRadius: 10, background: "#1A1A2E",
+                            border: `1px solid ${T.border}`, display: "flex", alignItems: "center",
+                            justifyContent: "center"}}>
                             <Zap size={16} color={T.accent} />
                         </div>
                     </div>
