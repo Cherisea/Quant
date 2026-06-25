@@ -1,8 +1,9 @@
 import TradeHistoryView from "@/components/trades/TradeHistoryView";
 
 // Extract dynamic query values from url
-export default function TradeHistoryPage(
-    {params} : {params:{symbol:string};}) 
+export default async function TradeHistoryPage(
+    {params} : { params: Promise<{symbol:string}> }) 
 {
-    return <TradeHistoryView symbol={params.symbol}/>
+    const { symbol } = await params;
+    return <TradeHistoryView symbol={symbol}/>
 }
