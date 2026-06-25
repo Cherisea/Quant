@@ -2,6 +2,7 @@
 
 import { T } from "@/lib/theme";
 import Link from "next/link";
+import UserMenu from "./UserMenu";
 import { useTradingContext } from "@/context/TradingContext";
 import { Search, Plus, Wifi, WifiOff, ChevronDown, ArrowUpRight } from "lucide-react";
 
@@ -64,10 +65,7 @@ export default function NavBar() {
                 <ChevronDown size={11} color={T.dim}/>
             </div>
 
-            {/* Avatar */}
-            <div style={{ width:32, height:32, borderRadius:"50%", background:T.accent, flexShrink:0,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:13, fontWeight:600, color:"#000", cursor:"pointer" }}>J</div>
+            <UserMenu />
         </nav>
     )
 }
