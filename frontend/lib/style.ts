@@ -37,3 +37,8 @@ export const btnSecondary = `${btnBase} bg-[#EFF2F6] text-gray-500 border border
 export const btnPrimarySmall   = `${btnBase} bg-indigo-600 text-white px-3 py-[5px] text-[11px]`;
 export const btnDangerSmall    = `${btnBase} bg-red-100 text-red-600 px-3 py-[5px] text-[11px]`;
 export const btnSecondarySmall = `${btnBase} bg-[#EFF2F6] text-gray-500 border border-slate-200 px-3 py-[5px] text-[11px]`;
+
+// ----------------- Component patterns -----------------
+// Dark card container -- used for custom head/body in Card UI
+export const card = "bg-[#181B24] border border-[#252836] rounded-[14px] overflow-hidden flex flex-col";
+ 
