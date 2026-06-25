@@ -38,7 +38,8 @@ export default function NavBar() {
             <Link href="/backtest" style={{ 
                 display:"flex", alignItems:"center", gap:6, background:T.accent,
                 color:"#000", border:"none", borderRadius:8, padding:"8px 16px",
-                fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0 }}>
+                fontSize:13, fontWeight:600, cursor:"pointer", flexShrink:0,
+                textDecoration:"none" }}>
                 New backtest <Plus size={13}/>
             </Link>
 
