@@ -1,6 +1,7 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import Link from "next/link";
+import { Zap, MoreHorizontal, Plus } from "lucide-react";
 import {T} from "@/lib/theme";
 import { useTradingContext } from "@/context/TradingContext";
 import { useMemo } from "react";
@@ -29,6 +30,21 @@ function StrategyCard() {
                             justifyContent: "center"}}>
                             <Zap size={16} color={T.accent} />
                         </div>
+                        <div>
+                            <div style={{fontSize:13, fontWeight:500, color:T.text}}>EMA Crossover</div>
+                            <div style={{fontSize:10, color:T.muted, marginTop:2}}>06066 · Momentum strategy</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
+                            background: running ? "rgba(0, 212, 106, 0.12)" : T.raised,
+                            color: running ? T.green : T.muted,
+                            padding: "3px 7px", borderRadius: 4}}>
+                            {running ? "ACTIVE" : "PASUED"}
+                        </span>
+                        <Link href="/strategy">
+                            <MoreHorizontal size={14} color={T.dim} style={{ cursor: "pointer" }}/>
+                        </Link>
                     </div>
                 </div>
             </div>
