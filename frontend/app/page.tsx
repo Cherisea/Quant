@@ -1,4 +1,5 @@
 import { T } from "@/lib/theme";
+import Link from "next/link";
 import StrategySection from "@/components/dashboard/StrategySection";
 import HeroCard from "@/components/dashboard/HeroCard";
 import PositionCard from "@/components/dashboard/PositionCard";
@@ -31,8 +32,8 @@ export default function DashboardPage() {
       <div style={{ display: "grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:26}}>
         <PositionCard />
         {/* Open new position */}
-        <div style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
-          borderRadius:14, display:"flex", flexDirection:"column",
+        <Link href="./" style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
+          borderRadius:14, display:"flex", flexDirection:"column", textDecoration: "none",
           alignItems:"center", justifyContent:"center", gap:10,
           padding:24, cursor:"pointer", minHeight:190 }}>
           <div style={{ width:48, height:48, borderRadius:12, background:T.raised,
@@ -41,7 +42,7 @@ export default function DashboardPage() {
           <span style={{ fontSize:12, fontWeight:500, color:T.muted }}>
             Open new position
           </span>
-        </div>
+        </Link>
       </div>
 
       {/* Active strategy */}
