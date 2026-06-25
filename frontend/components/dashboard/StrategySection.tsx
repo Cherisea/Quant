@@ -17,6 +17,20 @@ function StrategyCard() {
     const { strategy, risk, running } = useTradingContext();
     const spark = useMemo(() => generateStrategySpark(), []);
 
+    const params = [
+        { label: "EMA", value: `${strategy.fast_ema}/${strategy.slow_ema}`},
+        { label: "ROC", value: `${(strategy.roc_threshold * 100).toFixed(1)}%`},
+        { label: "Vol filter", value: `${strategy.vol_coefficient}x`},
+        { label: "Stop loss", value: `${(risk.stop_loss_pct * 100).toFixed(0)}%`},
+    ];
+
+    // Replace with real values from backend
+    const metrics = [
+        { label: "Win rate", value: "66.7%", color: T.green},
+        { label: "Sharpe", value: "1.82%", color: T.text},
+        { label: "Max DD", value: "-7.84%", color: T.red},
+    ];
+
     return (
         <div style={{ background: T.card, border: `1px solid ${T.border}`,
             borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
@@ -47,6 +61,12 @@ function StrategyCard() {
                         </Link>
                     </div>
                 </div>
+
+                {/* Params */}
+                <div>
+
+                </div>
+
             </div>
         </div>
     )
