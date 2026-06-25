@@ -26,52 +26,51 @@ export default function StrategyCard() {
     ];
 
     return (
-        <div style={{ background: T.card, border: `1px solid ${T.border}`,
-            borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
-            <div style={{ padding: "16px 16px 12px"}}>
-                {/* Header */}
-                <div style={{ display: "flex", alignItems: "center", 
-                    justifyContent: "space-between", marginBottom: 14}}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10}}>
-                        <div style={{ width: 38, height: 38, borderRadius: 10, background: "#1A1A2E",
-                            border: `1px solid ${T.border}`, display: "flex", alignItems: "center",
-                            justifyContent: "center"}}>
-                            <Zap size={16} color={T.accent} />
-                        </div>
-                        <div>
-                            <div style={{fontSize:13, fontWeight:500, color:T.text}}>EMA Crossover</div>
-                            <div style={{fontSize:10, color:T.muted, marginTop:2}}>06066 · Momentum strategy</div>
-                        </div>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8}}>
-                        <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
-                            background: running ? "rgba(0, 212, 106, 0.12)" : T.raised,
-                            color: running ? T.green : T.muted,
-                            padding: "3px 7px", borderRadius: 4}}>
-                            {running ? "ACTIVE" : "PASUED"}
-                        </span>
-                        <Link href="/strategy">
-                            <MoreVertical size={14} color={T.dim} style={{ cursor: "pointer" }}/>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Params */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 12}}>
-                    {params.map(p => (
-                        <div key={p.label} style={{ background:T.raised, borderRadius:8, padding:"8px 10px"}}>
-                            <div style={{ fontSize:9, color:T.muted, marginBottom:3,
-                                textTransform:"uppercase", letterSpacing:"0.05em"}}>{p.label}
+        <Link href="/strategy" style={{ textDecoration: "none"}}>
+            <div style={{ background: T.card, border: `1px solid ${T.border}`,
+                borderRadius: 14, overflow: "hidden", display: "flex", flexDirection: "column"}}>
+                <div style={{ padding: "16px 16px 12px"}}>
+                    {/* Header */}
+                    <div style={{ display: "flex", alignItems: "center", 
+                        justifyContent: "space-between", marginBottom: 14}}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10}}>
+                            <div style={{ width: 38, height: 38, borderRadius: 10, background: "#1A1A2E",
+                                border: `1px solid ${T.border}`, display: "flex", alignItems: "center",
+                                justifyContent: "center"}}>
+                                <Zap size={16} color={T.accent} />
                             </div>
-                            <div style={{ fontSize:13, fontWeight:600, color:T.text, fontFamily:"monospace"}}>{p.value}</div>
+                            <div>
+                                <div style={{fontSize:13, fontWeight:500, color:T.text}}>EMA Crossover</div>
+                                <div style={{fontSize:10, color:T.muted, marginTop:2}}>06066 · Momentum strategy</div>
+                            </div>
                         </div>
-                    ))}
+                        <div style={{ display: "flex", alignItems: "center", gap: 8}}>
+                            <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.06em",
+                                background: running ? "rgba(0, 212, 106, 0.12)" : T.raised,
+                                color: running ? T.green : T.muted,
+                                padding: "3px 7px", borderRadius: 4}}>
+                                {running ? "ACTIVE" : "PASUED"}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Params */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, marginBottom: 12}}>
+                        {params.map(p => (
+                            <div key={p.label} style={{ background:T.raised, borderRadius:8, padding:"8px 10px"}}>
+                                <div style={{ fontSize:9, color:T.muted, marginBottom:3,
+                                    textTransform:"uppercase", letterSpacing:"0.05em"}}>{p.label}
+                                </div>
+                                <div style={{ fontSize:13, fontWeight:600, color:T.text, fontFamily:"monospace"}}>{p.value}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ marginTop:"auto" }}>
+                    <Sparkline data={spark} color={T.accent} height={56}/>
                 </div>
             </div>
-
-            <div style={{ marginTop:"auto" }}>
-                <Sparkline data={spark} color={T.accent} height={56}/>
-            </div>
-        </div>
+        </Link>
     );
 }
