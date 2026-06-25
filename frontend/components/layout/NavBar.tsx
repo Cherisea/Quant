@@ -16,7 +16,7 @@ export default function NavBar() {
             borderBottom: `1px solid ${T.border},`
         }}>
             {/* Logo */}
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginRight:8, flexShrink:0 }}>
+            <Link href="./" style={{ display:"flex", alignItems:"center", gap:8, marginRight:8, flexShrink:0 }}>
                 <div style={{ width:30, height:30, borderRadius:8, background:T.accent,
                 display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <ArrowUpRight size={15} color="#000"/>
@@ -24,7 +24,7 @@ export default function NavBar() {
                 <span style={{ fontSize:15, fontWeight:600, color:T.text, letterSpacing:"-0.02em" }}>
                 MomentumBot
                 </span>
-            </div>
+            </Link>
 
             {/* Search */}
             <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, maxWidth:300,
