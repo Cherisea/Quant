@@ -5,6 +5,7 @@ import { Zap, MoreHorizontal, Plus } from "lucide-react";
 import {T} from "@/lib/theme";
 import { useTradingContext } from "@/context/TradingContext";
 import { useMemo } from "react";
+import Sparkline from "./Sparkline";
 
 // Synthetic data for drawing a spark line background
 function generateStrategySpark() {
@@ -89,8 +90,12 @@ function StrategyCard() {
                     ))}
                 </div>
             </div>
+
+            <div style={{ marginTop:"auto" }}>
+                <Sparkline data={spark} color={T.accent} height={56}/>
+            </div>
         </div>
-    )
+    );
 }
 
 export default function StrategySection() {
