@@ -21,8 +21,8 @@ export default function StrategyCard() {
     const params = [
         { label: "EMA", value: `${strategy.fast_ema}/${strategy.slow_ema}`},
         { label: "ROC", value: `${(strategy.roc_threshold * 100).toFixed(1)}%`},
-        { label: "Vol filter", value: `${strategy.vol_coefficient}x`},
-        { label: "Stop loss", value: `${(risk.stop_loss_pct * 100).toFixed(0)}%`},
+        { label: "VOL", value: `${strategy.vol_coefficient}x`},
+        { label: "STOP", value: `${(risk.stop_loss_pct * 100).toFixed(0)}%`},
     ];
 
     return (
