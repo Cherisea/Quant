@@ -79,7 +79,7 @@ export default function PositionCard() {
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10}}>
                         <div>
                             <div style={{ fontSize:10, color:T.muted, marginBottom:4}}>Capital</div>
-                            <div>
+                            <div style={{ color: T.text}}>
                                 HK${capital.toLocaleString(undefined, {maximumFractionDigits:0})}
                             </div>
                         </div>
