@@ -41,4 +41,16 @@ export const btnSecondarySmall = `${btnBase} bg-[#EFF2F6] text-gray-500 border b
 // ----------------- Component patterns -----------------
 // Dark card container -- used for custom head/body in Card UI
 export const card = "bg-[#181B24] border border-[#252836] rounded-[14px] overflow-hidden flex flex-col";
- 
+
+// Cicrular/rounded icon box used in card headers
+export const iconBox = [
+    "w-[38px] h-[38px] rounded-[10px] flex-shrink-0",
+    "bg-[#1A1A2E] border border-[#252836]",
+    "flex items-center justify-center",
+].join(" ");
+
+// Small raised container for parameter display
+export const paramBox = "bg-[#1E2130] rounded-lg px-[10px] py-2";
+
+// Uppercase micro-label above a stat value
+export const statLabel = "text-[9px] text-[#7E839A] uppercase tracking-[0.05em] mb-[3px]";
