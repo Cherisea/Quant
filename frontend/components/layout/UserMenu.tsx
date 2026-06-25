@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { T } from "@/lib/theme";
+import Link from "next/link";
 import { Settings, LogOut, User } from "lucide-react";
 
 // Dropdown menu on user avatar
@@ -28,7 +29,25 @@ export default function UserMenu() {
             </button>
 
             {/* Dropdown */}
-
+            {open && (
+                <div style={{
+                    position:"absolute", top:"calc(100%+8px)", right:0,
+                    background:T.card, border:`1px solid ${T.border}`,
+                    borderRadius:10, padding:"6px 0", minWidth:160,
+                    zIndex:100, boxShadow:"0 8px 24px rgba(0,0,0,0.4)",
+                }}>
+                    {MENU_ITEMS.map(({ label, href, Icon }) => (
+                        <Link key={label} href={href} onClick={() => setOpen(false)} style={{
+                            display:"flex", alignItems:"center", gap:10,
+                            padding:"9px 14px", color:T.muted, fontSize:13
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = T.raised)}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                            <Icon size={14} />
+                        </Link>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
