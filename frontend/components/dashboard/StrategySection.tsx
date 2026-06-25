@@ -75,7 +75,19 @@ function StrategyCard() {
                 </div>
 
                 {/* Metrics */}
-
+                <div style={{ display: "flex", gap: 20}}>
+                    {metrics.map(m => (
+                        <div key={m.label}>
+                            <div style={{ fontSize:9, color:T.muted, marginBottom:2, textTransform:"uppercase",
+                                letterSpacing: "0.05em"}}>
+                                {m.label}
+                            </div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: m.color, fontFamily:"monospace"}}>
+                                {m.value}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     )
