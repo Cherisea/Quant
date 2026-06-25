@@ -78,7 +78,7 @@ function StrategyCard() {
 
 export default function StrategySection() {
     return (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: 14}}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14}}>
             <StrategyCard />
 
             {/* Add new strategy slot */}

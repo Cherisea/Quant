@@ -28,7 +28,7 @@ export default function DashboardPage() {
       
       {/* Active position */}
       <Section>Active position</Section>
-      <div style={{ display: "grid", gridTemplateColumns:"1fr 200px", gap:14, marginBottom:26}}>
+      <div style={{ display: "grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:26}}>
         <PositionCard />
         {/* Open new position */}
         <div style={{ background:"transparent", border:`1.5px dashed ${T.border}`,
