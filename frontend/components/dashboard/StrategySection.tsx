@@ -64,8 +64,17 @@ function StrategyCard() {
 
                 {/* Params */}
                 <div>
-
+                    {params.map(p => (
+                        <div key={p.label} style={{ background:T.raised, borderRadius:8, padding:"8px 10px"}}>
+                            <div style={{ fontSize:9, color:T.muted, marginBottom:3,
+                                textTransform:"uppercase", letterSpacing:"0.05em"}}>{p.label}
+                            </div>
+                            <div style={{ fontSize:13, fontWeight:600, color:T.text, fontFamily:"monospace"}}></div>
+                        </div>
+                    ))}
                 </div>
+
+                {/* Metrics */}
 
             </div>
         </div>
