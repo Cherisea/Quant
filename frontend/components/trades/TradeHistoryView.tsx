@@ -8,6 +8,9 @@ import { useTradingContext } from "@/context/TradingContext";
 export default function TradeHistoryView({ symbol } : {symbol:string}) {
     const { trades } = useTradingContext();
     const filtered = trades.filter(t => !symbol || t.reason !== undefined);
+    const totalNet = filtered.reduce((s, t) => s + (t.net ?? 0), 0);
+    const winners = filtered.filter(t => (t.net ?? 0) > 0);
+    const winRate = filtered.length > 0 ? (winners.length / filtered.length) * 100 : 0;
 
     return (
         <div style={{ padding: "22px 24px"}}>
@@ -30,14 +33,23 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
             </div>
 
             {/* Summary cards */}
-            <div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:12, marginBottom:26}}>
                 {[
-                    {label:"Total trades", value:String(), color:T.text},
-                    
+                    {label:"Total trades", value:String(filtered.length), color:T.text},
+                    {label:"Net P&L", 
+                     value:`HK$${totalNet >= 0 ? "+" : ""}${totalNet.toLocaleString(undefined, {maximumFractionDigits:0})}`,
+                     color: totalNet >= 0 ? T.green : T.red
+                    },
+                    {label:"Win rate", value:`${winRate.toFixed(1)}%`, color:T.text},
+                    {label:"Symbol", value:symbol, color:T.text},
                 ].map(c => (
-                    <div>
-                        <div>{c.label}</div>
-                        <div>{c.value}</div>
+                    <div key={c.label} style={{ background:T.card, border:`1px solid ${T.border}`,
+                         borderRadius:10, padding:"14px 16px" }}>
+                        <div style={{ fontSize:10, color:T.muted, textTransform:"uppercase",
+                            letterSpacing:"0.06em", marginBottom:6}}>
+                            {c.label}
+                        </div>
+                        <div style={{ fontSize:18, fontWeight:700, color:c.color, fontFamily:"monospace"}}>{c.value}</div>
                     </div>
                 ))}
             </div>
