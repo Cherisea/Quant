@@ -5,6 +5,14 @@ import {T} from "@/lib/theme";
 import { ArrowLeft } from "lucide-react";
 import { useTradingContext } from "@/context/TradingContext";
 
+const REASON_STYLE: Record<string, { bg: string; color: string }> = {
+  signal:      { bg:"rgba(0,212,106,0.1)",  color:T.green },
+  trail_stop:  { bg:"rgba(255,77,106,0.1)", color:T.red   },
+  open:        { bg:"rgba(255,184,0,0.1)",  color:T.amber },
+  end_of_data: { bg:T.raised,               color:T.muted },
+};
+
+
 function Section({ children} : { children : React.ReactNode}) {
     return (
         <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em",
