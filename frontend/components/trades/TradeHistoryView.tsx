@@ -5,6 +5,15 @@ import {T} from "@/lib/theme";
 import { ArrowLeft } from "lucide-react";
 import { useTradingContext } from "@/context/TradingContext";
 
+function Section({ children} : { children : React.ReactNode}) {
+    return (
+        <div style={{ fontSize:11, fontWeight:600, letterSpacing:"0.1em",
+            textTransform:"uppercase", color:T.muted, marginBottom:12}}>
+            {children}
+        </div>
+    )
+}
+
 export default function TradeHistoryView({ symbol } : {symbol:string}) {
     const { trades } = useTradingContext();
     const filtered = trades.filter(t => !symbol || t.reason !== undefined);
