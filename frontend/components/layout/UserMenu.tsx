@@ -37,8 +37,8 @@ export default function UserMenu() {
                 <Image 
                     src="/avatar.png"
                     alt="User avatar"
-                    width={25}
-                    height={25}
+                    width={30}
+                    height={30}
                     style={{ objectFit: "cover"}}
                 />
             </div>
@@ -49,7 +49,7 @@ export default function UserMenu() {
                     alignItems:"center", color:T.muted, padding:3
                 }}
             >
-                {open ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+                {open ? <ChevronUp size={18}/> : <ChevronDown size={18}/>}
             </button>
             
 
