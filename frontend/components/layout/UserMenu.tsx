@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { T } from "@/lib/theme";
 import Link from "next/link";
-import { Settings, LogOut, User } from "lucide-react";
+import { Settings, LogOut, User, ChevronDown, ChevronUp } from "lucide-react";
 
 // Dropdown menu on user avatar
 const MENU_ITEMS = [
@@ -30,7 +30,7 @@ export default function UserMenu() {
     }, [open]);
 
     return (
-        <div ref={ref} style={{ position:"relative"}}>
+        <div ref={ref} style={{ position:"relative", display:"flex", gap:4, alignItems:"center"}}>
             {/* Avatar trigger */}
             <button
                 onClick={() => setOpen(o => !o)}
@@ -42,6 +42,7 @@ export default function UserMenu() {
                 outlineOffset: 2
                 }}>J
             </button>
+            {open ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
 
             {/* Dropdown */}
             {open && (
