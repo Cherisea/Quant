@@ -73,10 +73,10 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
 
             {/* Trade table */}
             <Section>All trades</Section>
-            <div>
-                <table>
+            <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:14, overflow:"hidden"}}>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:12, fontFamily:"monospace"}}>
                     <thead>
-                        <tr>
+                        <tr style={{ borderBottom:`1px solid ${T.border}` }}>
                             {["Entry", "Exit", "Qty", "Buy", "Sell", "Net P&L", "Return", "Reason"].map(h => (
                                 <th key={h} style={{ padding:"11px 16px", textAlign:"left",
                                     color:T.dim, fontWeight:500, fontSize:10,
@@ -86,7 +86,22 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                         </tr>
                     </thead>
                     <tbody>
-
+                        {[...filtered].reverse().map( trade => {
+                            const rs = REASON_STYLE[trade.reason] ?? REASON_STYLE.end_of_data;
+                            return (
+                                <tr>
+                                    <td>{trade.entry}</td>
+                                    <td>{trade.exit ?? "OPEN"}</td>
+                                    <td>{trade.qty.toLocaleString()}</td>
+                                    <td>{trade.buy.toFixed(2)}</td>
+                                    <td>{trade.sell?.toFixed(2) ?? "-"}</td>
+                                    <td>{trade.net === null ? "-" : `${trade.net >=0 ? "+" : ""}${trade.net.toLocaleString()}`}</td>
+                                    <td>{trade.pct === null ? "-" : `${trade.pct >= 0 ? "+":""}${trade.pct.toLocaleString()}`}</td>
+                                    <td>{trade.reason}</td>
+                                    <td></td>
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 </table>
             </div>
