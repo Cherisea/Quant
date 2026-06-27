@@ -71,6 +71,25 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                 ))}
             </div>
 
+            {/* Trade table */}
+            <Section>All trades</Section>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            {["Entry", "Exit", "Qty", "Buy", "Sell", "Net P&L", "Return", "Reason"].map(h => (
+                                <th key={h} style={{ padding:"11px 16px", textAlign:"left",
+                                    color:T.dim, fontWeight:500, fontSize:10,
+                                    letterSpacing:"0.07em", textTransform:"uppercase"
+                                }}>{h}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     )
