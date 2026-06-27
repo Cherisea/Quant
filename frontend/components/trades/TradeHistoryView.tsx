@@ -89,15 +89,26 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                         {[...filtered].reverse().map( trade => {
                             const rs = REASON_STYLE[trade.reason] ?? REASON_STYLE.end_of_data;
                             return (
-                                <tr>
-                                    <td>{trade.entry}</td>
-                                    <td>{trade.exit ?? "OPEN"}</td>
-                                    <td>{trade.qty.toLocaleString()}</td>
-                                    <td>{trade.buy.toFixed(2)}</td>
-                                    <td>{trade.sell?.toFixed(2) ?? "-"}</td>
-                                    <td>{trade.net === null ? "-" : `${trade.net >=0 ? "+" : ""}${trade.net.toLocaleString()}`}</td>
-                                    <td>{trade.pct === null ? "-" : `${trade.pct >= 0 ? "+":""}${trade.pct.toLocaleString()}`}</td>
-                                    <td>{trade.reason}</td>
+                                <tr key={trade.id} style={{borderBottom:`1px solid ${T.border}`}}>
+                                    <td style={{ padding:"11px 16px", color:T.muted}}>{trade.entry}</td>
+                                    <td style={{ padding:"11px 16px", color:trade.exit ? T.muted:T.amber}}>{trade.exit ?? "OPEN"}</td>
+                                    <td style={{ padding:"11px 16px", color:T.text}}>{trade.qty.toLocaleString()}</td>
+                                    <td style={{ padding:"11px 16px", color:T.text}}>{trade.buy.toFixed(2)}</td>
+                                    <td style={{ padding:"11px 16px", color:T.text}}>{trade.sell?.toFixed(2) ?? "-"}</td>
+                                    <td style={{ padding:"11px 16px", fontWeight:500,
+                                        color:trade.net === null ? T.muted : trade.net >= 0 ? T.green : T.red}}>
+                                            {trade.net === null ? "-" : `${trade.net >=0 ? "+" : ""}${trade.net.toLocaleString()}`}
+                                    </td>
+                                    <td style={{ padding:"11px 16px",
+                                        color: trade.pct === null ? T.muted : trade.pct >= 0 ? T.green : T.red}}>
+                                            {trade.pct === null ? "-" : `${trade.pct >= 0 ? "+":""}${trade.pct.toLocaleString()}`}
+                                    </td>
+                                    <td style={{ padding:"11px 16px"}}>
+                                        <span style={{ fontSize:9, padding:"3px 8px", borderRadius:4,
+                                                fontWeight:700, letterSpacing:"0.05em", ...rs }}>
+                                            {trade.reason}
+                                        </span>
+                                    </td>
                                     <td></td>
                                 </tr>
                             )
@@ -107,5 +118,5 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
             </div>
 
         </div>
-    )
+    );
 }
