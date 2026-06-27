@@ -35,7 +35,7 @@ export default function UserMenu() {
             {/* Avatar trigger */}
             <div style={{ width:25, height:25, borderRadius:"50%", overflow:"hidden", flexShrink:0}}>
                 <Image 
-                    src="/window.svg"
+                    src="/avatar.png"
                     alt="User avatar"
                     width={25}
                     height={25}
