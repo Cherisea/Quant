@@ -65,7 +65,7 @@ export default function SettingsView() {
                 <Field label="Lot size" hint="shares">
                     <NumInput value={broker.lot_size} onChange={v => setBroker(b => ({ ...b, lot_size: v }))} min={1} />
                 </Field>
-                <div style={{ marginTop: 10, padding: "9px 10px", background: T.elevated, borderRadius: 5, fontSize: 10, color: T.muted, lineHeight: 1.75}}>
+                <div style={{ marginTop: 10, padding: "9px 10px", background: T.raised, borderRadius: 5, fontSize: 10, color: T.muted, lineHeight: 1.75}}>
                     <span style={{ color: T.accent }}>Credentials</span> are server-side env vars.
                     Set <code>BROKER_NAME</code>, <code>TIGER_ID</code>, etc. on the host.
                 </div>
@@ -75,7 +75,7 @@ export default function SettingsView() {
                 {/* Engine control */}
                 <Card title="Engine control">
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                        padding: "12px 14px", background: T.elevated, borderRadius: 7, marginBottom: 12}}>
+                        padding: "12px 14px", background: T.raised, borderRadius: 7, marginBottom: 12}}>
                         <div>
                             <div style={{ fontSize: 12, fontWeight: 500, color: T.text }}>Trading engine</div>
                             <div style={{ fontSize: 10, color: T.muted, marginTop: 2}}>
@@ -90,9 +90,10 @@ export default function SettingsView() {
                             </button>
                         </div>
                     </div>
-
+                    
+                    {/* Warning box */}
                     {warn && (
-                        <div style={{ padding: "11px 13px", background: "#FEF2F2", border: `1px solid #FECACA`, borderRadius: 7, marginBottom: 12}}>
+                        <div style={{ padding: "11px 13px", background: "rgba(255,77,106,0.08)", border: `1px solid rgba(255,77,106,0.2)`, borderRadius: 7, marginBottom: 12}}>
                             <div style={{ display: "flex", gap: 8 }}>
                                 <AlertTriangle size={13} color={T.amber} style={{ flexShrink: 0, marginTop: 1}} />
                                 <div>
