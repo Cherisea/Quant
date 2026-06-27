@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { T } from "@/lib/theme";
 import Link from "next/link";
+import Image from "next/image";
 import { Settings, LogOut, User, ChevronDown, ChevronUp } from "lucide-react";
 
 // Dropdown menu on user avatar
@@ -32,17 +33,25 @@ export default function UserMenu() {
     return (
         <div ref={ref} style={{ position:"relative", display:"flex", gap:4, alignItems:"center"}}>
             {/* Avatar trigger */}
+            <div style={{ width:25, height:25, borderRadius:"50%", overflow:"hidden", flexShrink:0}}>
+                <Image 
+                    src="/window.svg"
+                    alt="User avatar"
+                    width={25}
+                    height={25}
+                    style={{ objectFit: "cover"}}
+                />
+            </div>
             <button
                 onClick={() => setOpen(o => !o)}
-                style={{ width:25, height:25, borderRadius:"50%", background:T.accent,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontSize:13, fontWeight:600, color:"#000", cursor:"pointer",
-                border:"none", flexShrink:0,
-                outline: open ? `2px solid ${T.accent}` : "none",
-                outlineOffset: 2
-                }}>J
+                style={{
+                    background:"none", border:"none", cursor:"pointer", display:"flex",
+                    alignItems:"center", color:T.muted, padding:3
+                }}
+            >
+                {open ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
             </button>
-            {open ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+            
 
             {/* Dropdown */}
             {open && (
