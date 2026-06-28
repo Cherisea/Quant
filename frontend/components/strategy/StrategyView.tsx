@@ -6,7 +6,7 @@ import { Check, Zap } from "lucide-react";
 import { useState } from "react";
 import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
-import NumInput from "@/components/ui/NumInput";
+import SectionLabel from "@/components/ui/SectionLabel";
 import { useTradingContext } from "@/context/TradingContext";
 import { 
     btnPrimary, card, paramBox, statLabel, 
@@ -81,7 +81,7 @@ export default function StrategyView() {
             </div>
 
             {/* Right: setting rows */}
-            
+            <SectionLabel label="Signal parameters" first/>
 
         </div>
     )
