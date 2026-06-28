@@ -4,8 +4,8 @@ import { T } from "@/lib/theme";
 import { api } from "@/lib/api";
 import { Check, Zap } from "lucide-react";
 import { useState } from "react";
-import Card from "@/components/ui/Card";
-import Field from "@/components/ui/Field";
+import Stepper from "@/components/ui/Stepper";
+import SettingRow from "@/components/ui/SettingRow";
 import SectionLabel from "@/components/ui/SectionLabel";
 import { useTradingContext } from "@/context/TradingContext";
 import { 
@@ -81,7 +81,12 @@ export default function StrategyView() {
             </div>
 
             {/* Right: setting rows */}
-            <SectionLabel label="Signal parameters" first/>
+            <div>
+                <SectionLabel label="Signal parameters" first/>
+
+                
+            </div>
+            
 
         </div>
     )
