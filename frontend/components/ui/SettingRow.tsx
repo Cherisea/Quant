@@ -8,10 +8,10 @@ interface SettingRowProps {
 
 export default function SettingRow({ label, hint, control}: SettingRowProps) {
     return (
-        <div>
-            <div>
-                <div>{label}</div>
-                <div>{hint}</div>
+        <div className="flex items-center gap-6 py-3.5 border-b border-[#252836]">
+            <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-white leading-tight">{label}</div>
+                <div className="text-xs text-[#7E839A] mt-0.5">{hint}</div>
             </div>
             {control}
         </div>
