@@ -2,7 +2,7 @@
 
 import { T } from "@/lib/theme";
 import { api } from "@/lib/api";
-import { Check } from "lucide-react";
+import { Check, Zap } from "lucide-react";
 import { useState } from "react";
 import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
@@ -14,7 +14,7 @@ import {
 } from "@/lib/style";
 
 export default function StrategyView() {
-    const { strategy, setStrategy, risk, setRisk } = useTradingContext();
+    const { strategy, setStrategy, risk, setRisk, running } = useTradingContext();
     const [saved, setSaved] = useState(false);
 
     // Simplifies field update of a state object
@@ -37,7 +37,47 @@ export default function StrategyView() {
 
     return (
         <div>
-            
+
+            {/* Left: overview card */}
+            <div>
+                <div>
+                    <div>
+                        <div>
+                            <Zap />
+                        </div>
+                        <div>
+                            <div>EMA Crossover</div>
+                            <div>Momentum strategy</div>
+                        </div>
+                    </div>
+                    <span>
+                        {running ? "ACTIVE" : "PAUSED"}
+                    </span>
+                </div>
+
+                <div />
+
+                <div>
+                    <div>
+                        Live performance
+                    </div>
+                    <div>
+                        {metrics.map(m => (
+                            <div key={m.label} className={paramBox}>
+                                <div>{m.label}</div>
+                                <div>{m.value}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div />
+
+                <div>
+                    <span>ⓘ</span>{" "}
+                    Changes write to Redis and are applied at the start of the next engine tick.
+                </div>
+            </div>
         </div>
     )
 
