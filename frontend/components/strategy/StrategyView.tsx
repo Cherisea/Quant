@@ -79,6 +79,10 @@ export default function StrategyView() {
                     Changes write to Redis and are applied at the start of the next engine tick.
                 </div>
             </div>
+
+            {/* Right: setting rows */}
+            
+
         </div>
     )
 
