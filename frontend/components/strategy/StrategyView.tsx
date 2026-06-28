@@ -84,7 +84,7 @@ export default function StrategyView() {
                     <Field label="Lookback bars" hint="daily bars">
                         <NumInput value={risk.lookback_bars} onChange={v => us(setRisk)("lookback_bars", v)} min={60} max={600} step={10}/>
                     </Field>
-                    <div style={{ marginTop:10, padding:"9px 10px", background:T.elevated, borderRadius:5, fontSize:10, color:T.muted, lineHeight:1.7 }}>
+                    <div style={{ marginTop:10, padding:"9px 10px", background:T.raised, borderRadius:5, fontSize:10, color:T.muted, lineHeight:1.7 }}>
                         <span style={{ color:T.amber }}>ⓘ</span> Saving POSTs to <code>/api/strategy</code>, which writes to Redis. Engine picks up changes at next tick.
                     </div>
                 </Card>

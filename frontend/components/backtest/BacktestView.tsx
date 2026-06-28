@@ -67,7 +67,7 @@ export default function BacktestView() {
                     </select>
                 </Field>
 
-                <div style={{ margin:"12px 0", padding:10, background:T.elevated, borderRadius:6, fontSize:10, color:T.muted, lineHeight:1.75 }}>
+                <div style={{ margin:"12px 0", padding:10, background:T.raised, borderRadius:6, fontSize:10, color:T.muted, lineHeight:1.75 }}>
                     EMA {strategy.fast_ema}/{strategy.slow_ema} · ROC {(strategy.roc_threshold*100).toFixed(0)}%
                     ({strategy.roc_period}d) · Vol {strategy.vol_coefficient}×MA({strategy.vol_ma})
                 </div>
@@ -85,7 +85,7 @@ export default function BacktestView() {
                 {/* Default view */}
                 {!done && !busy && (
                     <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        background: T.surface, border: `1px dashed ${T.border}`, borderRadius: 8, color: T.muted}}>
+                        background: T.card, border: `1px dashed ${T.border}`, borderRadius: 8, color: T.muted}}>
                         <div style={{ fontSize:28, opacity:.15, marginBottom:10 }}>📊</div>
                         <div style={{ fontSize:12 }}>Configure and run a backtest</div>
                     </div>
@@ -94,13 +94,13 @@ export default function BacktestView() {
                 {/* A view when request is being processed */}
                 {busy && (
                     <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        background:T.surface, border: `1px dashed ${T.border}`, borderRadius: 8}}>
+                        background:T.card, border: `1px dashed ${T.border}`, borderRadius: 8}}>
                             <div style={{ width: 220, marginBottom: 12 }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.muted, marginBottom: 5}}>
                                     <span>Simulating {dur}-year dataset</span>
                                     <span style={{ fontFamily: "monospace"}}>{Math.round(prog)}</span>
                                 </div>
-                                <div style={{ height: 3, background: T.elevated, borderRadius: 2}}>
+                                <div style={{ height: 3, background: T.raised, borderRadius: 2}}>
                                     <div style={{ height: "100%", width: `${prog}%`, background: T.accent, borderRadius: 2, transition: "width .15s"}}/>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@ export default function BacktestView() {
                     <>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1r)", gap: 8, marginBottom: 14 }}>
                             {BT_STATS.map(([k, v, pos]) => (
-                                <div key={k} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 6, padding: "9px 12px"}}>
+                                <div key={k} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 6, padding: "9px 12px"}}>
                                     <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", 
                                                     letterSpacing: ".05em", marginBottom: 2}}>{k}</div>
                                     <div style={{ fontSize: 14, fontWeight: 600, fontFamily: "monospace",
