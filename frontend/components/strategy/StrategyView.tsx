@@ -84,7 +84,10 @@ export default function StrategyView() {
             <div>
                 <SectionLabel label="Signal parameters" first/>
 
-                
+                <SettingRow label="Fast EMA"
+                    hint="Short-period moving average -- reacts quickly to recent price changes"
+                    control={<Stepper value={strategy.fast_ema}
+                        onChange={v => us(setStrategy)("fast_ema", v)} min={2} max={50} />} />
             </div>
             
 
