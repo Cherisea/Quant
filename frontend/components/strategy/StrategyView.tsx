@@ -88,6 +88,21 @@ export default function StrategyView() {
                     hint="Short-period moving average -- reacts quickly to recent price changes"
                     control={<Stepper value={strategy.fast_ema}
                         onChange={v => us(setStrategy)("fast_ema", v)} min={2} max={50} />} />
+
+                <SettingRow label="Slow EMA"
+                    hint="Long-period moving average -- defines the dominant trend in a larger time window"
+                    control={<Stepper value={strategy.slow_ema}
+                        onChange={v => us(setStrategy)("slow_ema", v)} min={10} max={200} />} />
+
+                <SettingRow label="ROC period"
+                    hint="Rate of change lookback window in trading days"
+                    control={<Stepper value={strategy.roc_period}
+                        onChange={v => us(setStrategy)("roc_period", v)} min={2} max={60}/>}/>
+
+                <SettingRow label="Volume MA window"
+                    hint="Rolling window for computing average daily volume"
+                    control={<Stepper value={strategy.vol_ma}
+                        onChange={v => us(setStrategy)("vol_ma", v)} min={5} max={60}/>}/>
             </div>
             
 
