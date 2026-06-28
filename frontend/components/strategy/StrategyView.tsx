@@ -36,32 +36,33 @@ export default function StrategyView() {
     ]
 
     return (
-        <div>
+        <div style={{ display:"grid", gridTemplateColumns:"260px 1fr", gap:20, alignItems:"start" }}>
 
             {/* Left: overview card */}
-            <div>
-                <div>
-                    <div>
-                        <div>
-                            <Zap />
+            <div className={card}>
+                <div className="p-4">
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="w-9 h-9 rounded-[10px] bg-[#1A1A2E] border border-[#252836]
+                            flex items-center justify-center flex-shrink-0">
+                            <Zap size={15} color={T.accent}/>
                         </div>
                         <div>
-                            <div>EMA Crossover</div>
-                            <div>Momentum strategy</div>
+                            <div className="text-sm font-medium text-white">EMA Crossover</div>
+                            <div className="text-[10px] text-[#7E839A] mt-0.5">Momentum strategy</div>
                         </div>
                     </div>
-                    <span>
+                    <span className={running ? badgeActive : badgePaused}>
                         {running ? "ACTIVE" : "PAUSED"}
                     </span>
                 </div>
 
-                <div />
+                <div className="border-t border-[#252836]"/>
 
-                <div>
-                    <div>
+                <div className="p-4">
+                    <div className="text-[10px] font-semibold text-[#7E839A] uppercase tracking-[0.1em] mb-3">
                         Live performance
                     </div>
-                    <div>
+                    <div className="grid grid-cols-2 gap-2">
                         {metrics.map(m => (
                             <div key={m.label} className={paramBox}>
                                 <div>{m.label}</div>
