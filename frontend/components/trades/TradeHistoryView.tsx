@@ -104,8 +104,8 @@ export default function TradeHistoryView({ symbol } : {symbol:string}) {
                                             {trade.pct === null ? "-" : `${trade.pct >= 0 ? "+":""}${trade.pct.toLocaleString()}`}
                                     </td>
                                     <td style={{ padding:"11px 16px"}}>
-                                        <span style={{ fontSize:9, padding:"3px 8px", borderRadius:4,
-                                                fontWeight:700, letterSpacing:"0.05em", ...rs }}>
+                                        <span style={{ padding:"3px 8px", borderRadius:4,
+                                                fontWeight:700, ...rs }}>
                                             {trade.reason}
                                         </span>
                                     </td>
