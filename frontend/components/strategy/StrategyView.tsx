@@ -4,6 +4,7 @@ import { T } from "@/lib/theme";
 import { api } from "@/lib/api";
 import { Check, Zap } from "lucide-react";
 import { useState } from "react";
+import SliderControl from "@/components/ui/SliderControl";
 import Stepper from "@/components/ui/Stepper";
 import SettingRow from "@/components/ui/SettingRow";
 import SectionLabel from "@/components/ui/SectionLabel";
