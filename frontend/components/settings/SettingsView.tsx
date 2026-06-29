@@ -13,12 +13,6 @@ import {
     btnSecondarySmall, btnDangerSmall
 } from "@/lib/style";
 
-const BROKER_TEXT_FIELDS: { label: string; key: keyof BrokerSettings }[] = [
-    { label: "Symbol", key: "symbol" },
-    { label: "Currency", key: "currency" },
-    { label: "Exchange", key: "exchange" },
-];
-
 export default function SettingsView() {
     const { running, setRunning, position, wsConnected } = useTradingContext();
     const [broker, setBroker] = useState<BrokerSettings>({ 
@@ -42,7 +36,14 @@ export default function SettingsView() {
         try { await api.engineStop(); } catch {}
         setRunning(false);
         setWarn(false);
-    }
+    };
+
+    const systemInfo = [
+        { label:"Symbol", value:broker.symbol },
+        { label:"Exchange", value:broker.exchange },
+        { label:"Interval", value:"Day" },
+        { label:"Lot size", value:`${broker.lot_size}` },
+    ];
 
     return (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
@@ -91,10 +92,11 @@ export default function SettingsView() {
                     </div>
                 </div>
 
-                <div />
+                <div style={{ borderTop:`1px solid ${T.border}` }}/>
 
-                <div>
-                    <div>System</div>
+                <div style={{ padding:16 }}>
+                    <div style={{ fontSize:10, fontWeight:600, color:T.muted, textTransform:"uppercase",
+                        letterSpacing:"0.1em", marginBottom:12}}>System</div>
                     <div>
 
                     </div>
