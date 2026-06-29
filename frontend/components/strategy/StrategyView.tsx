@@ -145,7 +145,13 @@ export default function StrategyView() {
                         onChange={v => us(setRisk)("limit_buffer_bps", v)}
                         min={1} max={50} step={10} suffix="bps"/>}/>
 
-            
+                <SettingRow label="Order timeout"
+                    hint="Amount of time before an order is cancelled and retried at next tick"
+                    control={<Stepper value={risk.max_wait_sec}
+                        onChange={v => us(setRisk)("max_wait_sec", v)}
+                        min={10} max={300} step={10} suffix="s"/>}/>
+
+                
 
             </div>
             
