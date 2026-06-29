@@ -3,8 +3,8 @@
 import { T } from "@/lib/theme";
 import { useState } from "react";
 import { api } from "@/lib/api";
-import Card from "@/components/ui/Card";
-import Field from "@/components/ui/Field";
+import SectionLabel from "../ui/SectionLabel";
+import SettingRow from "../ui/SettingRow";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
@@ -117,7 +117,7 @@ export default function SettingsView() {
             
             {/* Right: setting rows */}
             <div>
-                
+                <SectionLabel label="Broker" first />
 
                
             </div>
