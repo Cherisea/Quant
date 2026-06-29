@@ -151,7 +151,11 @@ export default function StrategyView() {
                         onChange={v => us(setRisk)("max_wait_sec", v)}
                         min={10} max={300} step={10} suffix="s"/>}/>
 
-                
+                <SettingRow label="Lookback bars"
+                    hint="Number of daily bars to fetch from broker at each evalution cycle"
+                    control={<Stepper value={risk.lookback_bars}
+                        onChange={v => us(setRisk)("lookback_bars", v)}
+                        min={60} max={600} step={10}/>}/>
 
             </div>
             
