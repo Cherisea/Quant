@@ -190,6 +190,29 @@ export default function SettingsView() {
                             </button>
                         </div>
                     }/>
+                
+                {warn && (
+                    <div style={{ marginTop:8, marginBottom:4, borderRadius:10, padding:14,
+                        background:"rgba(255, 77, 106, 0.08)", border:"1px solid rgba(255, 77, 106, 0.2)"}}>
+                        <div style={{ display:"flex", gap:10 }}>
+                            <AlertTriangle size={13} color={T.amber} style={{ flexShrink:0, marginTop:2 }}/>
+                            <div>
+                                <div style={{ fontSize:12, fontWeight:500, color:T.amber, marginBottom:6 }}>
+                                    Open position -- trailing stop will stop watching
+                                </div>
+                                <div style={{ fontSize:12, color:T.muted, lineHeight:1.6, marginBottom:12 }}>
+                                    You hold{" "}
+                                    <b style={{ color:T.text }}>{position?.qty.toLocaleString()} shares.</b>{" "}
+                                    Place a resting broker-side stop order before stopping the engine.
+                                </div>
+                                <div style={{ display:"flex", gap:8 }}>
+                                    <button onClick={forceStop} className={btnDangerSmall}>Stop anyway</button>
+                                    <button onClick={() => setWarn(false)} className={btnSecondarySmall}>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>
