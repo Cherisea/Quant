@@ -214,6 +214,24 @@ export default function SettingsView() {
                     </div>
                 )}
 
+                <SectionLabel label="Price cache" />
+
+                {([
+                    ["Cached bars", "1,247",                "Price bars stored in Postgres"           ],
+                    ["Latest",      "Jun 14, 2026",         "Most recent cached bar date"             ],
+                    ["Symbol",      "06066 · DAY",          "Symbol and interval stored"              ],
+                    ["Adapter",     "CachedBrokerAdapter",  "Decorator wrapping TigerAdapter"         ],
+                    
+                ] as [string, string, string][]).map(([label, value, hint]) => (
+                    <SettingRow key={label} label={label} hint={hint}
+                        control={
+                            <span style={{ fontSize:14, fontFamily:"monospace", fontWeight:600, color:T.text, flexShrink:0 }}>
+                                {value}
+                            </span>
+                        }
+                    />
+                ))}
+
             </div>
         </div>
     );
