@@ -48,20 +48,34 @@ export default function SettingsView() {
     return (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
             {/* Left: system overview */}
-            <div>
-                <div>
-                    <div>
-                        <div>
-                            <ArrowUpRight />
+            <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:14, overflow:"hidden"}}>
+                <div style={{ padding:16 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+                        <div style={{ width:36, height:36, borderRadius:10, flexShrink:0,
+                            background:"#0F1117", border:`1px solid ${T.border}`,
+                            display:"flex", alignItems:"center", justifyContent:"center"}}>
+                            <ArrowUpRight size={15} color={T.accent} />
                         </div>
                         <div>
-                            <div>MomentumBot</div>
-                            <div>06066 · HKEX</div>
+                            <div style={{ fontSize:14, fontWeight:500, color:T.text }}>MomentumBot</div>
+                            <div style={{ fontSize:11, color:T.muted, marginTop:2 }}>06066 · HKEX</div>
                         </div>
                     </div>
 
-                    <div>
-
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                        {[
+                            {
+                                icon: <div style={{ width:6, height:6, borderRadius:"50%", flexShrink:0,
+                                    background: running ? T.green : T.dim,
+                                    animation: running ? "pulse 2s infinite" : "none"}}/>,
+                                text: running ? "Engine running" : "Engine stopped",
+                            },
+                        ].map((row, i) => (
+                            <div key={i} style={{ display:"flex", alignItems:"center", gap:8 }}>
+                                {row.icon}
+                                <span style={{ fontSize:12, color:T.muted }}>{row.text}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
