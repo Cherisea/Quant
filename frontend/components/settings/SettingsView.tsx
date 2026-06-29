@@ -8,7 +8,7 @@ import Field from "@/components/ui/Field";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import NumInput from "../ui/NumInput";
-import { AlertTriangle, Play, Square, Database } from "lucide-react";
+import { AlertTriangle, Play, Square, Database, ArrowUpRight } from "lucide-react";
 import {
     input, select, btnPrimary, btnDanger, 
     btnSecondarySmall, btnDangerSmall
@@ -47,34 +47,40 @@ export default function SettingsView() {
 
     return (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
-            {/* Broker */}
-            <Card title="Broker" sub="Active adapter profile">
-                <Field label="Adapter">
-                    <select value={broker.name} onChange={e => setBroker(b => ({ ...b, name: e.target.value }))} className={select}>
-                        <option value="tiger">Tiger Trade</option>
-                        <option value="csv">Paper Trading</option>
-                    </select>
-                </Field>
+            {/* Left: system overview */}
+            <div>
+                <div>
+                    <div>
+                        <div>
+                            <ArrowUpRight />
+                        </div>
+                        <div>
+                            <div>MomentumBot</div>
+                            <div>06066 · HKEX</div>
+                        </div>
+                    </div>
 
-                {BROKER_TEXT_FIELDS.map(({ label, key}) => (
-                    <Field key={key} label={label}>
-                        <input 
-                            value = {broker[key]}
-                            onChange = { e => setBroker(b => ({ ...b, [key]: e.target.value}))}
-                            className = {input}
-                        />
-                    </Field>
-                ))}
+                    <div>
 
-                <Field label="Lot size" hint="shares">
-                    <NumInput value={broker.lot_size} onChange={v => setBroker(b => ({ ...b, lot_size: v }))} min={1} />
-                </Field>
-                <div style={{ marginTop: 10, padding: "9px 10px", background: T.raised, borderRadius: 5, fontSize: 10, color: T.muted, lineHeight: 1.75}}>
-                    <span style={{ color: T.accent }}>Credentials</span> are server-side env vars.
-                    Set <code>BROKER_NAME</code>, <code>TIGER_ID</code>, etc. on the host.
+                    </div>
                 </div>
-            </Card>
 
+                <div />
+
+                <div>
+                    <div>System</div>
+                    <div>
+
+                    </div>
+                </div>
+
+                <div />
+                <div>
+                    Broker credentials are server-side env vars and never reach the browser.
+                </div>
+            </div>
+            
+            {/* Right: setting rows */}
             <div>
                 {/* Engine control */}
                 <Card title="Engine control">
