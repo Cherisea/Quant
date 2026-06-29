@@ -12,7 +12,8 @@ import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } fr
 import {
     btnPrimary, btnDanger, 
     btnSecondarySmall, btnDangerSmall,
-    paramBox, statLabel, statValue
+    paramBox, statLabel, statValue,
+    btnPrimarySmall
 } from "@/lib/style";
 
 // Scoped to this file — fixed width inputs suit the SettingRow right-hand slot
@@ -172,6 +173,24 @@ export default function SettingsView() {
                     min={1} step={100}/>
                 }/>
                
+                <SectionLabel label="Engine control" />
+                
+                <SettingRow label="Trading engine"
+                    hint={running ? "Ticking every 10 mins during market hours" : "Stopped - no orders will be placed"}
+                    control={
+                        <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
+                            <div style={{ width:6, height:6, borderRadius:"50%",
+                                background: running ? T.green : T.dim}}/>
+                            <span style={{ fontSize:12, color:T.muted }}>
+                                {running ? "Running" : "Stopped"}
+                            </span>
+                            <button onClick={toggle}
+                                className={running ? btnDangerSmall : btnPrimarySmall}>
+                                {running ? <><Square size={9}/>Stop</> : <><Play size={9}/>Start</>}
+                            </button>
+                        </div>
+                    }/>
+
             </div>
         </div>
     );
