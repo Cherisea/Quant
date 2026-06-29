@@ -27,6 +27,10 @@ export default function SettingsView() {
     });
     const [warn, setWarn] = useState(false);
 
+    // A utility function to change a single attribute of BrokerSettings
+    const ub = (key: keyof BrokerSettings, value: BrokerSettings[keyof BrokerSettings]) => 
+        setBroker(b => ({...b, [key]: value }));
+
     // Turn on/off backtest engine
     const toggle = async () => {
         if (running && (position?.qty ?? 0) > 0) { setWarn(true); return; }
