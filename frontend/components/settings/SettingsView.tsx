@@ -108,8 +108,9 @@ export default function SettingsView() {
                     </div>
                 </div>
 
-                <div />
-                <div>
+                <div style={{ borderTop:`1px solid ${T.border}` }}/>
+                <div style={{ padding:16, fontSize:11, color:T.muted, lineHeight:1.6 }}>
+                    <span style={{ color:T.amber}}>ⓘ</span>{" "}
                     Broker credentials are server-side env vars and never reach the browser.
                 </div>
             </div>
