@@ -157,6 +157,13 @@ export default function StrategyView() {
                         onChange={v => us(setRisk)("lookback_bars", v)}
                         min={60} max={600} step={10}/>}/>
 
+                <div className="flex justify-end pt-6">
+                    <button onClick={save} className={btnPrimary}
+                        style={{ minWidth:130, justifyContent:"center"}}>
+                        {saved ? <><Check size={11}/>Saved</> : "Save changes"}
+                    </button>
+                </div>
+
             </div>
             
 
