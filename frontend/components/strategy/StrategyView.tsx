@@ -112,6 +112,15 @@ export default function StrategyView() {
                         onChange={v => us(setStrategy)("roc_threshold", v / 100)}
                         min={0.5} max={10} step={0.5}
                         display={`${(strategy.roc_threshold * 100).toFixed(1)}%`}/>}/>
+
+                <SettingRow label="Volume coefficient"
+                    hint="Min multiple of rolling average to trigger trading signals"
+                    control={<SliderControl
+                        value={risk.trade_size_pct * 100}
+                        onChange={v => us(setRisk)("trade_size_pct", v / 100)}
+                        min={10} max={100} step={5}
+                        display={`${(risk.trade_size_pct * 100).toFixed(0)}%`} />}/>
+                
             </div>
             
 
