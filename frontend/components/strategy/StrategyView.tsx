@@ -66,17 +66,17 @@ export default function StrategyView() {
                     <div className="grid grid-cols-2 gap-2">
                         {metrics.map(m => (
                             <div key={m.label} className={paramBox}>
-                                <div>{m.label}</div>
-                                <div>{m.value}</div>
+                                <div className={statLabel}>{m.label}</div>
+                                <div className={statValue}>{m.value}</div>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <div />
+                <div className="border-t border-[#252836]"/>
 
-                <div>
-                    <span>ⓘ</span>{" "}
+                <div className="p-4 text-[10px] text-[#7E839A] leading-relaxed">
+                    <span className="text-[#FFB800]">ⓘ</span>{" "}
                     Changes write to Redis and are applied at the start of the next engine tick.
                 </div>
             </div>
