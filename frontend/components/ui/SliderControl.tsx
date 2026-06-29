@@ -12,7 +12,10 @@ interface SliderControlProps {
 export default function SliderControl({value, onChange, min, max, step, display}: SliderControlProps) {
     return (
         <div>
-            <input />
+            <input 
+                type="range" min={min} max={max} step={step} value={value}
+                onChange={e => onChange(+e.target.value)}
+                className="w-36 accent-[#00D46A]" />
             <span>
                 {display}
             </span>
