@@ -5,6 +5,7 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import SectionLabel from "../ui/SectionLabel";
 import SettingRow from "../ui/SettingRow";
+import Stepper from "../ui/Stepper";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
@@ -61,7 +62,7 @@ export default function SettingsView() {
     ];
 
     return (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "0.4fr 1fr", gap: 16, alignItems: "start" }}>
             {/* Left: system overview */}
             <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:14, overflow:"hidden"}}>
                 <div style={{ padding:16 }}>
@@ -141,8 +142,35 @@ export default function SettingsView() {
                             <option value="tiger">Tiger Trade</option>
                             <option value="csv">CSV (paper)</option>
                         </select>
-                    } />
+                }/>
 
+                <SettingRow label="Symbol" hint="Ticker on an exchange"
+                    control={
+                        <input value={broker.symbol}
+                            onChange={e => ub("symbol", e.target.value)}
+                            style={textInput}/>
+                }/>
+                
+                <SettingRow label="Currency" hint="Settlement currency for this instrument"
+                    control={
+                        <input value={broker.currency}
+                            onChange={e => ub("currency", e.target.value)}
+                            style={textInput}/>
+                }/>
+                
+                <SettingRow label="Exchange" hint="Exchange the security is listed on"
+                control={
+                    <input value={broker.exchange}
+                    onChange={e => ub("exchange", e.target.value)}
+                    style={textInput}/>
+                }/>
+
+                <SettingRow label="Lot size" hint="Minimum tradable quantity in shares"
+                control={
+                    <Stepper value={broker.lot_size}
+                    onChange={v => ub("lot_size", v)}
+                    min={1} step={100}/>
+                }/>
                
             </div>
         </div>
