@@ -139,7 +139,13 @@ export default function StrategyView() {
                         min={1} max={15} step={0.5}
                         display={`${(risk.stop_loss_pct * 100).toFixed(1)}%`}/>}/>
 
-                
+                <SettingRow label="Limit buffer"
+                    hint="Extra basic points above ask price to ensure an order gets filled"
+                    control={<Stepper value={risk.limit_buffer_bps}
+                        onChange={v => us(setRisk)("limit_buffer_bps", v)}
+                        min={1} max={50} step={10} suffix="bps"/>}/>
+
+            
 
             </div>
             
