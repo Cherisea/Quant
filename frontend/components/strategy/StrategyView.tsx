@@ -104,6 +104,14 @@ export default function StrategyView() {
                     hint="Rolling window for computing average daily volume"
                     control={<Stepper value={strategy.vol_ma}
                         onChange={v => us(setStrategy)("vol_ma", v)} min={5} max={60}/>}/>
+
+                <SettingRow label="ROC threshold"
+                    hint="Minimum price momentum required to confirm a buy signal"
+                    control={<SliderControl 
+                        value={strategy.roc_threshold * 100}
+                        onChange={v => us(setStrategy)("roc_threshold", v / 100)}
+                        min={0.5} max={10} step={0.5}
+                        display={`${(strategy.roc_threshold * 100).toFixed(1)}%`}/>}/>
             </div>
             
 
