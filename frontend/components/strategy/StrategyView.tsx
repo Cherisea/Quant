@@ -116,11 +116,31 @@ export default function StrategyView() {
                 <SettingRow label="Volume coefficient"
                     hint="Min multiple of rolling average to trigger trading signals"
                     control={<SliderControl
+                        value={strategy.vol_coefficient}
+                        onChange={v => us(setStrategy)("vol_coefficient", v)}
+                        min={1} max={3} step={0.5}
+                        display={`${(strategy.vol_coefficient).toFixed(1)}x`} />}/>
+                
+                <SectionLabel label="Risk parameters"/>
+
+                <SettingRow label="Position size"
+                    hint="Fraction of available capital allocated to each trade"
+                    control={<SliderControl 
                         value={risk.trade_size_pct * 100}
                         onChange={v => us(setRisk)("trade_size_pct", v / 100)}
                         min={10} max={100} step={5}
-                        display={`${(risk.trade_size_pct * 100).toFixed(0)}%`} />}/>
+                        display={`${(risk.trade_size_pct * 100).toFixed(0)}%`}/>}/>
+
+                <SettingRow label="Trailing stop"
+                    hint="A price percentage threshold from its peak that triggers a stop order"
+                    control={<SliderControl 
+                        value={risk.stop_loss_pct * 100}
+                        onChange={v => us(setRisk)("stop_loss_pct", v / 100)}
+                        min={1} max={15} step={0.5}
+                        display={`${(risk.stop_loss_pct * 100).toFixed(1)}%`}/>}/>
+
                 
+
             </div>
             
 
