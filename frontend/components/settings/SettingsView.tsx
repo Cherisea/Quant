@@ -7,8 +7,7 @@ import Card from "@/components/ui/Card";
 import Field from "@/components/ui/Field";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
-import NumInput from "../ui/NumInput";
-import { AlertTriangle, Play, Square, Database, ArrowUpRight } from "lucide-react";
+import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
 import {
     input, select, btnPrimary, btnDanger, 
     btnSecondarySmall, btnDangerSmall
@@ -21,7 +20,7 @@ const BROKER_TEXT_FIELDS: { label: string; key: keyof BrokerSettings }[] = [
 ];
 
 export default function SettingsView() {
-    const { running, setRunning, position } = useTradingContext();
+    const { running, setRunning, position, wsConnected } = useTradingContext();
     const [broker, setBroker] = useState<BrokerSettings>({ 
         name: "tiger", symbol: "06066", currency: "HKD", exchange: "HKEX", lot_size: 500 
     });
@@ -69,6 +68,19 @@ export default function SettingsView() {
                                     background: running ? T.green : T.dim,
                                     animation: running ? "pulse 2s infinite" : "none"}}/>,
                                 text: running ? "Engine running" : "Engine stopped",
+                            },
+                            {
+                                icon: wsConnected
+                                    ? <Wifi size={11} color={T.green}/>
+                                    : <WifiOff size={11} color={T.red}/>,
+                                text: `WS ${wsConnected ? "connected" : "disconnected"}`,
+                            },
+                            {
+                                icon: <div style={{ width:14, height:14, borderRadius:"50%", flexShrink:0,
+                                    background:"#1A3A2A", display:"flex", alignItems:"center",
+                                    justifyContent:"center", fontSize:8, fontWeight:700, color:T.green
+                                }}>T</div>,
+                                text: "Tiger Trade",
                             },
                         ].map((row, i) => (
                             <div key={i} style={{ display:"flex", alignItems:"center", gap:8 }}>
