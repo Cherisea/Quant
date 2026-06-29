@@ -9,8 +9,9 @@ import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
 import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
 import {
-    input, select, btnPrimary, btnDanger, 
-    btnSecondarySmall, btnDangerSmall
+    btnPrimary, btnDanger, 
+    btnSecondarySmall, btnDangerSmall,
+    paramBox, statLabel, statValue
 } from "@/lib/style";
 
 export default function SettingsView() {
@@ -98,7 +99,12 @@ export default function SettingsView() {
                     <div style={{ fontSize:10, fontWeight:600, color:T.muted, textTransform:"uppercase",
                         letterSpacing:"0.1em", marginBottom:12}}>System</div>
                     <div>
-
+                        {systemInfo.map(m => (
+                            <div key={m.label} className={paramBox}>
+                                <div className={statLabel}>{m.label}</div>
+                                <div className={statValue}>{m.value}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
