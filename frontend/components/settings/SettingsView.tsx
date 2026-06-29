@@ -14,6 +14,20 @@ import {
     paramBox, statLabel, statValue
 } from "@/lib/style";
 
+// Scoped to this file — fixed width inputs suit the SettingRow right-hand slot
+const textInput: React.CSSProperties = {
+  width: 128, borderRadius: 6, border: `1px solid ${T.border}`,
+  background: T.raised, padding: "6px 10px",
+  fontSize: 12, fontFamily: "monospace", color: T.text, outline: "none",
+};
+
+const selInput: React.CSSProperties = {
+  borderRadius: 6, border: `1px solid ${T.border}`,
+  background: T.raised, padding: "6px 10px",
+  fontSize: 12, fontFamily: "system-ui", color: T.text,
+  outline: "none", cursor: "pointer",
+};
+
 export default function SettingsView() {
     const { running, setRunning, position, wsConnected } = useTradingContext();
     const [broker, setBroker] = useState<BrokerSettings>({ 
@@ -118,6 +132,16 @@ export default function SettingsView() {
             {/* Right: setting rows */}
             <div>
                 <SectionLabel label="Broker" first />
+
+                <SettingRow label="Adapter" hint="SDK used to connect to a broker"
+                    control={
+                        <select value={broker.name}
+                            onChange={e => ub("name", e.target.value)}
+                            style={selInput}>
+                            <option value="tiger">Tiger Trade</option>
+                            <option value="csv">CSV (paper)</option>
+                        </select>
+                    } />
 
                
             </div>
