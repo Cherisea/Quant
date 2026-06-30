@@ -8,9 +8,8 @@ import SettingRow from "../ui/SettingRow";
 import Stepper from "../ui/Stepper";
 import { BrokerSettings } from "@/lib/types";
 import { useTradingContext } from "@/context/TradingContext";
-import { AlertTriangle, Play, Square, Database, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
+import { AlertTriangle, Play, Square, ArrowUpRight, Wifi, WifiOff } from "lucide-react";
 import {
-    btnPrimary, btnDanger, 
     btnSecondarySmall, btnDangerSmall,
     paramBox, statLabel, statValue,
     btnPrimarySmall
