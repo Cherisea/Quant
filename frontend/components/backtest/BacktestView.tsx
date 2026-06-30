@@ -29,7 +29,7 @@ export default function BacktestView() {
     const [prog, setProg] = useState(0);
     const [done, setDone] = useState(false);
     const btData = useMemo(() => generateBtEquity(), []);
-    const pollRef = useRef<ReturnType<typeof setInterval>>();
+    const pollRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
     const run = async () => {
         setBusy(true); setProg(0); setDone(false);
