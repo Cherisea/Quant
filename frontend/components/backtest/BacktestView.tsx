@@ -126,50 +126,69 @@ export default function BacktestView() {
                 
                 {/* A view when request is being processed */}
                 {busy && (
-                    <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        background:T.card, border: `1px dashed ${T.border}`, borderRadius: 8}}>
-                            <div style={{ width: 220, marginBottom: 12 }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: T.muted, marginBottom: 5}}>
-                                    <span>Simulating {dur}-year dataset</span>
-                                    <span style={{ fontFamily: "monospace"}}>{Math.round(prog)}</span>
-                                </div>
-                                <div style={{ height: 3, background: T.raised, borderRadius: 2}}>
-                                    <div style={{ height: "100%", width: `${prog}%`, background: T.accent, borderRadius: 2, transition: "width .15s"}}/>
-                                </div>
-                            </div>
-                            <div style={{ fontSize: 10, color: T.dim}}>Bar-by-bar with slippage + fees...</div>
+                    <div style={{ height:300, display:"flex", flexDirection:"column",
+                        alignItems:"center", justifyContent:"center",
+                        background:T.card, border:`1px solid ${T.border}`, borderRadius:14 }}>
+                        <div style={{ width:220, marginBottom:12 }}>
+                        <div style={{ display:"flex", justifyContent:"space-between",
+                            fontSize:11, color:T.muted, marginBottom:6 }}>
+                            <span>Simulating {dur}-year dataset</span>
+                            <span style={{ fontFamily:"monospace" }}>{Math.round(prog)}%</span>
+                        </div>
+                        <div style={{ height:3, background:T.raised, borderRadius:2 }}>
+                            <div style={{ height:"100%", width:`${prog}%`, background:T.accent,
+                            borderRadius:2, transition:"width .15s" }}/>
+                        </div>
+                        </div>
+                        <div style={{ fontSize:11, color:T.dim }}>Bar-by-bar with slippage + fees…</div>
                     </div>
                 )}
 
                 {/* Final view after receiving results */}
                 {done && (
-                    <>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1r)", gap: 8, marginBottom: 14 }}>
-                            {BT_STATS.map(([k, v, pos]) => (
-                                <div key={k} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 6, padding: "9px 12px"}}>
-                                    <div style={{ fontSize: 9, color: T.muted, textTransform: "uppercase", 
-                                                    letterSpacing: ".05em", marginBottom: 2}}>{k}</div>
-                                    <div style={{ fontSize: 14, fontWeight: 600, fontFamily: "monospace",
-                                                    color: pos === null ? T.text : pos ? T.green : T.red}}>{v}</div>
-                                </div>
-                            ))}
+                <>
+                    <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)",
+                    gap:8, marginBottom:14 }}>
+                    {BT_STATS.map(([k, v, pos]) => (
+                        <div key={k} className={paramBox}>
+                        <div className={statLabel}>{k}</div>
+                        <div className={statValue}
+                            style={{ color: pos === null ? T.text : pos ? T.green : T.red }}>
+                            {v}
                         </div>
+                        </div>
+                    ))}
+                    </div>
 
-                        <Card title="Strategy vs buy & hold">
-                                <div style={{ height: 190 }}>
-                                    <ResponsiveContainer>
-                                        <LineChart data={btData} margin={{ top: 4, right: 4, bottom: 0, left: 0}}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke={T.border}/>
-                                            <XAxis dataKey="date" tick={{ fontSize: 8, fill:T.muted}} axisLine={false} tickLine={false} interval={18}/>
-                                            <YAxis tick={false} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                                            <Tooltip content={<BtTooltip/>}/>
-                                            <Line type="monotone" dataKey="strat" stroke={T.accent} strokeWidth={1.5} dot={false}/>
-                                            <Line type="monotone" dataKey="bnh"   stroke={T.dim}    strokeWidth={1}   dot={false} strokeDasharray="4 4"/>
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                        </Card>
-                    </>
+                    <Card title="Strategy vs buy & hold">
+                    <div style={{ height:190 }}>
+                        <ResponsiveContainer>
+                        <LineChart data={btData} margin={{ top:4, right:4, bottom:0, left:0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={T.border}/>
+                            <XAxis dataKey="date" tick={{ fontSize:8, fill:T.muted }}
+                            axisLine={false} tickLine={false} interval={18}/>
+                            <YAxis tick={false} axisLine={false} tickLine={false} domain={["auto","auto"]}/>
+                            <Tooltip content={<BtTooltip/>}/>
+                            <Line type="monotone" dataKey="strat" stroke={T.accent}
+                            strokeWidth={1.5} dot={false}/>
+                            <Line type="monotone" dataKey="bnh" stroke={T.dim}
+                            strokeWidth={1} dot={false} strokeDasharray="4 4"/>
+                        </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                    <div style={{ display:"flex", gap:16, marginTop:8,
+                        fontSize:11, color:T.dim }}>
+                        <span style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ display:"inline-block", width:16, height:2,
+                            background:T.accent }}/>Strategy
+                        </span>
+                        <span style={{ display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ display:"inline-block", width:16, height:1,
+                            borderTop:`1px dashed ${T.dim}` }}/>Buy & hold
+                        </span>
+                    </div>
+                    </Card>
+                </>
                 )}
             </div>
         </div>
