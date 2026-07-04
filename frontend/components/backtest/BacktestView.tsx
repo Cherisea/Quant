@@ -5,10 +5,9 @@ import { useTradingContext } from "@/context/TradingContext";
 import { useState, useMemo, useRef } from "react";
 import { api } from "@/lib/api";
 import Card from "@/components/ui/Card";
-import Field from "@/components/ui/Field";
 import { BT_STATS, generateBtEquity } from "@/data/seed";
 import { Play, RefreshCw } from "lucide-react";
-import { select, btnPrimary } from "@/lib/style";
+import { select, btnPrimary, paramBox, statLabel, statValue } from "@/lib/style";
 import { CartesianGrid, ResponsiveContainer, LineChart, Line, XAxis, Tooltip, YAxis } from "recharts";
 
 const DURATIONS = [1, 2, 3, 5] as const;
@@ -83,9 +82,23 @@ export default function BacktestView() {
                     </div>
                 </div>
 
-                <div style={{ margin:"12px 0", padding:10, background:T.raised, borderRadius:6, fontSize:10, color:T.muted, lineHeight:1.75 }}>
-                    EMA {strategy.fast_ema}/{strategy.slow_ema} · ROC {(strategy.roc_threshold*100).toFixed(0)}%
-                    ({strategy.roc_period}d) · Vol {strategy.vol_coefficient}×MA({strategy.vol_ma})
+                {/* Active strategy preview */}
+                <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:10, fontWeight:600, color:T.muted, textTransform:"uppercase",
+                    letterSpacing:"0.1em", marginBottom:8 }}>Strategy</div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                    {[
+                    { label:"Fast EMA", value:`${strategy.fast_ema}`                        },
+                    { label:"Slow EMA", value:`${strategy.slow_ema}`                        },
+                    { label:"ROC",      value:`${(strategy.roc_threshold*100).toFixed(0)}%` },
+                    { label:"Vol",      value:`${strategy.vol_coefficient}×`                },
+                    ].map(p => (
+                    <div key={p.label} className={paramBox}>
+                        <div className={statLabel}>{p.label}</div>
+                        <div className={statValue}>{p.value}</div>
+                    </div>
+                    ))}
+                </div>
                 </div>
 
                 <button onClick={run} disabled={busy} className={btnPrimary} style={{ width: "100%", justifyContent: "center" }}>
