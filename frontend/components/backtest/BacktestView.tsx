@@ -1,6 +1,7 @@
 "use client";
 
 import {T} from "@/lib/theme";
+import { BarChart2 } from "lucide-react";
 import { useTradingContext } from "@/context/TradingContext";
 import { useState, useMemo, useRef } from "react";
 import { api } from "@/lib/api";
@@ -109,15 +110,18 @@ export default function BacktestView() {
                 </button>
             </Card>
 
-            {/* Results */}
+            {/* Right: results panel */}
             <div>
-                {/* Default view */}
+                {/* Idle */}
                 {!done && !busy && (
-                    <div style={{ height: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        background: T.card, border: `1px dashed ${T.border}`, borderRadius: 8, color: T.muted}}>
-                        <div style={{ fontSize:28, opacity:.15, marginBottom:10 }}>📊</div>
-                        <div style={{ fontSize:12 }}>Configure and run a backtest</div>
-                    </div>
+                <div style={{ height:300, display:"flex", flexDirection:"column",
+                    alignItems:"center", justifyContent:"center",
+                    background:T.card, border:`1.5px dashed ${T.border}`,
+                    borderRadius:14, color:T.muted }}>
+                    <BarChart2 size={28} style={{ opacity:.18, marginBottom:10 }}/>
+                    <div style={{ fontSize:12 }}>Configure and run a backtest</div>
+                    <div style={{ fontSize:11, marginTop:3, color:T.dim }}>Results will appear here</div>
+                </div>
                 )}
                 
                 {/* A view when request is being processed */}
