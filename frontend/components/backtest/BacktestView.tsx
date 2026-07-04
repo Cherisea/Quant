@@ -11,11 +11,14 @@ import { Play, RefreshCw } from "lucide-react";
 import { select, btnPrimary } from "@/lib/style";
 import { CartesianGrid, ResponsiveContainer, LineChart, Line, XAxis, Tooltip, YAxis } from "recharts";
 
+const DURATIONS = [1, 2, 3, 5] as const;
+type Duration = typeof DURATIONS[number];
+
 function BtTooltip({ active, payload}: any) {
     if (!active || !payload?.length) return null;
     const fmtEq = (v: number) => v >= 1e6 ? `${(v/1e6).toFixed(2)}M` : `${(v/1e3).toFixed(0)}K`;
     return (
-        <div style={{ background:T.bg, border:`1px solid ${T.border}`, borderRadius:5, padding:"7px 10px", fontSize:10 }}>
+        <div style={{ background:T.raised, border:`1px solid ${T.border}`, borderRadius:6, padding:"7px 10px", fontSize:10 }}>
             <div style={{ color:T.accent }}>Strategy: HK${fmtEq(payload[0]?.value)}</div>
             <div style={{ color:T.muted }}>B&H: HK${fmtEq(payload[1]?.value)}</div>
         </div>
@@ -58,14 +61,26 @@ export default function BacktestView() {
     };
 
     return (
-        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 16, alignItems: "start" }}>
-            {/* Config */}
+        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20, alignItems: "start" }}>
+            {/* Left: config panel */}
             <Card title="Configuration">
-                <Field label="Test duration">
-                    <select value={dur} onChange={e => setDur(+e.target.value)} className={select}>
-                        {[1, 2, 3, 5].map(v => <option key={v} value={v}>{v} year{v>1?"s": ""}</option>)}
-                    </select>
-                </Field>
+                {/* Duration - pill selector */}
+                <div>
+                    <div>Test duration</div>
+                    <div style={{ display:"flex", gap:8 }}>
+                        {DURATIONS.map(v => (
+                            <button key={v} onClick={() => setDur(v)} style={{
+                                flex:1, padding:"6px 0", borderRadius:6, border:"none",
+                                cursor:"pointer", fontSize:12, fontWeight:500,
+                                background: dur === v ? T.accent : T.border,
+                                color: dur === v ? "#000" : T.muted,
+                                transition: "background 0.15s, color 0.15s",
+                            }}>
+                                {v}yr
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
                 <div style={{ margin:"12px 0", padding:10, background:T.raised, borderRadius:6, fontSize:10, color:T.muted, lineHeight:1.75 }}>
                     EMA {strategy.fast_ema}/{strategy.slow_ema} · ROC {(strategy.roc_threshold*100).toFixed(0)}%
