@@ -64,7 +64,7 @@ export default function BacktestView() {
             {/* Left: config panel */}
             <Card title="Configuration">
                 {/* Duration - pill selector */}
-                <div style={{ marginBottom:16 }}>
+                <div style={{ marginBottom:40 }}>
                     <div style={{ fontSize:10, fontWeight:600, color:T.muted, textTransform:"uppercase",
                         letterSpacing:"0.1em", marginBottom:8}}>Test duration</div>
                     <div style={{ display:"flex", gap:8 }}>
