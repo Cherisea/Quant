@@ -61,7 +61,7 @@ export default function BacktestView() {
     };
 
     return (
-        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 20 }}>
             {/* Left: config panel */}
             <Card title="Configuration">
                 {/* Duration - pill selector */}
